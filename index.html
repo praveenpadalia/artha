@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#059669">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Artha">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>Artha • धन से समृद्धि तक (BSE, NSE, Mutual Funds & Banks)</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
@@ -515,51 +520,161 @@
   <script>
     // Comprehensive Indian Stock Master Directory for Instant Auto-Lookup
     const INDIAN_STOCK_DIRECTORY = {
+      // NIFTY 50 & Heavyweights
       'RELIANCE': { name: 'Reliance Industries Ltd.', price: 1410.50, divYield: 0.8, exchange: 'NSE' },
       'TCS': { name: 'Tata Consultancy Services Ltd.', price: 4120.00, divYield: 2.1, exchange: 'NSE' },
-      'INFY': { name: 'Infosys Limited', price: 1850.25, divYield: 2.4, exchange: 'NSE' },
       'HDFCBANK': { name: 'HDFC Bank Ltd.', price: 1745.00, divYield: 1.1, exchange: 'NSE' },
       'ICICIBANK': { name: 'ICICI Bank Ltd.', price: 1260.50, divYield: 0.9, exchange: 'NSE' },
-      'SBIN': { name: 'State Bank of India', price: 810.00, divYield: 1.7, exchange: 'NSE' },
+      'INFY': { name: 'Infosys Limited', price: 1850.25, divYield: 2.4, exchange: 'NSE' },
       'BHARTIARTL': { name: 'Bharti Airtel Ltd.', price: 1680.00, divYield: 0.6, exchange: 'NSE' },
       'ITC': { name: 'ITC Limited', price: 485.50, divYield: 3.2, exchange: 'NSE' },
+      'SBIN': { name: 'State Bank of India', price: 810.00, divYield: 1.7, exchange: 'NSE' },
       'LT': { name: 'Larsen & Toubro Ltd.', price: 3620.00, divYield: 0.9, exchange: 'NSE' },
       'HINDUNILVR': { name: 'Hindustan Unilever Ltd.', price: 2450.00, divYield: 1.6, exchange: 'NSE' },
       'TATAMOTORS': { name: 'Tata Motors Ltd.', price: 875.00, divYield: 0.8, exchange: 'NSE' },
-      'TATASTEEL': { name: 'Tata Steel Ltd.', price: 148.50, divYield: 2.4, exchange: 'NSE' },
       'BAJFINANCE': { name: 'Bajaj Finance Ltd.', price: 6850.00, divYield: 0.5, exchange: 'NSE' },
       'MARUTI': { name: 'Maruti Suzuki India Ltd.', price: 11450.00, divYield: 1.1, exchange: 'NSE' },
-      'ASIANPAINT': { name: 'Asian Paints Ltd.', price: 2980.00, divYield: 1.2, exchange: 'NSE' },
-      'TITAN': { name: 'Titan Company Ltd.', price: 3410.00, divYield: 0.3, exchange: 'NSE' },
-      'WIPRO': { name: 'Wipro Limited', price: 545.00, divYield: 0.2, exchange: 'NSE' },
+      'HCLTECH': { name: 'HCL Technologies Ltd.', price: 1840.00, divYield: 2.8, exchange: 'NSE' },
       'KOTAKBANK': { name: 'Kotak Mahindra Bank Ltd.', price: 1780.00, divYield: 0.6, exchange: 'NSE' },
       'AXISBANK': { name: 'Axis Bank Ltd.', price: 1195.00, divYield: 0.1, exchange: 'NSE' },
       'SUNPHARMA': { name: 'Sun Pharmaceutical Industries Ltd.', price: 1870.00, divYield: 0.7, exchange: 'NSE' },
+      'TITAN': { name: 'Titan Company Ltd.', price: 3410.00, divYield: 0.3, exchange: 'NSE' },
+      'ASIANPAINT': { name: 'Asian Paints Ltd.', price: 2980.00, divYield: 1.2, exchange: 'NSE' },
       'NTPC': { name: 'NTPC Limited', price: 415.00, divYield: 1.9, exchange: 'NSE' },
+      'TATAPOWER': { name: 'Tata Power Company Ltd.', price: 435.00, divYield: 0.5, exchange: 'NSE' },
+      'TATASTEEL': { name: 'Tata Steel Ltd.', price: 148.50, divYield: 2.4, exchange: 'NSE' },
+      'ONGC': { name: 'Oil & Natural Gas Corporation Ltd.', price: 265.00, divYield: 4.6, exchange: 'NSE' },
       'POWERGRID': { name: 'Power Grid Corporation of India Ltd.', price: 325.00, divYield: 3.4, exchange: 'NSE' },
-      'ONGC': { name: 'Oil and Natural Gas Corporation Ltd.', price: 265.00, divYield: 4.6, exchange: 'NSE' },
       'COALINDIA': { name: 'Coal India Ltd.', price: 460.00, divYield: 5.5, exchange: 'NSE' },
       'ADANIENT': { name: 'Adani Enterprises Ltd.', price: 2850.00, divYield: 0.1, exchange: 'NSE' },
       'ADANIPORTS': { name: 'Adani Ports and Special Economic Zone Ltd.', price: 1390.00, divYield: 0.4, exchange: 'NSE' },
-      'HCLTECH': { name: 'HCL Technologies Ltd.', price: 1840.00, divYield: 2.8, exchange: 'NSE' },
+      'ADANIPOWER': { name: 'Adani Power Ltd.', price: 610.00, divYield: 0.0, exchange: 'NSE' },
+      'ADANIGREEN': { name: 'Adani Green Energy Ltd.', price: 1650.00, divYield: 0.0, exchange: 'NSE' },
       'BAJAJFINSV': { name: 'Bajaj Finserv Ltd.', price: 1740.00, divYield: 0.2, exchange: 'NSE' },
       'NESTLEIND': { name: 'Nestle India Ltd.', price: 2280.00, divYield: 1.3, exchange: 'NSE' },
       'ULTRACEMCO': { name: 'UltraTech Cement Ltd.', price: 11150.00, divYield: 0.6, exchange: 'NSE' },
-      'ZOMATO': { name: 'Zomato Limited', price: 265.00, divYield: 0.0, exchange: 'NSE' },
-      'JIOFIN': { name: 'Jio Financial Services Ltd.', price: 320.00, divYield: 0.0, exchange: 'NSE' },
-      'BEL': { name: 'Bharat Electronics Ltd.', price: 290.00, divYield: 0.8, exchange: 'NSE' },
-      'HAL': { name: 'Hindustan Aeronautics Ltd.', price: 4350.00, divYield: 0.8, exchange: 'NSE' },
-      'VEDL': { name: 'Vedanta Limited', price: 475.00, divYield: 6.2, exchange: 'NSE' },
-      'IRCTC': { name: 'Indian Railway Catering and Tourism Corp.', price: 840.00, divYield: 0.8, exchange: 'NSE' },
-      'TATACONSUM': { name: 'Tata Consumer Products Ltd.', price: 1040.00, divYield: 0.8, exchange: 'NSE' },
-      'INDUSINDBK': { name: 'IndusInd Bank Ltd.', price: 1050.00, divYield: 1.5, exchange: 'NSE' },
+      'WIPRO': { name: 'Wipro Limited', price: 545.00, divYield: 0.2, exchange: 'NSE' },
+      'JSWSTEEL': { name: 'JSW Steel Ltd.', price: 985.00, divYield: 0.7, exchange: 'NSE' },
+      'M&M': { name: 'Mahindra & Mahindra Ltd.', price: 2820.00, divYield: 0.7, exchange: 'NSE' },
       'TECHM': { name: 'Tech Mahindra Ltd.', price: 1680.00, divYield: 1.8, exchange: 'NSE' },
       'GRASIM': { name: 'Grasim Industries Ltd.', price: 2540.00, divYield: 0.7, exchange: 'NSE' },
       'CIPLA': { name: 'Cipla Limited', price: 1530.00, divYield: 0.9, exchange: 'NSE' },
       'DRREDDY': { name: 'Dr. Reddy’s Laboratories Ltd.', price: 1260.00, divYield: 0.8, exchange: 'NSE' },
       'EICHERMOT': { name: 'Eicher Motors Ltd.', price: 4720.00, divYield: 1.1, exchange: 'NSE' },
       'BPCL': { name: 'Bharat Petroleum Corporation Ltd.', price: 310.00, divYield: 4.8, exchange: 'NSE' },
-      'HEROMOTOCO': { name: 'Hero MotoCorp Ltd.', price: 5120.00, divYield: 2.7, exchange: 'NSE' }
+      'HEROMOTOCO': { name: 'Hero MotoCorp Ltd.', price: 5120.00, divYield: 2.7, exchange: 'NSE' },
+      'BRITANNIA': { name: 'Britannia Industries Ltd.', price: 5340.00, divYield: 1.4, exchange: 'NSE' },
+      'HINDALCO': { name: 'Hindalco Industries Ltd.', price: 680.00, divYield: 0.5, exchange: 'NSE' },
+      'APOLLOHOSP': { name: 'Apollo Hospitals Enterprise Ltd.', price: 6980.00, divYield: 0.2, exchange: 'NSE' },
+      'DIVISLAB': { name: 'Divi’s Laboratories Ltd.', price: 5890.00, divYield: 0.5, exchange: 'NSE' },
+      'TATACONSUM': { name: 'Tata Consumer Products Ltd.', price: 1040.00, divYield: 0.8, exchange: 'NSE' },
+      'LTIM': { name: 'LTIMindtree Ltd.', price: 6120.00, divYield: 1.1, exchange: 'NSE' },
+      'SHRIRAMFIN': { name: 'Shriram Finance Ltd.', price: 3180.00, divYield: 1.4, exchange: 'NSE' },
+      'SBILIFE': { name: 'SBI Life Insurance Co. Ltd.', price: 1680.00, divYield: 0.2, exchange: 'NSE' },
+      'HDFCLIFE': { name: 'HDFC Life Insurance Co. Ltd.', price: 690.00, divYield: 0.3, exchange: 'NSE' },
+      'BAJAJ-AUTO': { name: 'Bajaj Auto Ltd.', price: 10250.00, divYield: 1.2, exchange: 'NSE' },
+      // PSU & Railways
+      'IRFC': { name: 'Indian Railway Finance Corporation Ltd.', price: 155.00, divYield: 1.0, exchange: 'NSE' },
+      'RVNL': { name: 'Rail Vikas Nigam Ltd.', price: 465.00, divYield: 0.5, exchange: 'NSE' },
+      'IRCTC': { name: 'Indian Railway Catering and Tourism Corp.', price: 840.00, divYield: 0.8, exchange: 'NSE' },
+      'RAILTEL': { name: 'RailTel Corporation of India Ltd.', price: 395.00, divYield: 0.6, exchange: 'NSE' },
+      'RITES': { name: 'RITES Limited', price: 290.00, divYield: 4.2, exchange: 'NSE' },
+      'TITAGARH': { name: 'Titagarh Rail Systems Ltd.', price: 1220.00, divYield: 0.1, exchange: 'NSE' },
+      'JUPITERWAG': { name: 'Jupiter Wagons Ltd.', price: 495.00, divYield: 0.2, exchange: 'NSE' },
+      // Defense & Aerospace
+      'HAL': { name: 'Hindustan Aeronautics Ltd.', price: 4350.00, divYield: 0.8, exchange: 'NSE' },
+      'BEL': { name: 'Bharat Electronics Ltd.', price: 290.00, divYield: 0.8, exchange: 'NSE' },
+      'BDL': { name: 'Bharat Dynamics Ltd.', price: 1090.00, divYield: 0.8, exchange: 'NSE' },
+      'MAZDOCK': { name: 'Mazagon Dock Shipbuilders Ltd.', price: 4180.00, divYield: 0.6, exchange: 'NSE' },
+      'COCHINSHIP': { name: 'Cochin Shipyard Ltd.', price: 1480.00, divYield: 0.6, exchange: 'NSE' },
+      'GRSE': { name: 'Garden Reach Shipbuilders & Engineers', price: 1680.00, divYield: 0.5, exchange: 'NSE' },
+      // Power & Renewable Energy
+      'IREDA': { name: 'Indian Renewable Energy Development Agency', price: 215.00, divYield: 0.0, exchange: 'NSE' },
+      'SUZLON': { name: 'Suzlon Energy Ltd.', price: 68.50, divYield: 0.0, exchange: 'NSE' },
+      'NHPC': { name: 'NHPC Limited', price: 88.00, divYield: 2.1, exchange: 'NSE' },
+      'SJVN': { name: 'SJVN Limited', price: 112.00, divYield: 1.6, exchange: 'NSE' },
+      'JSWENERGY': { name: 'JSW Energy Ltd.', price: 670.00, divYield: 0.3, exchange: 'NSE' },
+      'BHEL': { name: 'Bharat Heavy Electricals Ltd.', price: 240.00, divYield: 0.4, exchange: 'NSE' },
+      'TATAINVEST': { name: 'Tata Investment Corporation Ltd.', price: 6850.00, divYield: 0.4, exchange: 'NSE' },
+      // Banking & NBFCs
+      'PNB': { name: 'Punjab National Bank', price: 105.00, divYield: 1.4, exchange: 'NSE' },
+      'BANKBARODA': { name: 'Bank of Baroda', price: 245.00, divYield: 3.1, exchange: 'NSE' },
+      'CANBK': { name: 'Canara Bank', price: 102.00, divYield: 3.2, exchange: 'NSE' },
+      'IDFCFIRSTB': { name: 'IDFC FIRST Bank Ltd.', price: 68.00, divYield: 0.0, exchange: 'NSE' },
+      'FEDERALBNK': { name: 'Federal Bank Ltd.', price: 198.00, divYield: 0.6, exchange: 'NSE' },
+      'UNIONBANK': { name: 'Union Bank of India', price: 118.00, divYield: 3.1, exchange: 'NSE' },
+      'INDIANB': { name: 'Indian Bank', price: 535.00, divYield: 2.2, exchange: 'NSE' },
+      'JIOFIN': { name: 'Jio Financial Services Ltd.', price: 320.00, divYield: 0.0, exchange: 'NSE' },
+      'CHOLAFIN': { name: 'Cholamandalam Investment & Finance', price: 1380.00, divYield: 0.2, exchange: 'NSE' },
+      'MUTHOOTFIN': { name: 'Muthoot Finance Ltd.', price: 1980.00, divYield: 1.2, exchange: 'NSE' },
+      'REC': { name: 'REC Limited', price: 510.00, divYield: 3.1, exchange: 'NSE' },
+      'PFC': { name: 'Power Finance Corporation Ltd.', price: 475.00, divYield: 2.8, exchange: 'NSE' },
+      // Retail & Consumer
+      'DMART': { name: 'Avenue Supermarts Ltd. (DMART)', price: 3980.00, divYield: 0.0, exchange: 'NSE' },
+      'TRENT': { name: 'Trent Limited', price: 6850.00, divYield: 0.1, exchange: 'NSE' },
+      'VBL': { name: 'Varun Beverages Ltd.', price: 580.00, divYield: 0.3, exchange: 'NSE' },
+      'PIDILITIND': { name: 'Pidilite Industries Ltd.', price: 3080.00, divYield: 0.5, exchange: 'NSE' },
+      'HAVELLS': { name: 'Havells India Ltd.', price: 1780.00, divYield: 0.5, exchange: 'NSE' },
+      'POLYCAB': { name: 'Polycab India Ltd.', price: 6720.00, divYield: 0.4, exchange: 'NSE' },
+      'VOLTAS': { name: 'Voltas Limited', price: 1740.00, divYield: 0.3, exchange: 'NSE' },
+      'DIXON': { name: 'Dixon Technologies (India) Ltd.', price: 14200.00, divYield: 0.1, exchange: 'NSE' },
+      'BATAINDIA': { name: 'Bata India Ltd.', price: 1380.00, divYield: 1.0, exchange: 'NSE' },
+      // New Age & Tech
+      'ZOMATO': { name: 'Zomato Limited', price: 265.00, divYield: 0.0, exchange: 'NSE' },
+      'PAYTM': { name: 'One 97 Communications Ltd. (Paytm)', price: 745.00, divYield: 0.0, exchange: 'NSE' },
+      'NYKAA': { name: 'FSN E-Commerce Ventures Ltd. (Nykaa)', price: 182.00, divYield: 0.0, exchange: 'NSE' },
+      'POLICYBZR': { name: 'PB Fintech Ltd. (PolicyBazaar)', price: 1640.00, divYield: 0.0, exchange: 'NSE' },
+      'DELHIVERY': { name: 'Delhivery Limited', price: 365.00, divYield: 0.0, exchange: 'NSE' },
+      'KPITTECH': { name: 'KPIT Technologies Ltd.', price: 1690.00, divYield: 0.3, exchange: 'NSE' },
+      'PERSISTENT': { name: 'Persistent Systems Ltd.', price: 5420.00, divYield: 0.9, exchange: 'NSE' },
+      'COFORGE': { name: 'Coforge Limited', price: 7480.00, divYield: 1.0, exchange: 'NSE' },
+      'TATATECH': { name: 'Tata Technologies Ltd.', price: 980.00, divYield: 0.0, exchange: 'NSE' },
+      // Commodities & Metals
+      'VEDL': { name: 'Vedanta Limited', price: 475.00, divYield: 6.2, exchange: 'NSE' },
+      'NMDC': { name: 'NMDC Limited', price: 228.00, divYield: 2.5, exchange: 'NSE' },
+      'HINDZINC': { name: 'Hindustan Zinc Ltd.', price: 495.00, divYield: 4.2, exchange: 'NSE' },
+      'SAIL': { name: 'Steel Authority of India Ltd.', price: 122.00, divYield: 1.8, exchange: 'NSE' },
+      'JINDALSTEL': { name: 'Jindal Steel & Power Ltd.', price: 940.00, divYield: 0.3, exchange: 'NSE' },
+      'NATIONALUM': { name: 'National Aluminium Co. Ltd.', price: 215.00, divYield: 2.6, exchange: 'NSE' },
+      // Exchanges & Platforms
+      'BSE': { name: 'BSE Limited', price: 4450.00, divYield: 0.5, exchange: 'BSE' },
+      'MCX': { name: 'Multi Commodity Exchange of India Ltd.', price: 6150.00, divYield: 0.4, exchange: 'NSE' },
+      'CDSL': { name: 'Central Depository Services (India) Ltd.', price: 1490.00, divYield: 1.3, exchange: 'NSE' },
+      'CAMS': { name: 'Computer Age Management Services Ltd.', price: 4350.00, divYield: 1.1, exchange: 'NSE' },
+      // Auto Ancillary
+      'MOTHERSON': { name: 'Samvardhana Motherson International', price: 165.00, divYield: 0.4, exchange: 'NSE' },
+      'BOSCHLTD': { name: 'Bosch Limited', price: 34200.00, divYield: 1.1, exchange: 'NSE' },
+      'BHARATFORG': { name: 'Bharat Forge Ltd.', price: 1440.00, divYield: 0.4, exchange: 'NSE' },
+      'TVSMOTOR': { name: 'TVS Motor Company Ltd.', price: 2450.00, divYield: 0.3, exchange: 'NSE' },
+      'MRF': { name: 'MRF Limited', price: 128500.00, divYield: 0.2, exchange: 'NSE' },
+      'BALKRISIND': { name: 'Balkrishna Industries Ltd.', price: 2940.00, divYield: 0.6, exchange: 'NSE' },
+      // Healthcare & Pharma
+      'MANKIND': { name: 'Mankind Pharma Ltd.', price: 2590.00, divYield: 0.0, exchange: 'NSE' },
+      'TORNTPHARM': { name: 'Torrent Pharmaceuticals Ltd.', price: 3280.00, divYield: 0.9, exchange: 'NSE' },
+      'LUPIN': { name: 'Lupin Limited', price: 2140.00, divYield: 0.4, exchange: 'NSE' },
+      'AUROPHARMA': { name: 'Aurobindo Pharma Ltd.', price: 1460.00, divYield: 0.3, exchange: 'NSE' },
+      'ALKEM': { name: 'Alkem Laboratories Ltd.', price: 5620.00, divYield: 0.7, exchange: 'NSE' },
+      'MAXHEALTH': { name: 'Max Healthcare Institute Ltd.', price: 980.00, divYield: 0.1, exchange: 'NSE' },
+      // Other Popular Retail Stocks
+      'KALYANKJIL': { name: 'Kalyan Jewellers India Ltd.', price: 680.00, divYield: 0.2, exchange: 'NSE' },
+      'HUDCO': { name: 'Housing & Urban Development Corp.', price: 218.00, divYield: 1.7, exchange: 'NSE' },
+      'PRESTIGE': { name: 'Prestige Estates Projects Ltd.', price: 1640.00, divYield: 0.1, exchange: 'NSE' },
+      'DLF': { name: 'DLF Limited', price: 790.00, divYield: 0.6, exchange: 'NSE' },
+      'GODREJPROP': { name: 'Godrej Properties Ltd.', price: 2890.00, divYield: 0.0, exchange: 'NSE' },
+      'OBEROIRLTY': { name: 'Oberoi Realty Ltd.', price: 1880.00, divYield: 0.4, exchange: 'NSE' },
+      'YESBANK': { name: 'Yes Bank Ltd.', price: 20.80, divYield: 0.0, exchange: 'NSE' },
+      'IDEA': { name: 'Vodafone Idea Ltd.', price: 8.40, divYield: 0.0, exchange: 'NSE' },
+      'ABCAPITAL': { name: 'Aditya Birla Capital Ltd.', price: 205.00, divYield: 0.0, exchange: 'NSE' },
+      'EXIDEIND': { name: 'Exide Industries Ltd.', price: 465.00, divYield: 0.4, exchange: 'NSE' },
+      'AMBUJACEM': { name: 'Ambuja Cements Ltd.', price: 560.00, divYield: 0.4, exchange: 'NSE' },
+      'ACC': { name: 'ACC Limited', price: 2290.00, divYield: 0.3, exchange: 'NSE' },
+      'INDHOTEL': { name: 'The Indian Hotels Company Ltd.', price: 690.00, divYield: 0.2, exchange: 'NSE' },
+      'PAGEIND': { name: 'Page Industries Ltd.', price: 44500.00, divYield: 0.8, exchange: 'NSE' },
+      'ASTRAL': { name: 'Astral Limited', price: 1840.00, divYield: 0.2, exchange: 'NSE' },
+      'PETRONET': { name: 'Petronet LNG Ltd.', price: 320.00, divYield: 3.1, exchange: 'NSE' },
+      'IGL': { name: 'Indraprastha Gas Ltd.', price: 395.00, divYield: 3.8, exchange: 'NSE' },
+      'MGL': { name: 'Mahanagar Gas Ltd.', price: 1650.00, divYield: 2.0, exchange: 'NSE' },
+      'GUJGASLTD': { name: 'Gujarat Gas Ltd.', price: 540.00, divYield: 1.2, exchange: 'NSE' }
     };
 
     // Initial Seed Data with AMFI Scheme Codes and Yield / Interest Rates
@@ -888,7 +1003,7 @@
       showToast(`Synced ${mfSuccessCount} Mutual Funds via AMFI API and refreshed ${stockSuccessCount} Stocks!`);
     }
 
-    // Automatic Stock Info Lookup Function (Requested Feature)
+    // Automatic Stock Info Lookup Function with Full NSE & BSE Support
     async function lookupAndFillStockInfo(symbolRaw) {
       const symbol = symbolRaw.trim().toUpperCase().replace(/\.(NS|BO)$/, '');
       if (!symbol) return;
@@ -900,15 +1015,17 @@
       const divInput = document.getElementById('field-stock-divyield');
       const lookupBtn = document.getElementById('btn-fetch-stock-info');
       const autoStatus = document.getElementById('stock-auto-status');
+      const autoList = document.getElementById('stock-autocomplete-list');
+      if (autoList) autoList.classList.add('hidden');
 
-      if (lookupBtn) lookupBtn.textContent = 'Fetching...';
+      if (lookupBtn) lookupBtn.textContent = 'Searching...';
       if (autoStatus) {
         autoStatus.classList.remove('hidden');
-        autoStatus.textContent = `Searching market data for ${symbol}...`;
+        autoStatus.textContent = `Fetching live NSE/BSE market quote for ${symbol}...`;
         autoStatus.className = 'text-[11px] text-blue-600 dark:text-blue-400 font-medium';
       }
 
-      // Check Master Directory First (Instant & 100% Reliable)
+      // 1. Check Master Directory First (Instant & 100% Reliable)
       if (INDIAN_STOCK_DIRECTORY[symbol]) {
         const info = INDIAN_STOCK_DIRECTORY[symbol];
         if (nameInput) nameInput.value = info.name;
@@ -920,51 +1037,68 @@
         if (divInput) divInput.value = info.divYield;
 
         if (autoStatus) {
-          autoStatus.textContent = `✓ Auto-filled ${symbol} (${info.name}) • Live Price: ${formatINR(info.price)}`;
+          autoStatus.textContent = `✓ Found in catalog: ${symbol} (${info.name}) • ${info.exchange} Price: ${formatINR(info.price)}`;
           autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
         }
-        if (lookupBtn) lookupBtn.textContent = 'Lookup Stock';
+        if (lookupBtn) lookupBtn.textContent = 'Lookup';
         showToast(`Auto-filled ${symbol} market data!`);
         return;
       }
 
-      // Fallback: Query Yahoo Finance / Public Quote via CORS Proxy
-      try {
-        const resp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}.NS`)}`);
-        if (resp.ok) {
-          const json = await resp.json();
-          const meta = json && json.chart && json.chart.result && json.chart.result[0] && json.chart.result[0].meta;
-          if (meta) {
-            const price = meta.regularMarketPrice || meta.chartPreviousClose || 0;
-            const compName = meta.shortName || meta.longName || `${symbol} Ltd.`;
-            if (nameInput) nameInput.value = compName;
-            if (currentInput && price > 0) currentInput.value = price;
-            if (buyInput && (!buyInput.value || parseFloat(buyInput.value) <= 0) && price > 0) {
-              buyInput.value = price;
-            }
-            if (exchangeSelect) exchangeSelect.value = 'NSE';
-            if (divInput && !divInput.value) divInput.value = '1.5';
+      // 2. Multi-Proxy Live Query across NSE (.NS) and BSE (.BO)
+      const selectedExchange = exchangeSelect ? exchangeSelect.value : 'NSE';
+      const tickerAttempts = selectedExchange === 'BSE' 
+        ? [`${symbol}.BO`, `${symbol}.NS`]
+        : [`${symbol}.NS`, `${symbol}.BO`];
 
-            if (autoStatus) {
-              autoStatus.textContent = `✓ Fetched ${symbol} (${compName}) • Price: ${formatINR(price)}`;
-              autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
+      for (const ticker of tickerAttempts) {
+        const ex = ticker.endsWith('.BO') ? 'BSE' : 'NSE';
+        const proxyUrls = [
+          `https://corsproxy.io/?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d`)}`,
+          `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d`)}`
+        ];
+
+        for (const url of proxyUrls) {
+          try {
+            const resp = await fetch(url);
+            if (resp.ok) {
+              const json = await resp.json();
+              const meta = json && json.chart && json.chart.result && json.chart.result[0] && json.chart.result[0].meta;
+              if (meta) {
+                const price = meta.regularMarketPrice || meta.chartPreviousClose || 0;
+                const compName = meta.shortName || meta.longName || `${symbol} Ltd.`;
+                if (price > 0) {
+                  if (nameInput) nameInput.value = compName;
+                  if (currentInput) currentInput.value = Math.round(price * 100) / 100;
+                  if (buyInput && (!buyInput.value || parseFloat(buyInput.value) <= 0)) {
+                    buyInput.value = Math.round(price * 100) / 100;
+                  }
+                  if (exchangeSelect) exchangeSelect.value = ex;
+                  if (divInput && !divInput.value) divInput.value = '1.2';
+
+                  if (autoStatus) {
+                    autoStatus.textContent = `✓ Live Quote: ${compName} (${ticker}) • ${ex} Price: ${formatINR(price)}`;
+                    autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
+                  }
+                  showToast(`Fetched ${compName} (${ex})!`);
+                  if (lookupBtn) lookupBtn.textContent = 'Lookup';
+                  return;
+                }
+              }
             }
-            showToast(`Fetched live data for ${symbol}!`);
-            if (lookupBtn) lookupBtn.textContent = 'Lookup Stock';
-            return;
+          } catch (err) {
+            // continue to next proxy
           }
         }
-      } catch (err) {
-        console.warn('Network quote query fallback:', err);
       }
 
-      // Unknown symbol or network restricted
+      // If symbol is not resolved automatically
       if (autoStatus) {
-        autoStatus.textContent = `Symbol ${symbol} not in quick catalog. Enter details manually.`;
+        autoStatus.textContent = `Could not auto-fetch quote for "${symbol}". You can enter the company name and price manually.`;
         autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400';
       }
       if (nameInput && !nameInput.value) nameInput.value = `${symbol} Ltd.`;
-      if (lookupBtn) lookupBtn.textContent = 'Lookup Stock';
+      if (lookupBtn) lookupBtn.textContent = 'Lookup';
     }
 
     // Search and Filter Logic
@@ -1230,16 +1364,20 @@
       } else if (activeTab === 'stocks') {
         title.textContent = 'Add Stock Holding (BSE / NSE)';
         fieldsContainer.innerHTML = `
-          <div>
+          <div class="relative">
             <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Stock Symbol</label>
-              <span class="text-[10px] text-slate-400">e.g. RELIANCE, TCS, INFY, HDFCBANK</span>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Stock Symbol or Company Name</label>
+              <span class="text-[10px] text-slate-400">Type symbol or company name (NSE / BSE)</span>
             </div>
             <div class="flex gap-2">
-              <input required id="field-stock-symbol" type="text" placeholder="e.g. TCS" class="uppercase w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
-              <button id="btn-fetch-stock-info" type="button" class="shrink-0 px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 flex items-center gap-1">
-                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                Lookup Stock
+              <div class="relative flex-1">
+                <input required id="field-stock-symbol" type="text" autocomplete="off" placeholder="e.g. SUZLON, TATA, RELIANCE, IRFC..." class="uppercase w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
+                <!-- Autocomplete Dropdown List -->
+                <div id="stock-autocomplete-list" class="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl max-h-56 overflow-y-auto hidden divide-y divide-slate-100 dark:divide-slate-700"></div>
+              </div>
+              <button id="btn-fetch-stock-info" type="button" class="shrink-0 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                Lookup
               </button>
             </div>
             <div id="stock-auto-status" class="mt-1 text-[11px] text-slate-500 hidden"></div>
@@ -1277,9 +1415,63 @@
           </div>
         `;
 
-        // Wire up auto-lookup for Stock Symbol
+        // Wire up auto-lookup & Live Autocomplete Dropdown for Stock Symbol
         const stockSymbolInput = document.getElementById('field-stock-symbol');
         const stockLookupBtn = document.getElementById('btn-fetch-stock-info');
+        const autoList = document.getElementById('stock-autocomplete-list');
+
+        function renderAutocomplete(query) {
+          if (!autoList) return;
+          const q = query.trim().toUpperCase();
+          if (q.length < 1) {
+            autoList.classList.add('hidden');
+            autoList.innerHTML = '';
+            return;
+          }
+
+          // Search catalog by symbol OR company name
+          const matches = Object.entries(INDIAN_STOCK_DIRECTORY).filter(([sym, data]) => {
+            return sym.includes(q) || data.name.toUpperCase().includes(q);
+          }).slice(0, 7);
+
+          if (matches.length === 0) {
+            autoList.innerHTML = `
+              <div class="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
+                <span>Not in quick catalog. Click <strong>"Lookup"</strong> to query live NSE/BSE feeds for <strong>"${escapeHtml(q)}"</strong></span>
+              </div>
+            `;
+            autoList.classList.remove('hidden');
+            return;
+          }
+
+          autoList.innerHTML = matches.map(([sym, data]) => `
+            <div class="stock-item-option px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer flex items-center justify-between text-xs transition-colors" data-sym="${sym}">
+              <div>
+                <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  ${sym}
+                  <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold ${data.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${data.exchange}</span>
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[200px]">${escapeHtml(data.name)}</div>
+              </div>
+              <div class="text-right">
+                <div class="font-bold text-slate-800 dark:text-slate-200">${formatINR(data.price)}</div>
+                <div class="text-[10px] text-emerald-600 dark:text-emerald-400">Yield: ${data.divYield}%</div>
+              </div>
+            </div>
+          `).join('');
+
+          autoList.classList.remove('hidden');
+
+          // Attach click handlers to options
+          autoList.querySelectorAll('.stock-item-option').forEach(item => {
+            item.addEventListener('click', () => {
+              const chosen = item.getAttribute('data-sym');
+              stockSymbolInput.value = chosen;
+              autoList.classList.add('hidden');
+              lookupAndFillStockInfo(chosen);
+            });
+          });
+        }
 
         if (stockLookupBtn) {
           stockLookupBtn.addEventListener('click', () => {
@@ -1287,21 +1479,26 @@
           });
         }
 
-        let debounceTimer;
         if (stockSymbolInput) {
           stockSymbolInput.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            const val = e.target.value.trim().toUpperCase();
-            if (val.length >= 2 && INDIAN_STOCK_DIRECTORY[val]) {
-              debounceTimer = setTimeout(() => lookupAndFillStockInfo(val), 300);
-            }
+            renderAutocomplete(e.target.value);
           });
-          stockSymbolInput.addEventListener('blur', (e) => {
-            if (e.target.value.trim()) {
-              lookupAndFillStockInfo(e.target.value);
+
+          stockSymbolInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              autoList.classList.add('hidden');
+              lookupAndFillStockInfo(stockSymbolInput.value);
             }
           });
         }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (autoList && !autoList.contains(e.target) && e.target !== stockSymbolInput) {
+            autoList.classList.add('hidden');
+          }
+        });
       } else if (activeTab === 'funds') {
         title.textContent = 'Add Mutual Fund Scheme';
         fieldsContainer.innerHTML = `

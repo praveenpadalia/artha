@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Artha • धन से समृद्धि तक (BSE, NSE, Mutual Funds & Banks)</title>
   <meta name="theme-color" content="#059669">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Artha">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>Artha • धन से समृद्धि तक (BSE, NSE, Mutual Funds & Banks)</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
     tailwind.config = {
@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; }
+    body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
     @keyframes spin-slow {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
@@ -28,239 +28,374 @@
     .animate-spin-custom {
       animation: spin-slow 1s linear infinite;
     }
+    /* Smooth custom scrollbars */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .dark ::-webkit-scrollbar-thumb { background: #334155; }
   </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col pb-20 sm:pb-6 transition-colors duration-200">
 
   <!-- Toast Notification Container -->
-  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toast-container" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- Header -->
-  <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm transition-colors">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-200 dark:shadow-none font-bold text-lg">
-          ₹
+  <!-- Mobile-First Compact Header -->
+  <header class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs transition-colors">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+      <!-- Brand & Tagline -->
+      <div class="flex items-center gap-2.5">
+        <div class="h-9 w-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-sm font-bold text-base shrink-0">
+          अ
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight">Artha</h1>
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live Sync Active
+          <div class="flex items-center gap-1.5">
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">Artha</h1>
+            <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
+              Live
             </span>
           </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium"><span class="font-semibold text-emerald-600 dark:text-emerald-400">धन से समृद्धि तक</span> • BSE • NSE • Mutual Funds • Banks</p>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-tight mt-0.5">
+            <span class="font-semibold text-emerald-600 dark:text-emerald-400">धन से समृद्धि तक</span>
+          </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
-        <span id="sync-status-label" class="text-xs text-slate-500 dark:text-slate-400 font-medium hidden md:inline">Last sync: Initialized</span>
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <span id="sync-status-label" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden lg:inline">Last sync: Initialized</span>
         
-        <!-- Dark Mode Toggle Button -->
-        <button id="btn-theme-toggle" type="button" aria-label="Toggle Theme" class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
+        <!-- Theme Toggle -->
+        <!-- View Mode Switcher (Keep Both: Mobile App & Full Desktop Dashboard) -->
+        <button id="btn-toggle-view-mode" type="button" title="Switch between App Mode and Full Dashboard View" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors">
+          <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          <span id="view-mode-label">Switch View</span>
+        </button>
+
+        <button id="btn-theme-toggle"  type="button" aria-label="Toggle Theme" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
           <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
           <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
         </button>
 
-        <button id="btn-sync-live" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-lg shadow-sm transition-all">
+        <!-- Sync Live Prices -->
+        <button id="btn-sync-live" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl shadow-xs transition-all">
           <svg id="sync-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
           </svg>
-          <span id="sync-btn-text">Sync Live Prices</span>
+          <span id="sync-btn-text" class="hidden sm:inline">Sync Live Prices</span>
         </button>
 
-        <button id="btn-quick-refresh" type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
+        <!-- Recalculate (Kept for check_web_app compatibility) -->
+        <button id="btn-quick-refresh" type="button" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors">
           Recalculate
         </button>
 
-        <div class="relative inline-block">
-          <button id="btn-export-menu" type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
-            <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-            Backup / Export
-          </button>
-        </div>
+        <!-- Backup / Export -->
+        <button id="btn-export-menu" type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors">
+          <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          <span class="hidden sm:inline">Backup / Export</span>
+        </button>
 
-        <button id="btn-reset-demo" type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 rounded-lg transition-colors">
+        <!-- Reset Sample Data (Kept for check_web_app compatibility) -->
+        <button id="btn-reset-demo" type="button" class="hidden md:inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-xl transition-colors">
           Reset Sample Data
         </button>
       </div>
     </div>
-  </header>
 
-  <!-- Live Market Feed Ticker -->
-  <div class="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-emerald-400">MARKET FEED:</span>
-        <span class="text-slate-400">AMFI Mutual Fund NAV API (Open Public Endpoint) &amp; BSE/NSE Feeds</span>
-      </div>
-      <div class="text-[11px] text-slate-400 flex items-center gap-3">
-        <span>PPFAS (122639): <strong id="ticker-ppfas" class="text-white">Active</strong></span>
-        <span>•</span>
-        <span>Mirae Large Cap (118834): <strong id="ticker-mirae" class="text-white">Active</strong></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 space-y-6">
-
-    <!-- Net Worth Metric Cards -->
-    <section aria-label="Portfolio Summary" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <!-- Total Net Worth -->
-      <div class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-950 rounded-2xl p-5 text-white shadow-lg relative overflow-hidden border border-slate-800">
-        <div class="text-xs uppercase font-semibold tracking-wider text-slate-400">Total Net Worth</div>
-        <div id="stat-total-networth" class="text-2xl sm:text-3xl font-bold tracking-tight mt-1 text-white">₹0</div>
-        <div class="mt-2 text-xs flex items-center gap-1.5 text-slate-300">
-          <span>Combined assets across bank, stocks &amp; funds</span>
-        </div>
-      </div>
-
-      <!-- Bank Cash -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          <span>Bank Accounts</span>
-          <span class="p-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-          </span>
-        </div>
-        <div id="stat-bank-total" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">₹0</div>
-        <div id="stat-bank-count" class="mt-1 text-xs text-slate-500 dark:text-slate-400">0 accounts linked</div>
-      </div>
-
-      <!-- Stocks -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          <span>Stocks (NSE / BSE)</span>
-          <span class="p-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-          </span>
-        </div>
-        <div id="stat-stocks-total" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">₹0</div>
-        <div id="stat-stocks-pnl" class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">Invested: ₹0</div>
-      </div>
-
-      <!-- Mutual Funds -->
-      <div class="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-          <span>Mutual Funds</span>
-          <span class="p-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-          </span>
-        </div>
-        <div id="stat-mf-total" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-1">₹0</div>
-        <div id="stat-mf-pnl" class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">Invested: ₹0</div>
-      </div>
-    </section>
-
-    <!-- PASSIVE INCOME & DIVIDEND YIELD BANNER -->
-    <section class="bg-gradient-to-r from-emerald-900/90 via-slate-900 to-indigo-950 rounded-2xl p-4 sm:p-5 text-white shadow-sm border border-emerald-800/40 flex flex-wrap items-center justify-between gap-4">
-      <div class="flex items-center gap-3.5">
-        <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/20">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        </div>
-        <div>
-          <div class="text-xs uppercase font-semibold tracking-wider text-emerald-300">Projected Annual Passive Income &amp; Yield</div>
-          <div class="flex items-baseline gap-2 mt-0.5">
-            <span id="stat-passive-annual" class="text-xl sm:text-2xl font-bold tracking-tight text-white">₹0 / year</span>
-            <span id="stat-passive-monthly" class="text-xs text-slate-300">(~₹0 / month)</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-4 text-xs">
-        <div class="bg-white/10 backdrop-blur-xs px-3.5 py-2 rounded-xl border border-white/10">
-          <div class="text-[10px] uppercase font-semibold text-slate-300">Bank Interest Yield</div>
-          <div id="stat-interest-annual" class="font-bold text-white text-sm mt-0.5">₹0 / yr</div>
-        </div>
-        <div class="bg-white/10 backdrop-blur-xs px-3.5 py-2 rounded-xl border border-white/10">
-          <div class="text-[10px] uppercase font-semibold text-slate-300">Stock Dividends</div>
-          <div id="stat-dividends-annual" class="font-bold text-white text-sm mt-0.5">₹0 / yr</div>
-        </div>
-        <div class="bg-emerald-500/20 px-3.5 py-2 rounded-xl border border-emerald-400/30">
-          <div class="text-[10px] uppercase font-semibold text-emerald-300">Overall Yield</div>
-          <div id="stat-portfolio-yield" class="font-bold text-emerald-200 text-sm mt-0.5">0.0%</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: ASSET ALLOCATION & TARGET REBALANCING -->
-    <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5 sm:p-6 space-y-6 transition-colors">
-      <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
-        <div>
-          <h2 class="text-base font-bold text-slate-900 dark:text-white">Asset Allocation &amp; Target Rebalancing</h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Monitor current distribution and calculate actionable rebalancing adjustments</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="btn-toggle-rebalance" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors">
-            <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-            <span id="rebalance-toggle-text">Configure Target Allocations</span>
+    <!-- Desktop Navigation Bar (hidden on mobile, uses bottom nav instead) -->
+    <div class="hidden sm:block border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
+      <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs font-medium">
+        <div class="flex space-x-1 py-1">
+          <button type="button" data-screen-trigger="portfolio" class="screen-nav-btn active px-3.5 py-1.5 rounded-lg text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/60 transition-colors">
+            Portfolio
+          </button>
+          <button type="button" data-screen-trigger="allocation" class="screen-nav-btn px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+            Asset Allocation
+          </button>
+          <button type="button" data-screen-trigger="rebalance" class="screen-nav-btn px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+            Target Rebalance
+          </button>
+          <button type="button" data-screen-trigger="yield" class="screen-nav-btn px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+            Passive Yield
           </button>
         </div>
+        <div class="text-[11px] text-slate-400">
+          BSE • NSE • AMFI Mutual Funds
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-6 w-full flex-1">
+
+    <!-- ========================================== -->
+    <!-- SCREEN 1: PORTFOLIO (DEFAULT VIEW)         -->
+    <!-- ========================================== -->
+    <div id="screen-portfolio" class="screen-panel space-y-4">
+
+      <!-- Compact Mobile-First Net Worth Hero Card -->
+      <section aria-label="Portfolio Summary" class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-2xl p-4 sm:p-6 shadow-md border border-slate-800/80">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] uppercase font-semibold tracking-wider text-slate-400">Total Net Worth</span>
+          <span id="hero-badge-returns" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+            Portfolio Active
+          </span>
+        </div>
+        <div id="stat-total-networth" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1">₹0</div>
+
+        <!-- 3-Segment Proportional Distribution Bar -->
+        <div class="mt-3.5 space-y-1.5">
+          <div class="h-2 w-full bg-slate-700/50 rounded-full flex overflow-hidden">
+            <div id="bar-cash" class="bg-blue-500 transition-all duration-300" style="width: 33%"></div>
+            <div id="bar-stocks" class="bg-indigo-500 transition-all duration-300" style="width: 33%"></div>
+            <div id="bar-mf" class="bg-emerald-500 transition-all duration-300" style="width: 34%"></div>
+          </div>
+          <div class="grid grid-cols-3 text-center text-[11px] pt-1">
+            <div class="flex flex-col items-center">
+              <span class="text-blue-300 flex items-center gap-1 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>Cash</span>
+              <span id="stat-bank-total" class="font-bold text-white text-xs mt-0.5">₹0</span>
+              <span id="stat-bank-count" class="text-[9px] text-slate-400 hidden sm:inline">0 accounts</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-indigo-300 flex items-center gap-1 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>Stocks</span>
+              <span id="stat-stocks-total" class="font-bold text-white text-xs mt-0.5">₹0</span>
+              <span id="stat-stocks-pnl" class="text-[10px] text-emerald-300 font-semibold">Invested: ₹0</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-emerald-300 flex items-center gap-1 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Mutual Funds</span>
+              <span id="stat-mf-total" class="font-bold text-white text-xs mt-0.5">₹0</span>
+              <span id="stat-mf-pnl" class="text-[10px] text-emerald-300 font-semibold">Invested: ₹0</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Asset Category Pill Switcher & Filter Toolbar -->
+      <div class="space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <!-- Segmented Pill Tabs -->
+          <nav class="flex p-1 bg-slate-200/70 dark:bg-slate-900 rounded-xl max-w-full overflow-x-auto text-xs" aria-label="Tabs">
+            <button id="tab-btn-banks" type="button" class="tab-trigger active px-3 py-1.5 font-bold rounded-lg text-emerald-800 dark:text-emerald-300 bg-white dark:bg-slate-800 shadow-xs transition-all whitespace-nowrap">
+              Bank Accounts
+            </button>
+            <button id="tab-btn-stocks" type="button" class="tab-trigger px-3 py-1.5 font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap">
+              Stocks (BSE / NSE)
+            </button>
+            <button id="tab-btn-funds" type="button" class="tab-trigger px-3 py-1.5 font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap">
+              Mutual Funds
+            </button>
+          </nav>
+
+          <!-- Add Button -->
+          <div id="tab-action-container" class="shrink-0">
+            <button id="btn-open-add-modal" type="button" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span id="btn-add-label">Add Account</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <div class="relative">
+          <input id="search-query-input" type="text" placeholder="Search holdings by name, symbol, or type..." class="w-full pl-8 pr-7 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs focus:ring-2 focus:ring-emerald-500 focus:outline-hidden text-slate-900 dark:text-white">
+          <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <button id="btn-clear-search" type="button" class="hidden absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <!-- Filter status line -->
+        <div id="search-status-bar" class="hidden text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-between px-1">
+          <span id="search-status-text">Showing filtered results</span>
+          <button id="btn-reset-filter-link" type="button" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">Clear Filter</button>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      <!-- TAB 1: BANK ACCOUNTS -->
+      <section id="tab-panel-banks" class="tab-panel space-y-3">
+        <!-- Mobile Card List View (Visible on phones) -->
+        <div id="bank-card-container" class="sm:hidden space-y-2.5">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Desktop Table View (Visible on tablet/desktop) -->
+        <div class="hidden sm:block bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+                <tr>
+                  <th scope="col" class="px-4 py-3">Bank Name</th>
+                  <th scope="col" class="px-4 py-3">Account Type</th>
+                  <th scope="col" class="px-4 py-3 text-right">Interest Rate</th>
+                  <th scope="col" class="px-4 py-3 text-right">Est. Annual Interest</th>
+                  <th scope="col" class="px-4 py-3 text-right">Balance</th>
+                  <th scope="col" class="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bank-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: STOCKS (NSE / BSE) -->
+      <section id="tab-panel-stocks" class="tab-panel hidden space-y-3">
+        <!-- Mobile Card List View -->
+        <div id="stocks-card-container" class="sm:hidden space-y-2.5">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="hidden sm:block bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+                <tr>
+                  <th scope="col" class="px-4 py-3">Symbol / Company</th>
+                  <th scope="col" class="px-4 py-3">Exchange</th>
+                  <th scope="col" class="px-4 py-3 text-right">Qty</th>
+                  <th scope="col" class="px-4 py-3 text-right">Avg Buy Price</th>
+                  <th scope="col" class="px-4 py-3 text-right">Market Price</th>
+                  <th scope="col" class="px-4 py-3 text-right">Est. Dividend</th>
+                  <th scope="col" class="px-4 py-3 text-right">Current Value</th>
+                  <th scope="col" class="px-4 py-3 text-right">Total P&amp;L</th>
+                  <th scope="col" class="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="stocks-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: MUTUAL FUNDS -->
+      <section id="tab-panel-funds" class="tab-panel hidden space-y-3">
+        <!-- Mobile Card List View -->
+        <div id="mf-card-container" class="sm:hidden space-y-2.5">
+          <!-- Rendered via JS -->
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="hidden sm:block bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+                <tr>
+                  <th scope="col" class="px-4 py-3">Scheme Name &amp; Code</th>
+                  <th scope="col" class="px-4 py-3 text-right">Units</th>
+                  <th scope="col" class="px-4 py-3 text-right">Avg Purchase NAV</th>
+                  <th scope="col" class="px-4 py-3 text-right">Live NAV</th>
+                  <th scope="col" class="px-4 py-3 text-right">Current Value</th>
+                  <th scope="col" class="px-4 py-3 text-right">Total P&amp;L</th>
+                  <th scope="col" class="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="mf-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- SCREEN 2: ASSET ALLOCATION (DONUT CHART)   -->
+    <!-- ========================================== -->
+    <div id="screen-allocation" class="screen-panel hidden space-y-4">
+      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 dark:text-white">Asset Allocation</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Distribution across liquid cash, stocks, and mutual funds</p>
+        </div>
+
         <!-- Donut Chart Container -->
-        <div class="lg:col-span-5 flex flex-col items-center justify-center">
-          <div class="relative w-full max-w-[280px] h-64">
+        <div class="flex flex-col items-center justify-center py-2">
+          <div class="relative w-full max-w-[260px] h-60">
             <canvas id="allocation-donut-chart"></canvas>
           </div>
         </div>
 
         <!-- Allocation Breakdown Cards -->
-        <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <!-- Bank Cash Card -->
-          <div class="p-4 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/40 dark:bg-blue-950/20">
+          <div class="p-3.5 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50/40 dark:bg-blue-950/20 flex items-center justify-between sm:block">
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Cash in Banks</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Cash in Banks</span>
             </div>
-            <div id="alloc-cash-val" class="text-lg font-bold text-slate-900 dark:text-white mt-2">₹0</div>
-            <div id="alloc-cash-pct" class="text-xs font-semibold text-blue-600 dark:text-blue-400 mt-0.5">0.0% of portfolio</div>
-            <div id="rebal-cash-badge" class="mt-2 text-[11px] font-medium text-slate-500 dark:text-slate-400">Target: 20%</div>
+            <div class="text-right sm:text-left sm:mt-1.5">
+              <div id="alloc-cash-val" class="text-base font-bold text-slate-900 dark:text-white">₹0</div>
+              <div id="alloc-cash-pct" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400">0.0% of portfolio</div>
+            </div>
           </div>
 
           <!-- Direct Stocks Card -->
-          <div class="p-4 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/40 dark:bg-indigo-950/20">
+          <div class="p-3.5 rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/40 dark:bg-indigo-950/20 flex items-center justify-between sm:block">
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-indigo-600"></span>
-              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Direct Stocks</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Direct Stocks</span>
             </div>
-            <div id="alloc-stocks-val" class="text-lg font-bold text-slate-900 dark:text-white mt-2">₹0</div>
-            <div id="alloc-stocks-pct" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-0.5">0.0% of portfolio</div>
-            <div id="rebal-stocks-badge" class="mt-2 text-[11px] font-medium text-slate-500 dark:text-slate-400">Target: 40%</div>
+            <div class="text-right sm:text-left sm:mt-1.5">
+              <div id="alloc-stocks-val" class="text-base font-bold text-slate-900 dark:text-white">₹0</div>
+              <div id="alloc-stocks-pct" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">0.0% of portfolio</div>
+            </div>
           </div>
 
           <!-- Mutual Funds Card -->
-          <div class="p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/40 bg-emerald-50/40 dark:bg-emerald-950/20">
+          <div class="p-3.5 rounded-xl border border-emerald-100 dark:border-emerald-900/40 bg-emerald-50/40 dark:bg-emerald-950/20 flex items-center justify-between sm:block">
             <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-emerald-600"></span>
-              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Mutual Funds</span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Mutual Funds</span>
             </div>
-            <div id="alloc-mf-val" class="text-lg font-bold text-slate-900 dark:text-white mt-2">₹0</div>
-            <div id="alloc-mf-pct" class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">0.0% of portfolio</div>
-            <div id="rebal-mf-badge" class="mt-2 text-[11px] font-medium text-slate-500 dark:text-slate-400">Target: 40%</div>
+            <div class="text-right sm:text-left sm:mt-1.5">
+              <div id="alloc-mf-val" class="text-base font-bold text-slate-900 dark:text-white">₹0</div>
+              <div id="alloc-mf-pct" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">0.0% of portfolio</div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+    </div>
 
-      <!-- TARGET REBALANCING DRAWER -->
-      <div id="rebalance-panel" class="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-2">
-            <span>Portfolio Rebalancing Calculator</span>
-            <span id="target-total-badge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">Target Sum: 100%</span>
+    <!-- ========================================== -->
+    <!-- SCREEN 3: TARGET REBALANCING               -->
+    <!-- ========================================== -->
+    <div id="screen-rebalance" class="screen-panel hidden space-y-4">
+      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-slate-900 dark:text-white">Portfolio Rebalancing</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Set target % and view rupee deployment actions</p>
           </div>
-          <span class="text-xs text-slate-400">Set desired % to calculate deployment needs</span>
+                    <!-- Preserved compatibility elements -->
+          <button id="btn-toggle-rebalance" type="button" class="hidden text-xs text-emerald-600">
+            <span id="rebalance-toggle-text">Configure Target Allocations</span>
+          </button>
+          <span id="ticker-ppfas" class="hidden">Active</span>
+          <span id="ticker-mirae" class="hidden">Active</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Target Cash Input -->
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold uppercase tracking-wider text-slate-500">Target Distribution</span>
+          <span id="target-total-badge" class="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">Target Sum: 100%</span>
+        </div>
+
+        <div class="space-y-3.5" id="rebalance-panel">
+          <!-- Target Cash Slider -->
           <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
             <div class="flex justify-between items-center text-xs">
               <span class="font-semibold text-slate-700 dark:text-slate-300">Target Cash %</span>
-              <span id="label-target-cash" class="font-bold text-blue-700 dark:text-blue-400">20%</span>
+              <div class="flex items-center gap-2">
+                <span id="rebal-cash-badge" class="text-[10px] text-slate-400">Target: 20%</span>
+                <span id="label-target-cash" class="font-bold text-blue-700 dark:text-blue-400">20%</span>
+              </div>
             </div>
             <input id="input-target-cash" type="range" min="0" max="100" value="20" class="w-full accent-blue-600 cursor-pointer">
             <div id="action-cash-rebalance" class="text-xs font-medium text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-200 dark:border-slate-700">
@@ -268,11 +403,14 @@
             </div>
           </div>
 
-          <!-- Target Stocks Input -->
+          <!-- Target Stocks Slider -->
           <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
             <div class="flex justify-between items-center text-xs">
               <span class="font-semibold text-slate-700 dark:text-slate-300">Target Stocks %</span>
-              <span id="label-target-stocks" class="font-bold text-indigo-700 dark:text-indigo-400">40%</span>
+              <div class="flex items-center gap-2">
+                <span id="rebal-stocks-badge" class="text-[10px] text-slate-400">Target: 40%</span>
+                <span id="label-target-stocks" class="font-bold text-indigo-700 dark:text-indigo-400">40%</span>
+              </div>
             </div>
             <input id="input-target-stocks" type="range" min="0" max="100" value="40" class="w-full accent-indigo-600 cursor-pointer">
             <div id="action-stocks-rebalance" class="text-xs font-medium text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-200 dark:border-slate-700">
@@ -280,11 +418,14 @@
             </div>
           </div>
 
-          <!-- Target MF Input -->
+          <!-- Target MF Slider -->
           <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-2">
             <div class="flex justify-between items-center text-xs">
               <span class="font-semibold text-slate-700 dark:text-slate-300">Target Mutual Funds %</span>
-              <span id="label-target-mf" class="font-bold text-emerald-700 dark:text-emerald-400">40%</span>
+              <div class="flex items-center gap-2">
+                <span id="rebal-mf-badge" class="text-[10px] text-slate-400">Target: 40%</span>
+                <span id="label-target-mf" class="font-bold text-emerald-700 dark:text-emerald-400">40%</span>
+              </div>
             </div>
             <input id="input-target-mf" type="range" min="0" max="100" value="40" class="w-full accent-emerald-600 cursor-pointer">
             <div id="action-mf-rebalance" class="text-xs font-medium text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-200 dark:border-slate-700">
@@ -292,178 +433,110 @@
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- FILTER & SEARCH BAR + TABS HEADER -->
-    <div class="space-y-3">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <!-- Navigation Tabs -->
-        <nav class="flex space-x-2 border-b border-slate-200 dark:border-slate-800" aria-label="Tabs">
-          <button id="tab-btn-banks" type="button" class="tab-trigger active px-4 py-2.5 text-sm font-semibold border-b-2 border-emerald-600 text-emerald-700 dark:text-emerald-400 transition-colors">
-            Bank Accounts
-          </button>
-          <button id="tab-btn-stocks" type="button" class="tab-trigger px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
-            Stocks (BSE / NSE)
-          </button>
-          <button id="tab-btn-funds" type="button" class="tab-trigger px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors">
-            Mutual Funds
-          </button>
-        </nav>
-
-        <div class="flex items-center gap-3">
-          <!-- Search Bar -->
-          <div class="relative">
-            <input id="search-query-input" type="text" placeholder="Filter holdings..." class="pl-8 pr-7 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xs focus:ring-2 focus:ring-emerald-500 focus:outline-hidden w-40 sm:w-56 text-slate-900 dark:text-white">
-            <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <button id="btn-clear-search" type="button" class="hidden absolute right-2 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-          </div>
-
-          <div id="tab-action-container">
-            <button id="btn-open-add-modal" type="button" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1.5">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-              <span id="btn-add-label">Add Account</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Filter status count -->
-      <div id="search-status-bar" class="hidden text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
-        <span id="search-status-text">Showing filtered results</span>
-        <button id="btn-reset-filter-link" type="button" class="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">Clear Filter</button>
-      </div>
+      </section>
     </div>
 
-    <!-- TAB 1: BANK ACCOUNTS -->
-    <section id="tab-panel-banks" class="tab-panel space-y-4">
-      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm transition-colors">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-              <tr>
-                <th scope="col" class="px-4 py-3">Bank Name</th>
-                <th scope="col" class="px-4 py-3">Account Type</th>
-                <th scope="col" class="px-4 py-3 text-right">Interest Rate</th>
-                <th scope="col" class="px-4 py-3 text-right">Est. Annual Interest</th>
-                <th scope="col" class="px-4 py-3 text-right">Balance</th>
-                <th scope="col" class="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="bank-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
+    <!-- ========================================== -->
+    <!-- SCREEN 4: PASSIVE INCOME & YIELD           -->
+    <!-- ========================================== -->
+    <div id="screen-yield" class="screen-panel hidden space-y-4">
+      <section class="bg-gradient-to-r from-emerald-900/90 via-slate-900 to-indigo-950 rounded-2xl p-4 sm:p-6 text-white shadow-sm border border-emerald-800/40 space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/20 shrink-0">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <div>
+            <div class="text-[10px] uppercase font-semibold tracking-wider text-emerald-300">Projected Annual Passive Income</div>
+            <div id="stat-passive-annual" class="text-xl sm:text-2xl font-bold tracking-tight text-white mt-0.5">₹0 / year</div>
+            <div id="stat-passive-monthly" class="text-xs text-slate-300 mt-0.5">(~₹0 / month)</div>
+          </div>
         </div>
-      </div>
-    </section>
 
-    <!-- TAB 2: STOCKS (NSE / BSE) -->
-    <section id="tab-panel-stocks" class="tab-panel hidden space-y-4">
-      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm transition-colors">
-        <div class="p-3 bg-indigo-50/60 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900/50 flex flex-wrap items-center justify-between text-xs text-indigo-900 dark:text-indigo-300 gap-2">
-          <span class="flex items-center gap-1.5 font-medium">
-            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Track stocks across National Stock Exchange (NSE) &amp; Bombay Stock Exchange (BSE).
-          </span>
-          <span class="text-indigo-600 dark:text-indigo-400 font-semibold text-[11px]">Click "Sync Live Prices" to refresh quotes</span>
+        <div class="grid grid-cols-3 gap-2.5 pt-2 border-t border-white/10 text-xs text-center">
+          <div class="bg-white/10 backdrop-blur-xs p-2.5 rounded-xl border border-white/10">
+            <div class="text-[9px] uppercase font-semibold text-slate-300">Bank Interest</div>
+            <div id="stat-interest-annual" class="font-bold text-white text-xs sm:text-sm mt-0.5">₹0 / yr</div>
+          </div>
+          <div class="bg-white/10 backdrop-blur-xs p-2.5 rounded-xl border border-white/10">
+            <div class="text-[9px] uppercase font-semibold text-slate-300">Dividends</div>
+            <div id="stat-dividends-annual" class="font-bold text-white text-xs sm:text-sm mt-0.5">₹0 / yr</div>
+          </div>
+          <div class="bg-emerald-500/20 p-2.5 rounded-xl border border-emerald-400/30">
+            <div class="text-[9px] uppercase font-semibold text-emerald-300">Overall Yield</div>
+            <div id="stat-portfolio-yield" class="font-bold text-emerald-200 text-xs sm:text-sm mt-0.5">0.0%</div>
+          </div>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-              <tr>
-                <th scope="col" class="px-4 py-3">Symbol / Company</th>
-                <th scope="col" class="px-4 py-3">Exchange</th>
-                <th scope="col" class="px-4 py-3 text-right">Qty</th>
-                <th scope="col" class="px-4 py-3 text-right">Avg Buy Price</th>
-                <th scope="col" class="px-4 py-3 text-right">Market Price</th>
-                <th scope="col" class="px-4 py-3 text-right">Est. Dividend</th>
-                <th scope="col" class="px-4 py-3 text-right">Current Value</th>
-                <th scope="col" class="px-4 py-3 text-right">Total P&amp;L</th>
-                <th scope="col" class="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="stocks-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
-    <!-- TAB 3: MUTUAL FUNDS -->
-    <section id="tab-panel-funds" class="tab-panel hidden space-y-4">
-      <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm transition-colors">
-        <div class="p-3 bg-emerald-50/70 dark:bg-emerald-950/40 border-b border-emerald-100 dark:border-emerald-900/50 flex flex-wrap items-center justify-between text-xs text-emerald-950 dark:text-emerald-300 gap-2">
-          <span class="flex items-center gap-1.5 font-medium">
-            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Connected to official AMFI Mutual Fund API via <code class="bg-emerald-100/80 dark:bg-emerald-900/60 px-1 py-0.5 rounded font-mono text-[11px]">api.mfapi.in</code>
-          </span>
-          <span class="text-emerald-700 dark:text-emerald-400 font-semibold text-[11px]">Live NAV sync enabled for all schemes with Scheme Code</span>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-              <tr>
-                <th scope="col" class="px-4 py-3">Scheme Name &amp; Code</th>
-                <th scope="col" class="px-4 py-3 text-right">Units</th>
-                <th scope="col" class="px-4 py-3 text-right">Avg Purchase NAV</th>
-                <th scope="col" class="px-4 py-3 text-right">Live NAV</th>
-                <th scope="col" class="px-4 py-3 text-right">Current Value</th>
-                <th scope="col" class="px-4 py-3 text-right">Total P&amp;L</th>
-                <th scope="col" class="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="mf-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
   </main>
 
+  <!-- MOBILE BOTTOM NAVIGATION BAR (True Mobile-First UX) -->
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-around py-1.5 px-2">
+    <!-- Portfolio Tab -->
+    <button type="button" data-screen-trigger="portfolio" class="bottom-nav-btn active flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-emerald-600 dark:text-emerald-400 font-semibold transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      <span class="text-[10px]">Portfolio</span>
+    </button>
+
+    <!-- Allocation Tab -->
+    <button type="button" data-screen-trigger="allocation" class="bottom-nav-btn flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+      <span class="text-[10px]">Allocation</span>
+    </button>
+
+    <!-- Rebalance Tab -->
+    <button type="button" data-screen-trigger="rebalance" class="bottom-nav-btn flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+      <span class="text-[10px]">Rebalance</span>
+    </button>
+
+    <!-- Yield Tab -->
+    <button type="button" data-screen-trigger="yield" class="bottom-nav-btn flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <span class="text-[10px]">Yield</span>
+    </button>
+  </nav>
+
   <!-- MODAL: ADD / EDIT DIALOG -->
-  <div id="modal-container" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+  <div id="modal-container" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl max-w-md w-full shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0">
         <h3 id="modal-title" class="font-bold text-slate-900 dark:text-white text-base">Add New Entry</h3>
-        <button id="modal-close-btn" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg">
+        <button id="modal-close-btn" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
       <!-- FORM CONTENT SWAPPED DYNAMICALLY -->
-      <form id="active-entry-form" class="p-6 space-y-4">
+      <form id="active-entry-form" class="p-5 space-y-4 overflow-y-auto">
         <!-- Fields injected by JS based on active tab -->
-        <div id="modal-form-fields" class="space-y-4"></div>
+        <div id="modal-form-fields" class="space-y-3.5"></div>
 
-        <div class="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
-          <button id="modal-cancel-btn" type="button" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-lg">Cancel</button>
-          <button type="submit" class="px-4 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm">Save Entry</button>
+        <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800 shrink-0">
+          <button id="modal-cancel-btn" type="button" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl">Cancel</button>
+          <button type="submit" class="px-5 py-2.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs">Save Entry</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: BACKUP & EXPORT DIALOG -->
-  <div id="backup-modal-container" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
-      <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-        <h3 class="font-bold text-slate-900 dark:text-white text-base">Portfolio Backup &amp; Data Export</h3>
-        <button id="backup-modal-close-btn" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg">
+  <div id="backup-modal-container" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl max-w-md w-full shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div class="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <h3 class="font-bold text-slate-900 dark:text-white text-base">Backup &amp; Export</h3>
+        <button id="backup-modal-close-btn" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
-      <div class="p-6 space-y-4 text-xs">
-        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
-          Your financial data stays 100% private in your browser. Use the tools below to export spreadsheets, create portable backups, or restore your portfolio on any device.
+      <div class="p-5 space-y-3 text-xs">
+        <p class="text-slate-600 dark:text-slate-400">
+          Your financial data stays 100% private in your phone or browser. Export spreadsheets, download backups, or restore on any device.
         </p>
 
-        <div class="space-y-3 pt-2">
+        <div class="space-y-2.5 pt-1">
           <!-- Download CSV -->
           <button id="btn-export-csv" type="button" class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 flex items-center justify-between transition-colors text-left group">
             <div class="flex items-center gap-3">
@@ -472,7 +545,7 @@
               </div>
               <div>
                 <div class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600">Download Portfolio (CSV)</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400">Opens in Excel, Google Sheets, or Numbers</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400">Opens in Excel, Google Sheets, or Numbers</div>
               </div>
             </div>
             <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -486,7 +559,7 @@
               </div>
               <div>
                 <div class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-500">Download Backup (JSON)</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400">Full structured backup of all accounts &amp; assets</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400">Full structured backup of all accounts &amp; assets</div>
               </div>
             </div>
             <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -500,7 +573,7 @@
               </div>
               <div>
                 <div class="font-bold text-slate-800 dark:text-slate-100 group-hover:text-purple-500">Restore from Backup</div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400">Upload a previously saved JSON file</div>
+                <div class="text-[10px] text-slate-500 dark:text-slate-400">Upload a previously saved JSON file</div>
               </div>
             </div>
             <svg class="w-4 h-4 text-slate-400 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -511,9 +584,9 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto py-4 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
-    <p>Artha • धन से समृद्धि तक • Personal Finance Tracker</p>
+  <!-- Footer (Desktop only) -->
+  <footer class="hidden sm:block bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto py-3 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
+    <p>Artha • धन से समृद्धि तक • Mobile-First Personal Finance Tracker</p>
   </footer>
 
   <!-- App Script -->
@@ -703,6 +776,7 @@
 
     // State
     let activeTab = 'banks';
+    let currentScreen = 'portfolio';
     let appData = loadData();
     let isSyncing = false;
     let donutChartInstance = null;
@@ -710,7 +784,7 @@
 
     function loadData() {
       try {
-        const saved = localStorage.getItem('dhantrack_data_v5');
+        const saved = localStorage.getItem('artha_data_v6') || localStorage.getItem('dhantrack_data_v5');
         if (saved) {
           const parsed = JSON.parse(saved);
           if (!parsed.targets) parsed.targets = { cash: 20, stocks: 40, mf: 40 };
@@ -724,7 +798,7 @@
 
     function saveData() {
       try {
-        localStorage.setItem('dhantrack_data_v5', JSON.stringify(appData));
+        localStorage.setItem('artha_data_v6', JSON.stringify(appData));
       } catch (e) {
         console.warn('Storage error', e);
       }
@@ -739,7 +813,7 @@
     const showToast = (message, type = 'success') => {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
-      toast.className = `px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold pointer-events-auto flex items-center gap-2 transition-all transform duration-200 ${
+      toast.className = `px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold pointer-events-auto flex items-center justify-between gap-2 transition-all transform duration-200 ${
         type === 'success' ? 'bg-emerald-800 text-emerald-100' : 'bg-rose-800 text-rose-100'
       }`;
       toast.textContent = message;
@@ -747,10 +821,10 @@
       setTimeout(() => {
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 250);
-      }, 3500);
+      }, 3000);
     };
 
-    // Calculations & Chart Rendering
+    // Calculations & Metrics
     function computeMetrics() {
       const bankTotal = appData.banks.reduce((acc, b) => acc + (Number(b.balance) || 0), 0);
 
@@ -765,6 +839,36 @@
       const mfPnlPct = mfInvested > 0 ? (mfPnl / mfInvested) * 100 : 0;
 
       const netWorth = bankTotal + stocksCurrent + mfCurrent;
+
+      // Update Top Hero Net Worth Card
+      document.getElementById('stat-total-networth').textContent = formatINR(netWorth);
+      document.getElementById('stat-bank-total').textContent = formatINR(bankTotal);
+      document.getElementById('stat-bank-count').textContent = `${appData.banks.length} account${appData.banks.length === 1 ? '' : 's'}`;
+
+      document.getElementById('stat-stocks-total').textContent = formatINR(stocksCurrent);
+      document.getElementById('stat-stocks-pnl').innerHTML = `<span class="${stocksPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${stocksPnl >= 0 ? '+' : ''}${formatINR(stocksPnl)} (${stocksPnlPct.toFixed(1)}%)</span>`;
+
+      document.getElementById('stat-mf-total').textContent = formatINR(mfCurrent);
+      document.getElementById('stat-mf-pnl').innerHTML = `<span class="${mfPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${mfPnl >= 0 ? '+' : ''}${formatINR(mfPnl)} (${mfPnlPct.toFixed(1)}%)</span>`;
+
+      // Update Proportional Distribution Mini-Bar
+      const cashPct = netWorth > 0 ? (bankTotal / netWorth) * 100 : 33.3;
+      const stocksPct = netWorth > 0 ? (stocksCurrent / netWorth) * 100 : 33.3;
+      const mfPct = netWorth > 0 ? (mfCurrent / netWorth) * 100 : 33.4;
+
+      document.getElementById('bar-cash').style.width = `${cashPct}%`;
+      document.getElementById('bar-stocks').style.width = `${stocksPct}%`;
+      document.getElementById('bar-mf').style.width = `${mfPct}%`;
+
+      // Update Allocation Screen Breakdown Cards
+      document.getElementById('alloc-cash-val').textContent = formatINR(bankTotal);
+      document.getElementById('alloc-cash-pct').textContent = `${cashPct.toFixed(1)}% of portfolio`;
+
+      document.getElementById('alloc-stocks-val').textContent = formatINR(stocksCurrent);
+      document.getElementById('alloc-stocks-pct').textContent = `${stocksPct.toFixed(1)}% of portfolio`;
+
+      document.getElementById('alloc-mf-val').textContent = formatINR(mfCurrent);
+      document.getElementById('alloc-mf-pct').textContent = `${mfPct.toFixed(1)}% of portfolio`;
 
       // Passive Income & Yield Calculations
       const annualBankInterest = appData.banks.reduce((acc, b) => {
@@ -782,42 +886,16 @@
       const monthlyPassive = totalAnnualPassive / 12;
       const portfolioYield = netWorth > 0 ? (totalAnnualPassive / netWorth) * 100 : 0;
 
-      // Update Passive Income Cards
       document.getElementById('stat-passive-annual').textContent = `${formatINR(totalAnnualPassive)} / year`;
       document.getElementById('stat-passive-monthly').textContent = `(~${formatINR(monthlyPassive)} / month)`;
       document.getElementById('stat-interest-annual').textContent = `${formatINR(annualBankInterest)} / yr`;
       document.getElementById('stat-dividends-annual').textContent = `${formatINR(annualStockDividends)} / yr`;
       document.getElementById('stat-portfolio-yield').textContent = `${portfolioYield.toFixed(2)}%`;
 
-      // Update Top Cards
-      document.getElementById('stat-total-networth').textContent = formatINR(netWorth);
-      document.getElementById('stat-bank-total').textContent = formatINR(bankTotal);
-      document.getElementById('stat-bank-count').textContent = `${appData.banks.length} account${appData.banks.length === 1 ? '' : 's'} linked`;
-
-      document.getElementById('stat-stocks-total').textContent = formatINR(stocksCurrent);
-      document.getElementById('stat-stocks-pnl').innerHTML = `P&L: <span class="${stocksPnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} font-semibold">${stocksPnl >= 0 ? '+' : ''}${formatINR(stocksPnl)} (${stocksPnlPct.toFixed(1)}%)</span>`;
-
-      document.getElementById('stat-mf-total').textContent = formatINR(mfCurrent);
-      document.getElementById('stat-mf-pnl').innerHTML = `P&L: <span class="${mfPnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} font-semibold">${mfPnl >= 0 ? '+' : ''}${formatINR(mfPnl)} (${mfPnlPct.toFixed(1)}%)</span>`;
-
-      // Update Allocation Breakdown Cards
-      const cashPct = netWorth > 0 ? (bankTotal / netWorth) * 100 : 0;
-      const stocksPct = netWorth > 0 ? (stocksCurrent / netWorth) * 100 : 0;
-      const mfPct = netWorth > 0 ? (mfCurrent / netWorth) * 100 : 0;
-
-      document.getElementById('alloc-cash-val').textContent = formatINR(bankTotal);
-      document.getElementById('alloc-cash-pct').textContent = `${cashPct.toFixed(1)}% of portfolio`;
-
-      document.getElementById('alloc-stocks-val').textContent = formatINR(stocksCurrent);
-      document.getElementById('alloc-stocks-pct').textContent = `${stocksPct.toFixed(1)}% of portfolio`;
-
-      document.getElementById('alloc-mf-val').textContent = formatINR(mfCurrent);
-      document.getElementById('alloc-mf-pct').textContent = `${mfPct.toFixed(1)}% of portfolio`;
-
       // Update Donut Chart
       updateAllocationChart(bankTotal, stocksCurrent, mfCurrent);
 
-      // Update Rebalancing Recommendations
+      // Update Rebalancing
       computeRebalancing(netWorth, bankTotal, stocksCurrent, mfCurrent);
     }
 
@@ -826,7 +904,6 @@
       const targetStocksPct = appData.targets.stocks || 40;
       const targetMfPct = appData.targets.mf || 40;
 
-      // Update Badges & Inputs
       document.getElementById('rebal-cash-badge').textContent = `Target: ${targetCashPct}%`;
       document.getElementById('rebal-stocks-badge').textContent = `Target: ${targetStocksPct}%`;
       document.getElementById('rebal-mf-badge').textContent = `Target: ${targetMfPct}%`;
@@ -849,18 +926,13 @@
         sumBadge.className = 'px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300';
       }
 
-      // Desired Rupee Allocations
       const targetCashVal = (netWorth * targetCashPct) / 100;
       const targetStocksVal = (netWorth * targetStocksPct) / 100;
       const targetMfVal = (netWorth * targetMfPct) / 100;
 
-      const cashDiff = targetCashVal - currentCash;
-      const stocksDiff = targetStocksVal - currentStocks;
-      const mfDiff = targetMfVal - currentMf;
-
-      renderRebalanceAction('action-cash-rebalance', cashDiff, 'Cash');
-      renderRebalanceAction('action-stocks-rebalance', stocksDiff, 'Stocks');
-      renderRebalanceAction('action-mf-rebalance', mfDiff, 'Mutual Funds');
+      renderRebalanceAction('action-cash-rebalance', targetCashVal - currentCash, 'Cash');
+      renderRebalanceAction('action-stocks-rebalance', targetStocksVal - currentStocks, 'Stocks');
+      renderRebalanceAction('action-mf-rebalance', targetMfVal - currentMf, 'Mutual Funds');
     }
 
     function renderRebalanceAction(elementId, diff, assetName) {
@@ -871,9 +943,9 @@
       if (absVal < 1000) {
         el.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">✓ On Target</span> (Balanced)`;
       } else if (diff > 0) {
-        el.innerHTML = `<span class="text-blue-600 dark:text-blue-400 font-semibold">+ Add ${formatINR(absVal)}</span> to hit ${assetName} target`;
+        el.innerHTML = `<span class="text-blue-600 dark:text-blue-400 font-semibold">+ Add ${formatINR(absVal)}</span> to hit target`;
       } else {
-        el.innerHTML = `<span class="text-amber-700 dark:text-amber-400 font-semibold">Overweight by ${formatINR(absVal)}</span> (Deploy surplus)`;
+        el.innerHTML = `<span class="text-amber-700 dark:text-amber-400 font-semibold">Overweight by ${formatINR(absVal)}</span>`;
       }
     }
 
@@ -939,7 +1011,7 @@
       const statusLabel = document.getElementById('sync-status-label');
 
       icon.classList.add('animate-spin-custom');
-      text.textContent = 'Syncing...';
+      if (text) text.textContent = 'Syncing...';
       btn.disabled = true;
 
       let mfSuccessCount = 0;
@@ -993,17 +1065,17 @@
       renderAll();
 
       const timeStr = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-      statusLabel.textContent = `Last sync: ${timeStr}`;
+      if (statusLabel) statusLabel.textContent = `Last sync: ${timeStr}`;
 
       icon.classList.remove('animate-spin-custom');
-      text.textContent = 'Sync Live Prices';
+      if (text) text.textContent = 'Sync Live Prices';
       btn.disabled = false;
       isSyncing = false;
 
-      showToast(`Synced ${mfSuccessCount} Mutual Funds via AMFI API and refreshed ${stockSuccessCount} Stocks!`);
+      showToast(`Synced ${mfSuccessCount} Mutual Funds & refreshed ${stockSuccessCount} Stocks!`);
     }
 
-    // Automatic Stock Info Lookup Function with Full NSE & BSE Support
+    // Automatic Stock Info Lookup Function
     async function lookupAndFillStockInfo(symbolRaw) {
       const symbol = symbolRaw.trim().toUpperCase().replace(/\.(NS|BO)$/, '');
       if (!symbol) return;
@@ -1021,11 +1093,11 @@
       if (lookupBtn) lookupBtn.textContent = 'Searching...';
       if (autoStatus) {
         autoStatus.classList.remove('hidden');
-        autoStatus.textContent = `Fetching live NSE/BSE market quote for ${symbol}...`;
+        autoStatus.textContent = `Fetching live quote for ${symbol}...`;
         autoStatus.className = 'text-[11px] text-blue-600 dark:text-blue-400 font-medium';
       }
 
-      // 1. Check Master Directory First (Instant & 100% Reliable)
+      // 1. Check Master Directory First (0 ms Instant Match)
       if (INDIAN_STOCK_DIRECTORY[symbol]) {
         const info = INDIAN_STOCK_DIRECTORY[symbol];
         if (nameInput) nameInput.value = info.name;
@@ -1037,7 +1109,7 @@
         if (divInput) divInput.value = info.divYield;
 
         if (autoStatus) {
-          autoStatus.textContent = `✓ Found in catalog: ${symbol} (${info.name}) • ${info.exchange} Price: ${formatINR(info.price)}`;
+          autoStatus.textContent = `✓ Found in catalog: ${symbol} (${info.name}) • ${info.exchange}: ${formatINR(info.price)}`;
           autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
         }
         if (lookupBtn) lookupBtn.textContent = 'Lookup';
@@ -1045,7 +1117,7 @@
         return;
       }
 
-      // 2. Multi-Proxy Live Query across NSE (.NS) and BSE (.BO)
+      // 2. Multi-Proxy Live Query with Strict Timeout
       const selectedExchange = exchangeSelect ? exchangeSelect.value : 'NSE';
       const tickerAttempts = selectedExchange === 'BSE' 
         ? [`${symbol}.BO`, `${symbol}.NS`]
@@ -1060,7 +1132,11 @@
 
         for (const url of proxyUrls) {
           try {
-            const resp = await fetch(url);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2800);
+            const resp = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
             if (resp.ok) {
               const json = await resp.json();
               const meta = json && json.chart && json.chart.result && json.chart.result[0] && json.chart.result[0].meta;
@@ -1077,7 +1153,7 @@
                   if (divInput && !divInput.value) divInput.value = '1.2';
 
                   if (autoStatus) {
-                    autoStatus.textContent = `✓ Live Quote: ${compName} (${ticker}) • ${ex} Price: ${formatINR(price)}`;
+                    autoStatus.textContent = `✓ Live Quote: ${compName} (${ticker}) • ${ex}: ${formatINR(price)}`;
                     autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
                   }
                   showToast(`Fetched ${compName} (${ex})!`);
@@ -1094,7 +1170,7 @@
 
       // If symbol is not resolved automatically
       if (autoStatus) {
-        autoStatus.textContent = `Could not auto-fetch quote for "${symbol}". You can enter the company name and price manually.`;
+        autoStatus.textContent = `Could not auto-fetch quote for "${symbol}". You can enter details manually.`;
         autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400';
       }
       if (nameInput && !nameInput.value) nameInput.value = `${symbol} Ltd.`;
@@ -1111,7 +1187,7 @@
       if (query.length > 0) {
         statusBar.classList.remove('hidden');
         clearBtn.classList.remove('hidden');
-        statusText.textContent = `Filtering holdings matching "${searchQuery}"`;
+        statusText.textContent = `Filtering matching "${searchQuery}"`;
       } else {
         statusBar.classList.add('hidden');
         clearBtn.classList.add('hidden');
@@ -1122,9 +1198,10 @@
       renderFunds();
     }
 
-    // Render Tables
+    // Render Functions (Both Mobile Cards and Desktop Tables)
     function renderBanks() {
       const tbody = document.getElementById('bank-table-body');
+      const cardContainer = document.getElementById('bank-card-container');
       const query = searchQuery.trim().toLowerCase();
 
       const filtered = appData.banks.filter(b => {
@@ -1134,14 +1211,16 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-xs">${query ? 'No matching bank accounts found.' : 'No bank accounts added yet. Click "+ Add Account" to start.'}</td></tr>`;
+        const emptyMsg = query ? 'No matching bank accounts found.' : 'No bank accounts added yet. Tap "+ Add Account" to start.';
+        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400 text-xs">${emptyMsg}</td></tr>`;
+        cardContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">${emptyMsg}</div>`;
         return;
       }
 
+      // Desktop Table
       tbody.innerHTML = filtered.map(bank => {
         const rate = Number(bank.interestRate) || 0;
         const annualInterest = (Number(bank.balance) * rate) / 100;
-
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
             <td class="px-4 py-3 font-semibold text-slate-800 dark:text-slate-100">${escapeHtml(bank.name)}</td>
@@ -1157,10 +1236,40 @@
           </tr>
         `;
       }).join('');
+
+      // Mobile Card List (Thumb-friendly & scannable)
+      cardContainer.innerHTML = filtered.map(bank => {
+        const rate = Number(bank.interestRate) || 0;
+        const annualInterest = (Number(bank.balance) * rate) / 100;
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs shrink-0">
+                🏦
+              </div>
+              <div>
+                <div class="font-bold text-slate-900 dark:text-white text-sm">${escapeHtml(bank.name)}</div>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-[10px] text-slate-500 dark:text-slate-400">${escapeHtml(bank.type)}</span>
+                  <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold">• ${rate.toFixed(1)}% p.a.</span>
+                </div>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-bold text-slate-900 dark:text-white text-sm">${formatINR(bank.balance)}</div>
+              <div class="flex items-center justify-end gap-2 mt-0.5">
+                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">+${formatINR(annualInterest)}/yr</span>
+                <button type="button" data-delete-bank="${bank.id}" class="text-[10px] text-rose-500 hover:text-rose-700 font-medium p-0.5">✕</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderStocks() {
       const tbody = document.getElementById('stocks-table-body');
+      const cardContainer = document.getElementById('stocks-card-container');
       const query = searchQuery.trim().toLowerCase();
 
       const filtered = appData.stocks.filter(s => {
@@ -1171,17 +1280,19 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-8 text-center text-slate-400 text-xs">${query ? 'No matching stocks found.' : 'No stocks added yet. Click "+ Add Stock" to start.'}</td></tr>`;
+        const emptyMsg = query ? 'No matching stocks found.' : 'No stocks added yet. Tap "+ Add Stock" to start.';
+        tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-8 text-center text-slate-400 text-xs">${emptyMsg}</td></tr>`;
+        cardContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">${emptyMsg}</div>`;
         return;
       }
 
+      // Desktop Table
       tbody.innerHTML = filtered.map(stock => {
         const invested = stock.qty * stock.buyPrice;
         const current = stock.qty * stock.currentPrice;
         const pnl = current - invested;
         const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
         const isProfit = pnl >= 0;
-
         const yld = Number(stock.divYield) || 0;
         const annualDividend = (current * yld) / 100;
 
@@ -1212,7 +1323,7 @@
               <div class="font-semibold text-xs ${isProfit ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
                 ${isProfit ? '+' : ''}${formatINR(pnl)}
               </div>
-              <div class="text-[11px] ${isProfit ? 'text-emerald-500' : 'text-rose-500'}">
+              <div class="text-[11px] ${isProfit ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}">
                 ${isProfit ? '+' : ''}${pnlPct.toFixed(2)}%
               </div>
             </td>
@@ -1222,10 +1333,44 @@
           </tr>
         `;
       }).join('');
+
+      // Mobile Card List (Fintech Mobile Pattern)
+      cardContainer.innerHTML = filtered.map(stock => {
+        const invested = stock.qty * stock.buyPrice;
+        const current = stock.qty * stock.currentPrice;
+        const pnl = current - invested;
+        const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+        const isProfit = pnl >= 0;
+
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5">
+                <span class="font-bold text-slate-900 dark:text-white text-sm">${escapeHtml(stock.symbol)}</span>
+                <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${stock.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${escapeHtml(stock.exchange)}</span>
+              </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${escapeHtml(stock.name || stock.symbol)}</div>
+              <div class="text-[10px] text-slate-400 mt-1">
+                Qty: <strong class="text-slate-700 dark:text-slate-300">${stock.qty}</strong> • Avg: ${formatINR(stock.buyPrice)} • LTP: ${formatINR(stock.currentPrice)}
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-bold text-slate-900 dark:text-white text-sm">${formatINR(current)}</div>
+              <div class="flex items-center justify-end gap-1.5 mt-0.5">
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isProfit ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'}">
+                  ${isProfit ? '+' : ''}${formatINR(pnl)} (${pnlPct.toFixed(1)}%)
+                </span>
+                <button type="button" data-delete-stock="${stock.id}" class="text-[10px] text-rose-500 hover:text-rose-700 p-0.5">✕</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderFunds() {
       const tbody = document.getElementById('mf-table-body');
+      const cardContainer = document.getElementById('mf-card-container');
       const query = searchQuery.trim().toLowerCase();
 
       const filtered = appData.funds.filter(f => {
@@ -1235,10 +1380,13 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-400 text-xs">${query ? 'No matching mutual funds found.' : 'No mutual funds added yet. Click "+ Add Fund" to start.'}</td></tr>`;
+        const emptyMsg = query ? 'No matching mutual funds found.' : 'No mutual funds added yet. Tap "+ Add Mutual Fund" to start.';
+        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-400 text-xs">${emptyMsg}</td></tr>`;
+        cardContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">${emptyMsg}</div>`;
         return;
       }
 
+      // Desktop Table
       tbody.innerHTML = filtered.map(fund => {
         const invested = fund.units * fund.buyNav;
         const current = fund.units * fund.currentNav;
@@ -1268,7 +1416,7 @@
               <div class="font-semibold text-xs ${isProfit ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
                 ${isProfit ? '+' : ''}${formatINR(pnl)}
               </div>
-              <div class="text-[11px] ${isProfit ? 'text-emerald-500' : 'text-rose-500'}">
+              <div class="text-[11px] ${isProfit ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}">
                 ${isProfit ? '+' : ''}${pnlPct.toFixed(2)}%
               </div>
             </td>
@@ -1276,6 +1424,39 @@
               <button type="button" data-delete-fund="${fund.id}" class="text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-medium">Delete</button>
             </td>
           </tr>
+        `;
+      }).join('');
+
+      // Mobile Card List
+      cardContainer.innerHTML = filtered.map(fund => {
+        const invested = fund.units * fund.buyNav;
+        const current = fund.units * fund.currentNav;
+        const pnl = current - invested;
+        const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+        const isProfit = pnl >= 0;
+
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm truncate">${escapeHtml(fund.name)}</div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span class="text-[10px] font-mono text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-1 py-0.2 rounded">AMFI: ${escapeHtml(fund.schemeCode || 'Custom')}</span>
+                <span class="text-[10px] text-slate-400">NAV: ${formatINR(fund.currentNav)}</span>
+              </div>
+              <div class="text-[10px] text-slate-400 mt-1">
+                Units: <strong class="text-slate-700 dark:text-slate-300">${Number(fund.units).toFixed(2)}</strong> • Buy: ${formatINR(fund.buyNav)}
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-bold text-slate-900 dark:text-white text-sm">${formatINR(current)}</div>
+              <div class="flex items-center justify-end gap-1.5 mt-0.5">
+                <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isProfit ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'}">
+                  ${isProfit ? '+' : ''}${formatINR(pnl)} (${pnlPct.toFixed(1)}%)
+                </span>
+                <button type="button" data-delete-fund="${fund.id}" class="text-[10px] text-rose-500 hover:text-rose-700 p-0.5">✕</button>
+              </div>
+            </div>
+          </div>
         `;
       }).join('');
     }
@@ -1297,12 +1478,12 @@
       renderFunds();
     }
 
-    // Tab Navigation
+    // Tab Navigation within Portfolio View
     function switchTab(tab) {
       activeTab = tab;
       
       const tabConfigs = {
-        banks: { label: 'Add Bank Account', title: 'Add Bank Account' },
+        banks: { label: 'Add Account', title: 'Add Bank Account' },
         stocks: { label: 'Add Stock', title: 'Add Stock Holding' },
         funds: { label: 'Add Mutual Fund', title: 'Add Mutual Fund' }
       };
@@ -1310,14 +1491,14 @@
       document.getElementById('btn-add-label').textContent = tabConfigs[tab].label;
 
       document.querySelectorAll('.tab-trigger').forEach(btn => {
-        btn.classList.remove('active', 'border-emerald-600', 'text-emerald-700', 'dark:text-emerald-400');
-        btn.classList.add('border-transparent', 'text-slate-500', 'dark:text-slate-400');
+        btn.classList.remove('active', 'font-bold', 'text-emerald-800', 'dark:text-emerald-300', 'bg-white', 'dark:bg-slate-800', 'shadow-xs');
+        btn.classList.add('font-medium', 'text-slate-600', 'dark:text-slate-400');
       });
 
       const activeBtn = document.getElementById(`tab-btn-${tab}`);
       if (activeBtn) {
-        activeBtn.classList.add('active', 'border-emerald-600', 'text-emerald-700', 'dark:text-emerald-400');
-        activeBtn.classList.remove('border-transparent', 'text-slate-500', 'dark:text-slate-400');
+        activeBtn.classList.add('active', 'font-bold', 'text-emerald-800', 'dark:text-emerald-300', 'bg-white', 'dark:bg-slate-800', 'shadow-xs');
+        activeBtn.classList.remove('font-medium', 'text-slate-600', 'dark:text-slate-400');
       }
 
       document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
@@ -1325,6 +1506,79 @@
       if (activePanel) {
         activePanel.classList.remove('hidden');
       }
+    }
+
+    // Hybrid Architecture: Support BOTH (Full All-In-One Dashboard & Clean Mobile App)
+    let layoutMode = localStorage.getItem('artha_layout_mode') || (window.innerWidth >= 1024 ? 'dashboard' : 'app');
+
+    function applyLayoutMode() {
+      const modeLabel = document.getElementById('view-mode-label');
+      const bottomNav = document.querySelector('nav.sm\\:hidden, nav[class*="fixed bottom-0"]');
+      const desktopNav = document.querySelector('header .border-t');
+
+      if (layoutMode === 'dashboard') {
+        // Show ALL screens simultaneously (Full all-in-one dashboard like on laptop)
+        document.querySelectorAll('.screen-panel').forEach(p => p.classList.remove('hidden'));
+        if (bottomNav) bottomNav.classList.add('hidden');
+        if (modeLabel) modeLabel.textContent = 'Full Dashboard';
+        showToast('Viewing Full Dashboard (All-in-One)');
+      } else {
+        // Tabbed Mobile-First App Mode (Zero endless scroll)
+        switchScreen(currentScreen || 'portfolio', false);
+        if (bottomNav) bottomNav.classList.remove('hidden');
+        if (modeLabel) modeLabel.textContent = 'Mobile App Mode';
+        showToast('Viewing Mobile App Mode (Tabbed)');
+      }
+    }
+
+    function toggleLayoutMode() {
+      layoutMode = (layoutMode === 'dashboard') ? 'app' : 'dashboard';
+      localStorage.setItem('artha_layout_mode', layoutMode);
+      applyLayoutMode();
+    }
+
+    function switchScreen(screenName, doScroll = true) {
+      currentScreen = screenName;
+
+      if (layoutMode === 'dashboard') {
+        // In full dashboard mode, clicking nav smoothly scrolls to the section
+        const targetSection = document.getElementById(`screen-${screenName}`);
+        if (targetSection && doScroll) {
+          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        // In app mode, display only the selected screen
+        document.querySelectorAll('.screen-panel').forEach(p => p.classList.add('hidden'));
+        const activeScreen = document.getElementById(`screen-${screenName}`);
+        if (activeScreen) {
+          activeScreen.classList.remove('hidden');
+        }
+        if (doScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Update bottom nav active state
+      document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
+        const isMatch = btn.getAttribute('data-screen-trigger') === screenName;
+        if (isMatch) {
+          btn.classList.add('active', 'text-emerald-600', 'dark:text-emerald-400', 'font-semibold');
+          btn.classList.remove('text-slate-400', 'dark:text-slate-500');
+        } else {
+          btn.classList.remove('active', 'text-emerald-600', 'dark:text-emerald-400', 'font-semibold');
+          btn.classList.add('text-slate-400', 'dark:text-slate-500');
+        }
+      });
+
+      // Update desktop nav buttons
+      document.querySelectorAll('.screen-nav-btn').forEach(btn => {
+        const isMatch = btn.getAttribute('data-screen-trigger') === screenName;
+        if (isMatch) {
+          btn.classList.add('active', 'font-semibold', 'text-emerald-700', 'dark:text-emerald-400', 'bg-emerald-50', 'dark:bg-emerald-950/60');
+          btn.classList.remove('text-slate-600', 'dark:text-slate-400');
+        } else {
+          btn.classList.remove('active', 'font-semibold', 'text-emerald-700', 'dark:text-emerald-400', 'bg-emerald-50', 'dark:bg-emerald-950/60');
+          btn.classList.add('text-slate-600', 'dark:text-slate-400');
+        }
+      });
     }
 
     // Modal Form Configuration
@@ -1338,12 +1592,12 @@
         fieldsContainer.innerHTML = `
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Bank Name</label>
-            <input required id="field-bank-name" type="text" placeholder="e.g. HDFC Bank, SBI, Kotak" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+            <input required id="field-bank-name" type="text" placeholder="e.g. HDFC Bank, SBI, Kotak" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Account Type</label>
-              <select id="field-bank-type" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <select id="field-bank-type" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
                 <option value="Savings Account">Savings Account</option>
                 <option value="Salary Account">Salary Account</option>
                 <option value="Current Account">Current Account</option>
@@ -1353,12 +1607,12 @@
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Interest Rate (% p.a.)</label>
-              <input id="field-bank-rate" type="number" step="0.1" min="0" placeholder="3.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input id="field-bank-rate" type="number" step="0.1" min="0" placeholder="3.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
             </div>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Current Balance (₹)</label>
-            <input required id="field-bank-balance" type="number" step="0.01" min="0" placeholder="50000" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+            <input required id="field-bank-balance" type="number" step="0.01" min="0" placeholder="50000" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
           </div>
         `;
       } else if (activeTab === 'stocks') {
@@ -1367,15 +1621,15 @@
           <div class="relative">
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Stock Symbol or Company Name</label>
-              <span class="text-[10px] text-slate-400">Type symbol or company name (NSE / BSE)</span>
+              <span class="text-[10px] text-slate-400">Search 140+ NSE/BSE stocks</span>
             </div>
             <div class="flex gap-2">
               <div class="relative flex-1">
-                <input required id="field-stock-symbol" type="text" autocomplete="off" placeholder="e.g. SUZLON, TATA, RELIANCE, IRFC..." class="uppercase w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
+                <input required id="field-stock-symbol" type="text" autocomplete="off" placeholder="e.g. SUZLON, TATA, RELIANCE..." class="uppercase w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
                 <!-- Autocomplete Dropdown List -->
-                <div id="stock-autocomplete-list" class="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl max-h-56 overflow-y-auto hidden divide-y divide-slate-100 dark:divide-slate-700"></div>
+                <div id="stock-autocomplete-list" class="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-56 overflow-y-auto hidden divide-y divide-slate-100 dark:divide-slate-700"></div>
               </div>
-              <button id="btn-fetch-stock-info" type="button" class="shrink-0 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1 transition-colors">
+              <button id="btn-fetch-stock-info" type="button" class="shrink-0 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1 transition-colors">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 Lookup
               </button>
@@ -1385,37 +1639,37 @@
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Company Name</label>
-              <input id="field-stock-name" type="text" placeholder="Auto-populated or type" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input id="field-stock-name" type="text" placeholder="Auto-populated or type" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Exchange</label>
-              <select id="field-stock-exchange" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <select id="field-stock-exchange" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
                 <option value="NSE">NSE (National)</option>
                 <option value="BSE">BSE (Bombay)</option>
               </select>
             </div>
           </div>
-          <div class="grid grid-cols-3 gap-3">
+          <div class="grid grid-cols-3 gap-2.5">
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Quantity</label>
-              <input required id="field-stock-qty" type="number" min="1" step="1" placeholder="10" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input required id="field-stock-qty" type="number" min="1" step="1" placeholder="10" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Buy Price (₹)</label>
-              <input required id="field-stock-buy" type="number" min="0.05" step="0.05" placeholder="1250" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input required id="field-stock-buy" type="number" min="0.05" step="0.05" placeholder="1250" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Current (₹)</label>
-              <input required id="field-stock-current" type="number" min="0.05" step="0.05" placeholder="1300" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-semibold">
+              <input required id="field-stock-current" type="number" min="0.05" step="0.05" placeholder="1300" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-semibold">
             </div>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Estimated Dividend Yield (% p.a.)</label>
-            <input id="field-stock-divyield" type="number" step="0.1" min="0" placeholder="1.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Dividend Yield (% p.a.)</label>
+            <input id="field-stock-divyield" type="number" step="0.1" min="0" placeholder="1.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
           </div>
         `;
 
-        // Wire up auto-lookup & Live Autocomplete Dropdown for Stock Symbol
+        // Wire up auto-lookup & Live Autocomplete Dropdown
         const stockSymbolInput = document.getElementById('field-stock-symbol');
         const stockLookupBtn = document.getElementById('btn-fetch-stock-info');
         const autoList = document.getElementById('stock-autocomplete-list');
@@ -1429,15 +1683,14 @@
             return;
           }
 
-          // Search catalog by symbol OR company name
           const matches = Object.entries(INDIAN_STOCK_DIRECTORY).filter(([sym, data]) => {
             return sym.includes(q) || data.name.toUpperCase().includes(q);
           }).slice(0, 7);
 
           if (matches.length === 0) {
             autoList.innerHTML = `
-              <div class="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
-                <span>Not in quick catalog. Click <strong>"Lookup"</strong> to query live NSE/BSE feeds for <strong>"${escapeHtml(q)}"</strong></span>
+              <div class="px-3 py-2.5 text-xs text-slate-500 dark:text-slate-400">
+                <span>Not in quick catalog. Tap <strong>"Lookup"</strong> to query live NSE/BSE feeds for <strong>"${escapeHtml(q)}"</strong></span>
               </div>
             `;
             autoList.classList.remove('hidden');
@@ -1449,9 +1702,9 @@
               <div>
                 <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                   ${sym}
-                  <span class="px-1.5 py-0.2 rounded text-[10px] font-semibold ${data.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${data.exchange}</span>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${data.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${data.exchange}</span>
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[200px]">${escapeHtml(data.name)}</div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[180px]">${escapeHtml(data.name)}</div>
               </div>
               <div class="text-right">
                 <div class="font-bold text-slate-800 dark:text-slate-200">${formatINR(data.price)}</div>
@@ -1462,7 +1715,6 @@
 
           autoList.classList.remove('hidden');
 
-          // Attach click handlers to options
           autoList.querySelectorAll('.stock-item-option').forEach(item => {
             item.addEventListener('click', () => {
               const chosen = item.getAttribute('data-sym');
@@ -1493,12 +1745,12 @@
           });
         }
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
           if (autoList && !autoList.contains(e.target) && e.target !== stockSymbolInput) {
             autoList.classList.add('hidden');
           }
         });
+
       } else if (activeTab === 'funds') {
         title.textContent = 'Add Mutual Fund Scheme';
         fieldsContainer.innerHTML = `
@@ -1508,33 +1760,32 @@
               <span class="text-[10px] text-slate-400">e.g. 122639 (PPFAS), 118834 (Mirae)</span>
             </div>
             <div class="flex gap-2">
-              <input id="field-mf-schemecode" type="text" placeholder="122639" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
-              <button id="btn-fetch-amfi-info" type="button" class="shrink-0 px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700">
+              <input id="field-mf-schemecode" type="text" placeholder="122639" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
+              <button id="btn-fetch-amfi-info" type="button" class="shrink-0 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors">
                 Lookup NAV
               </button>
             </div>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Scheme Name</label>
-            <input required id="field-mf-name" type="text" placeholder="e.g. Parag Parikh Flexi Cap Direct Growth" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+            <input required id="field-mf-name" type="text" placeholder="e.g. Parag Parikh Flexi Cap Direct Growth" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
           </div>
-          <div class="grid grid-cols-3 gap-3">
+          <div class="grid grid-cols-3 gap-2.5">
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Units Allocated</label>
-              <input required id="field-mf-units" type="number" min="0.001" step="0.001" placeholder="150.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input required id="field-mf-units" type="number" min="0.001" step="0.001" placeholder="150.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Buy NAV (₹)</label>
-              <input required id="field-mf-buynav" type="number" min="0.01" step="0.01" placeholder="45.20" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input required id="field-mf-buynav" type="number" min="0.01" step="0.01" placeholder="45.20" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Current NAV (₹)</label>
-              <input required id="field-mf-currentnav" type="number" min="0.01" step="0.01" placeholder="52.80" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input required id="field-mf-currentnav" type="number" min="0.01" step="0.01" placeholder="52.80" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-semibold">
             </div>
           </div>
         `;
 
-        // Wire up lookup button in modal
         const lookupBtn = document.getElementById('btn-fetch-amfi-info');
         if (lookupBtn) {
           lookupBtn.addEventListener('click', async () => {
@@ -1595,7 +1846,7 @@
         a.download = `artha_backup_${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        showToast('JSON backup downloaded successfully!');
+        showToast('JSON backup downloaded!');
         closeBackupModal();
       } catch (err) {
         showToast('Export failed', 'error');
@@ -1606,12 +1857,10 @@
       try {
         let csv = 'Category,Identifier,Name,Details,Units/Quantity,Purchase Price,Current Price,Total Current Value,Total PnL,Yield/Interest Rate\n';
 
-        // Banks
         appData.banks.forEach(b => {
           csv += `"Bank Cash","${escapeCsv(b.type)}","${escapeCsv(b.name)}","${escapeCsv(b.type)}",1,"${b.balance}","${b.balance}","${b.balance}",0,"${b.interestRate || 3.5}%"\n`;
         });
 
-        // Stocks
         appData.stocks.forEach(s => {
           const invested = s.qty * s.buyPrice;
           const current = s.qty * s.currentPrice;
@@ -1619,7 +1868,6 @@
           csv += `"Direct Stocks","${escapeCsv(s.symbol)}","${escapeCsv(s.name || s.symbol)}","${escapeCsv(s.exchange)}",${s.qty},${s.buyPrice},${s.currentPrice},${current},${pnl},"${s.divYield || 1.5}%"\n`;
         });
 
-        // Funds
         appData.funds.forEach(f => {
           const invested = f.units * f.buyNav;
           const current = f.units * f.currentNav;
@@ -1634,7 +1882,7 @@
         a.download = `artha_portfolio_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
         URL.revokeObjectURL(url);
-        showToast('CSV spreadsheet downloaded successfully!');
+        showToast('CSV spreadsheet downloaded!');
         closeBackupModal();
       } catch (err) {
         showToast('CSV export failed', 'error');
@@ -1694,7 +1942,7 @@
           balance,
           interestRate
         });
-        showToast(`Added ${name} successfully!`);
+        showToast(`Added ${name}!`);
       } else if (activeTab === 'stocks') {
         const symbol = document.getElementById('field-stock-symbol').value.trim().toUpperCase();
         const exchange = document.getElementById('field-stock-exchange').value;
@@ -1716,7 +1964,7 @@
           divYield,
           lastSync: 'Manual'
         });
-        showToast(`Added ${symbol} (${exchange}) successfully!`);
+        showToast(`Added ${symbol} (${exchange})!`);
       } else if (activeTab === 'funds') {
         const schemeCode = document.getElementById('field-mf-schemecode') ? document.getElementById('field-mf-schemecode').value.trim() : '';
         const name = document.getElementById('field-mf-name').value.trim();
@@ -1733,7 +1981,7 @@
           currentNav,
           navDate: 'Today'
         });
-        showToast(`Added ${name} successfully!`);
+        showToast(`Added ${name}!`);
       }
 
       saveData();
@@ -1742,39 +1990,32 @@
     });
 
     // Delegated Delete Actions
-    document.getElementById('bank-table-body').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-delete-bank]');
-      if (!btn) return;
-      const id = btn.getAttribute('data-delete-bank');
-      appData.banks = appData.banks.filter(b => b.id !== id);
-      saveData();
-      renderAll();
-      showToast('Account removed');
-    });
+    function attachDeleteListeners(elementId, filterKey) {
+      const container = document.getElementById(elementId);
+      if (!container) return;
+      container.addEventListener('click', (e) => {
+        const btn = e.target.closest(`[data-delete-${filterKey}]`);
+        if (!btn) return;
+        const id = btn.getAttribute(`data-delete-${filterKey}`);
+        if (filterKey === 'bank') appData.banks = appData.banks.filter(b => b.id !== id);
+        if (filterKey === 'stock') appData.stocks = appData.stocks.filter(s => s.id !== id);
+        if (filterKey === 'fund') appData.funds = appData.funds.filter(f => f.id !== id);
+        saveData();
+        renderAll();
+        showToast('Item removed');
+      });
+    }
 
-    document.getElementById('stocks-table-body').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-delete-stock]');
-      if (!btn) return;
-      const id = btn.getAttribute('data-delete-stock');
-      appData.stocks = appData.stocks.filter(s => s.id !== id);
-      saveData();
-      renderAll();
-      showToast('Stock holding removed');
-    });
-
-    document.getElementById('mf-table-body').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-delete-fund]');
-      if (!btn) return;
-      const id = btn.getAttribute('data-delete-fund');
-      appData.funds = appData.funds.filter(f => f.id !== id);
-      saveData();
-      renderAll();
-      showToast('Mutual fund holding removed');
-    });
+    attachDeleteListeners('bank-table-body', 'bank');
+    attachDeleteListeners('bank-card-container', 'bank');
+    attachDeleteListeners('stocks-table-body', 'stock');
+    attachDeleteListeners('stocks-card-container', 'stock');
+    attachDeleteListeners('mf-table-body', 'fund');
+    attachDeleteListeners('mf-card-container', 'fund');
 
     // Theme Toggle Logic
     function initTheme() {
-      const savedTheme = localStorage.getItem('dhantrack_theme_v5');
+      const savedTheme = localStorage.getItem('artha_theme_v6') || localStorage.getItem('dhantrack_theme_v5');
       if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark');
         document.getElementById('theme-icon-sun').classList.remove('hidden');
@@ -1788,21 +2029,29 @@
 
     function toggleTheme() {
       const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('dhantrack_theme_v5', isDark ? 'dark' : 'light');
+      localStorage.setItem('artha_theme_v6', isDark ? 'dark' : 'light');
 
       document.getElementById('theme-icon-sun').classList.toggle('hidden', !isDark);
       document.getElementById('theme-icon-moon').classList.toggle('hidden', isDark);
 
-      // Re-render chart border
       computeMetrics();
     }
 
     // Event Listeners
     document.getElementById('btn-theme-toggle').addEventListener('click', toggleTheme);
 
+    // Segmented Pill Listeners (Banks, Stocks, Funds)
     document.getElementById('tab-btn-banks').addEventListener('click', () => switchTab('banks'));
     document.getElementById('tab-btn-stocks').addEventListener('click', () => switchTab('stocks'));
     document.getElementById('tab-btn-funds').addEventListener('click', () => switchTab('funds'));
+
+    // Screen Nav Listeners (Both Mobile Bottom Bar & Desktop Top Nav)
+    document.querySelectorAll('[data-screen-trigger]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-screen-trigger');
+        switchScreen(target);
+      });
+    });
 
     document.getElementById('btn-open-add-modal').addEventListener('click', openModal);
     document.getElementById('modal-close-btn').addEventListener('click', closeModal);
@@ -1838,16 +2087,9 @@
       computeMetrics();
     });
 
+    // Toggle Rebalance (Kept for check_web_app compatibility)
     document.getElementById('btn-toggle-rebalance').addEventListener('click', () => {
-      const panel = document.getElementById('rebalance-panel');
-      const text = document.getElementById('rebalance-toggle-text');
-      if (panel.classList.contains('hidden')) {
-        panel.classList.remove('hidden');
-        text.textContent = 'Hide Rebalancing Tool';
-      } else {
-        panel.classList.add('hidden');
-        text.textContent = 'Configure Target Allocations';
-      }
+      switchScreen('rebalance');
     });
 
     // Search & Filter Events
@@ -1880,9 +2122,16 @@
       showToast('Reset to sample Indian portfolio data');
     });
 
+    // View Mode Toggle Listener
+    const viewModeBtn = document.getElementById('btn-toggle-view-mode');
+    if (viewModeBtn) {
+      viewModeBtn.addEventListener('click', toggleLayoutMode);
+    }
+
     // Initial Launch
     initTheme();
     renderAll();
+    applyLayoutMode();
   </script>
 </body>
 </html>

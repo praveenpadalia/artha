@@ -580,6 +580,21 @@
           </button>
           <input type="file" id="file-import-input" accept=".json" class="hidden">
         </div>
+
+        <!-- Google Apps Script / Google Finance Bridge URL Configuration -->
+        <div class="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-bold text-slate-800 dark:text-slate-200">Google Apps Script Webhook (Zero CORS)</label>
+            <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold">Optional</span>
+          </div>
+          <div class="flex gap-2">
+            <input id="input-google-bridge-url" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 font-mono">
+            <button id="btn-save-google-bridge" type="button" class="shrink-0 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition-colors">
+              Save
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-400">Paste your deployed Google Apps Script URL here for 100% reliable, zero-CORS live quotes.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -1088,6 +1103,89 @@
       return results;
     }
 
+        // Unified Live Stock Quote Fetcher (Zero Direct CORS Blocks)
+    async function fetchStockLiveQuote(symbolsQuery) {
+      const q = (symbolsQuery || '').trim().toUpperCase().replace(/\.(NS|BO)$/, '');
+      if (!q) return null;
+
+      // 1. Check for user-configured Google Apps Script Webhook URL first (Zero CORS, 100% Google Finance)
+      const customBridge = localStorage.getItem('artha_google_bridge') || '';
+      if (customBridge) {
+        try {
+          const bridgeUrl = `${customBridge}?ticker=${encodeURIComponent(q)}`;
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 3500);
+          const res = await fetch(bridgeUrl, { signal: ctrl.signal });
+          clearTimeout(tid);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.price && data.price > 0) {
+              const resObj = {};
+              resObj[q] = { price: data.price, name: data.name || q, source: 'Google Finance' };
+              return resObj;
+            }
+          }
+        } catch (e) {
+          console.warn('Google Bridge error:', e);
+        }
+      }
+
+      // 2. Query Rediff via reliable CORS proxy (NEVER direct browser call)
+      const rediffTarget = `https://money.rediff.com/money1/current_status_new.php?companylist=${encodeURIComponent(q)}`;
+
+      // Try AllOrigins /raw
+      try {
+        const rawUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rediffTarget)}`;
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 3500);
+        const resp = await fetch(rawUrl, { signal: ctrl.signal });
+        clearTimeout(tid);
+        if (resp.ok) {
+          const text = await resp.text();
+          const parsed = parseRediffResponse(text, q);
+          if (parsed && Object.keys(parsed).length > 0) return parsed;
+        }
+      } catch (e) {}
+
+      // Try AllOrigins /get (unpacks .contents)
+      try {
+        const getUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rediffTarget)}`;
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 3500);
+        const resp = await fetch(getUrl, { signal: ctrl.signal });
+        clearTimeout(tid);
+        if (resp.ok) {
+          const json = await resp.json();
+          if (json && json.contents) {
+            const parsed = parseRediffResponse(json.contents, q);
+            if (parsed && Object.keys(parsed).length > 0) return parsed;
+          }
+        }
+      } catch (e) {}
+
+      // 3. Fallback: Query Yahoo Chart via AllOrigins
+      try {
+        const yfTarget = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(q)}.NS?interval=1d`;
+        const yfUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yfTarget)}`;
+        const ctrl = new AbortController();
+        const tid = setTimeout(() => ctrl.abort(), 3500);
+        const resp = await fetch(yfUrl, { signal: ctrl.signal });
+        clearTimeout(tid);
+        if (resp.ok) {
+          const json = await resp.json();
+          const meta = json && json.chart && json.chart.result && json.chart.result[0] && json.chart.result[0].meta;
+          if (meta && (meta.regularMarketPrice || meta.chartPreviousClose)) {
+            const price = meta.regularMarketPrice || meta.chartPreviousClose;
+            const resObj = {};
+            resObj[q] = { price, name: meta.shortName || meta.longName || q, source: 'Yahoo Feed' };
+            return resObj;
+          }
+        }
+      } catch (e) {}
+
+      return null;
+    }
+
     async function syncMarketPrices() {
       if (isSyncing) return;
       isSyncing = true;
@@ -1130,44 +1228,20 @@
         }
       }
 
-      // 2. Fetch Stock Quotes via Batched Rediff Money API (Single Multi-Symbol Request)
+      // 2. Fetch Stock Quotes via Batched Proxy API (Zero Direct CORS Errors)
       if (appData.stocks.length > 0) {
         const cleanSymbols = appData.stocks.map(s => s.symbol.toUpperCase().replace(/\.(NS|BO)$/, '')).filter(Boolean);
         const batchQuery = cleanSymbols.join('|');
-        let rediffQuotes = {};
 
-        const rediffUrls = [
-          `https://money.rediff.com/money1/current_status_new.php?companylist=${encodeURIComponent(batchQuery)}`,
-          `https://corsproxy.io/?url=${encodeURIComponent(`https://money.rediff.com/money1/current_status_new.php?companylist=${batchQuery}`)}`,
-          `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://money.rediff.com/money1/current_status_new.php?companylist=${batchQuery}`)}`
-        ];
-
-        for (const url of rediffUrls) {
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2600);
-            const resp = await fetch(url, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            if (resp.ok) {
-              const text = await resp.text();
-              const parsed = parseRediffResponse(text);
-              if (Object.keys(parsed).length > 0) {
-                rediffQuotes = parsed;
-                break;
-              }
+        const quotes = await fetchStockLiveQuote(batchQuery);
+        if (quotes) {
+          for (const stock of appData.stocks) {
+            const symKey = stock.symbol.toUpperCase().replace(/\.(NS|BO)$/, '');
+            if (quotes[symKey] && quotes[symKey].price > 0) {
+              stock.currentPrice = quotes[symKey].price;
+              stock.lastSync = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ` (${quotes[symKey].source || 'Live'})`;
+              stockSuccessCount++;
             }
-          } catch (e) {
-            // try next endpoint
-          }
-        }
-
-        // Apply Rediff prices to portfolio stocks
-        for (const stock of appData.stocks) {
-          const symKey = stock.symbol.toUpperCase().replace(/\.(NS|BO)$/, '');
-          if (rediffQuotes[symKey] && rediffQuotes[symKey].price > 0) {
-            stock.currentPrice = rediffQuotes[symKey].price;
-            stock.lastSync = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' (Rediff)';
-            stockSuccessCount++;
           }
         }
       }
@@ -1188,7 +1262,7 @@
 
     // Automatic Stock Info Lookup Function
     async function lookupAndFillStockInfo(symbolRaw) {
-      const symbol = symbolRaw.trim().toUpperCase().replace(/\.(NS|BO)$/, '');
+      const symbol = (symbolRaw || '').trim().toUpperCase().replace(/\.(NS|BO)$/, '');
       if (!symbol) return;
 
       const nameInput = document.getElementById('field-stock-name');
@@ -1201,77 +1275,65 @@
       const autoList = document.getElementById('stock-autocomplete-list');
       if (autoList) autoList.classList.add('hidden');
 
-      if (lookupBtn) lookupBtn.textContent = 'Calling Rediff...';
+      if (lookupBtn) {
+        lookupBtn.textContent = 'Calling API...';
+        lookupBtn.disabled = true;
+      }
       if (autoStatus) {
         autoStatus.classList.remove('hidden');
-        autoStatus.textContent = `Fetching live price from Rediff API for ${symbol}...`;
+        autoStatus.textContent = `Fetching live price for ${symbol}...`;
         autoStatus.className = 'text-[11px] text-blue-600 dark:text-blue-400 font-medium';
       }
 
-      // Pre-fill registered company name from catalog if available (WITHOUT ANY STATIC PRICE)
       if (INDIAN_STOCK_DIRECTORY[symbol] && nameInput) {
         nameInput.value = INDIAN_STOCK_DIRECTORY[symbol].name;
         if (exchangeSelect) exchangeSelect.value = INDIAN_STOCK_DIRECTORY[symbol].exchange || 'NSE';
         if (divInput && !divInput.value) divInput.value = INDIAN_STOCK_DIRECTORY[symbol].divYield || '1.2';
       }
 
-      // Query Rediff Money API directly and via high-speed edge proxies
-      const rediffUrls = [
-        `https://money.rediff.com/money1/current_status_new.php?companylist=${encodeURIComponent(symbol)}`,
-        `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://money.rediff.com/money1/current_status_new.php?companylist=${symbol}`)}`,
-        `https://corsproxy.io/?url=${encodeURIComponent(`https://money.rediff.com/money1/current_status_new.php?companylist=${symbol}`)}`
-      ];
+      try {
+        const quotes = await fetchStockLiveQuote(symbol);
 
-      let livePriceFound = null;
-      let fetchedName = null;
+        if (quotes && quotes[symbol] && quotes[symbol].price > 0) {
+          const item = quotes[symbol];
+          const livePrice = item.price;
+          const compTitle = (INDIAN_STOCK_DIRECTORY[symbol] && INDIAN_STOCK_DIRECTORY[symbol].name) || item.name || `${symbol} Ltd.`;
 
-      for (const url of rediffUrls) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3800);
-          const resp = await fetch(url, { signal: controller.signal });
-          clearTimeout(timeoutId);
-
-          if (resp.ok) {
-            const raw = await resp.text();
-            const parsed = parseRediffResponse(raw, symbol);
-            if (parsed && parsed[symbol] && parsed[symbol].price > 0) {
-              livePriceFound = parsed[symbol].price;
-              fetchedName = parsed[symbol].name;
-              break;
-            }
+          if (nameInput) nameInput.value = compTitle;
+          if (currentInput) currentInput.value = livePrice;
+          if (buyInput && (!buyInput.value || parseFloat(buyInput.value) <= 0)) {
+            buyInput.value = livePrice;
           }
-        } catch (e) {
-          // try next proxy
-        }
-      }
+          if (exchangeSelect && !exchangeSelect.value) exchangeSelect.value = 'NSE';
 
-      if (livePriceFound && livePriceFound > 0) {
-        const compTitle = (INDIAN_STOCK_DIRECTORY[symbol] && INDIAN_STOCK_DIRECTORY[symbol].name) || fetchedName || `${symbol} Ltd.`;
-        if (nameInput) nameInput.value = compTitle;
-        if (currentInput) currentInput.value = livePriceFound;
-        if (buyInput && (!buyInput.value || parseFloat(buyInput.value) <= 0)) {
-          buyInput.value = livePriceFound;
+          if (autoStatus) {
+            autoStatus.textContent = `✓ Live Price: ${symbol} (${compTitle}) • Price: ${formatINR(livePrice)} [${item.source || 'Live'}]`;
+            autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
+          }
+          showToast(`Live price fetched for ${symbol}: ${formatINR(livePrice)}`);
+          return;
         }
-        if (exchangeSelect && !exchangeSelect.value) exchangeSelect.value = 'NSE';
 
+        // If no price found from API
         if (autoStatus) {
-          autoStatus.textContent = `✓ Live Rediff API: ${symbol} (${compTitle}) • Current Price: ${formatINR(livePriceFound)}`;
-          autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
+          autoStatus.textContent = `Could not auto-fetch quote for "${symbol}". Please enter current price manually.`;
+          autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400';
         }
-        if (lookupBtn) lookupBtn.textContent = 'Lookup';
-        showToast(`Live price from Rediff API: ${formatINR(livePriceFound)}`);
-        return;
+        if (nameInput && !nameInput.value) nameInput.value = `${symbol} Ltd.`;
+        showToast(`Please enter current price manually for ${symbol}`, 'error');
+      } catch (err) {
+        console.error('Lookup error:', err);
+        if (autoStatus) {
+          autoStatus.textContent = `Could not reach live API for "${symbol}". Please enter price manually.`;
+          autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400';
+        }
+        showToast(`Error querying API for ${symbol}`, 'error');
+      } finally {
+        if (lookupBtn) {
+          lookupBtn.textContent = 'Lookup';
+          lookupBtn.disabled = false;
+        }
       }
-
-      // If Rediff could not be reached, alert user with ZERO fake or local price
-      if (autoStatus) {
-        autoStatus.textContent = `Could not get live quote from Rediff for "${symbol}". Please enter current price manually.`;
-        autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400';
-      }
-      if (nameInput && !nameInput.value) nameInput.value = `${symbol} Ltd.`;
-      if (lookupBtn) lookupBtn.textContent = 'Lookup';
-      showToast(`Please enter current price manually for ${symbol}`, 'error');
     }
 
     function applySearchFilter() {
@@ -2555,6 +2617,22 @@
       renderAll();
       showToast('Reset to sample Indian portfolio data');
     });
+
+    // Google Apps Script Bridge URL Management
+    const bridgeInput = document.getElementById('input-google-bridge-url');
+    const bridgeSaveBtn = document.getElementById('btn-save-google-bridge');
+
+    if (bridgeInput) {
+      bridgeInput.value = localStorage.getItem('artha_google_bridge') || '';
+    }
+
+    if (bridgeSaveBtn) {
+      bridgeSaveBtn.addEventListener('click', () => {
+        const val = (document.getElementById('input-google-bridge-url').value || '').trim();
+        localStorage.setItem('artha_google_bridge', val);
+        showToast(val ? 'Google Apps Script Webhook saved!' : 'Cleared custom webhook URL');
+      });
+    }
 
     // View Mode Toggle Listener
     const viewModeBtn = document.getElementById('btn-toggle-view-mode');

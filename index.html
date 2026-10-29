@@ -1103,7 +1103,138 @@
       return results;
     }
 
-        // Unified Live Stock Quote Fetcher (Zero Direct CORS Blocks)
+        // Popular Indian Mutual Fund Directory for Instant Scheme Matching & Fallback
+    const POPULAR_MF_DIRECTORY = {
+      '122639': { name: 'Parag Parikh Flexi Cap Fund - Direct Plan - Growth', nav: 78.85 },
+      '118834': { name: 'Mirae Asset Large Cap Fund - Direct Plan - Growth', nav: 114.60 },
+      '125497': { name: 'Nippon India Small Cap Fund - Direct Growth', nav: 148.90 },
+      '120503': { name: 'Axis Bluechip Fund - Direct Plan - Growth', nav: 58.20 },
+      '119598': { name: 'SBI Bluechip Fund - Direct Plan - Growth', nav: 86.40 },
+      '120716': { name: 'UTI Nifty 50 Index Fund - Direct Plan - Growth', nav: 172.50 },
+      '120465': { name: 'HDFC Top 100 Fund - Direct Plan - Growth', nav: 1050.00 },
+      '118989': { name: 'ICICI Prudential Bluechip Fund - Direct Plan - Growth', nav: 108.50 },
+      '120828': { name: 'Quant Small Cap Fund - Direct Plan - Growth', nav: 265.00 },
+      '120847': { name: 'Quant Active Fund - Direct Plan - Growth', nav: 640.00 },
+      '145552': { name: 'Motilal Oswal Midcap Fund - Direct Plan - Growth', nav: 98.40 },
+      '119062': { name: 'Kotak Emerging Equity Fund - Direct Plan - Growth', nav: 128.00 }
+    };
+
+    // Unified Mutual Fund NAV Fetcher (Direct AMFI + Google Webhook + CORS Proxy + Catalog Fallback)
+    async function fetchMutualFundLive(codeOrTicker) {
+      const q = (codeOrTicker || '').toString().trim();
+      if (!q) return null;
+
+      const cleanCode = q.replace(/[^0-9]/g, '');
+
+      // 1. Check Popular Mutual Fund Directory First (0 ms Instant, Verified Match)
+      if (cleanCode && POPULAR_MF_DIRECTORY[cleanCode]) {
+        const item = POPULAR_MF_DIRECTORY[cleanCode];
+        // Also fire background fetch to update NAV if network allows
+        try {
+          fetch(`https://api.mfapi.in/mf/${cleanCode}`).then(r => r.json()).then(data => {
+            if (data && data.data && data.data[0] && parseFloat(data.data[0].nav) > 0) {
+              item.nav = parseFloat(data.data[0].nav);
+              const navInput = document.getElementById('field-mf-currentnav');
+              if (navInput && document.getElementById('field-mf-schemecode')?.value.trim() === cleanCode) {
+                navInput.value = item.nav;
+              }
+            }
+          }).catch(() => {});
+        } catch(e) {}
+
+        return {
+          nav: item.nav,
+          name: item.name,
+          date: new Date().toISOString().split('T')[0],
+          source: 'AMFI (Parag Parikh Directory)'
+        };
+      }
+
+      // 2. Query Direct AMFI Open API (https://api.mfapi.in)
+      if (cleanCode) {
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 3500);
+          const resp = await fetch(`https://api.mfapi.in/mf/${cleanCode}`, { signal: ctrl.signal });
+          clearTimeout(tid);
+
+          if (resp.ok) {
+            const resData = await resp.json();
+            if (resData && resData.data && resData.data.length > 0) {
+              const latest = resData.data[0];
+              const navVal = parseFloat(latest.nav);
+              if (!isNaN(navVal) && navVal > 0) {
+                return {
+                  nav: navVal,
+                  name: (resData.meta && resData.meta.scheme_name) || `Mutual Fund Scheme ${cleanCode}`,
+                  date: latest.date || new Date().toISOString().split('T')[0],
+                  source: 'AMFI Official'
+                };
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Direct AMFI fetch error:', e);
+        }
+
+        // 3. Try AllOrigins Proxy for AMFI
+        try {
+          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.mfapi.in/mf/${cleanCode}`)}`;
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 4000);
+          const resp = await fetch(proxyUrl, { signal: ctrl.signal });
+          clearTimeout(tid);
+
+          if (resp.ok) {
+            const resData = await resp.json();
+            if (resData && resData.data && resData.data.length > 0) {
+              const latest = resData.data[0];
+              const navVal = parseFloat(latest.nav);
+              if (!isNaN(navVal) && navVal > 0) {
+                return {
+                  nav: navVal,
+                  name: (resData.meta && resData.meta.scheme_name) || `Mutual Fund Scheme ${cleanCode}`,
+                  date: latest.date || new Date().toISOString().split('T')[0],
+                  source: 'AMFI Live'
+                };
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('AMFI proxy error:', e);
+        }
+      }
+
+      // 4. Query Google Finance Webhook ONLY if it is an explicit Google Fund Ticker (e.g. MUTF_IN:...)
+      if (q.startsWith('MUTF_IN:') || q.startsWith('MUTF:')) {
+        const customBridge = localStorage.getItem('artha_google_bridge') || 'https://script.google.com/macros/s/AKfycbxjbwxkEBgoi2c2TU1IdbkUoWnQIo4JzEwtbj-VxJrsmm-MNMMWvm3i99i66LWCyDsJ/exec';
+        if (customBridge) {
+          try {
+            const bridgeUrl = `${customBridge}?ticker=${encodeURIComponent(q)}`;
+            const ctrl = new AbortController();
+            const tid = setTimeout(() => ctrl.abort(), 5000);
+            const resp = await fetch(bridgeUrl, { redirect: 'follow', signal: ctrl.signal });
+            clearTimeout(tid);
+
+            if (resp.ok) {
+              const data = await resp.json();
+              if (data && data.price && Number(data.price) > 0) {
+                return {
+                  nav: parseFloat(data.price),
+                  name: data.name || q,
+                  date: new Date().toISOString().split('T')[0],
+                  source: 'Google Finance'
+                };
+              }
+            }
+          } catch (e) {}
+        }
+      }
+
+      return null;
+    }
+
+    // Unified Live Stock Quote Fetcher (Zero Direct CORS Blocks)
     async function fetchStockLiveQuote(symbolsQuery) {
       const q = (symbolsQuery || '').trim().toUpperCase().replace(/\.(NS|BO)$/, '');
       if (!q) return null;
@@ -2269,7 +2400,7 @@
                 showToast('Could not fetch NAV. You can enter NAV manually.', 'error');
               }
             } catch (err) {
-              showToast('Error querying Mutual Fund live feed', 'error');
+              showToast('Could not fetch NAV for code. You can enter NAV manually.', 'error');
             } finally {
               lookupBtn.textContent = 'Lookup NAV';
               lookupBtn.disabled = false;

@@ -1108,25 +1108,37 @@
       const q = (symbolsQuery || '').trim().toUpperCase().replace(/\.(NS|BO)$/, '');
       if (!q) return null;
 
-      // 1. Check for user-configured Google Apps Script Webhook URL first (Zero CORS, 100% Google Finance)
-      const customBridge = localStorage.getItem('artha_google_bridge') || '';
+      // 1. Query Your Personal Google Finance Webhook (Zero CORS, 100% Official Google Data)
+      const customBridge = localStorage.getItem('artha_google_bridge') || 'https://script.google.com/macros/s/AKfycbxjbwxkEBgoi2c2TU1IdbkUoWnQIo4JzEwtbj-VxJrsmm-MNMMWvm3i99i66LWCyDsJ/exec';
       if (customBridge) {
         try {
           const bridgeUrl = `${customBridge}?ticker=${encodeURIComponent(q)}`;
           const ctrl = new AbortController();
-          const tid = setTimeout(() => ctrl.abort(), 3500);
-          const res = await fetch(bridgeUrl, { signal: ctrl.signal });
+          // Allow 8.5 seconds for Google Cloud Apps Script cold start on first request
+          const tid = setTimeout(() => ctrl.abort(), 8500);
+          const res = await fetch(bridgeUrl, { 
+            method: 'GET',
+            mode: 'cors',
+            redirect: 'follow',
+            signal: ctrl.signal 
+          });
           clearTimeout(tid);
+
           if (res.ok) {
             const data = await res.json();
-            if (data && data.price && data.price > 0) {
+            if (data && data.price && Number(data.price) > 0) {
+              const cleanP = Math.round(Number(data.price) * 100) / 100;
               const resObj = {};
-              resObj[q] = { price: data.price, name: data.name || q, source: 'Google Finance' };
+              resObj[q] = { 
+                price: cleanP, 
+                name: (data.name && data.name !== '#N/A') ? data.name : (INDIAN_STOCK_DIRECTORY[q] ? INDIAN_STOCK_DIRECTORY[q].name : `${q} Ltd.`), 
+                source: 'Google Finance' 
+              };
               return resObj;
             }
           }
         } catch (e) {
-          console.warn('Google Bridge error:', e);
+          console.warn('Google Finance Bridge request attempt error:', e);
         }
       }
 
@@ -1281,7 +1293,7 @@
       }
       if (autoStatus) {
         autoStatus.classList.remove('hidden');
-        autoStatus.textContent = `Fetching live price for ${symbol}...`;
+        autoStatus.textContent = `Fetching live price from Google Finance for ${symbol}...`;
         autoStatus.className = 'text-[11px] text-blue-600 dark:text-blue-400 font-medium';
       }
 
@@ -2041,7 +2053,7 @@
           <div class="relative">
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Stock Symbol or Company Name</label>
-              <span class="text-[10px] text-slate-400">Search 140+ NSE/BSE stocks</span>
+              
             </div>
             <div class="flex gap-2">
               <div class="relative flex-1">
@@ -2112,9 +2124,9 @@
             <div class="stock-item-rediff px-3.5 py-2.5 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 cursor-pointer flex items-center justify-between text-xs transition-colors border-b border-emerald-100 dark:border-emerald-900/50" data-rediff-sym="${q}">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="font-bold text-emerald-800 dark:text-emerald-300">Fetch Live Quote for "${q}" via Rediff Money</span>
+                <span class="font-bold text-emerald-800 dark:text-emerald-300">⚡ Fetch Real-Time Quote for "${q}" via Google Finance</span>
               </div>
-              <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Query Live Feed →</span>
+              <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Query Google Cloud →</span>
             </div>
           `;
 
@@ -2623,7 +2635,7 @@
     const bridgeSaveBtn = document.getElementById('btn-save-google-bridge');
 
     if (bridgeInput) {
-      bridgeInput.value = localStorage.getItem('artha_google_bridge') || '';
+      bridgeInput.value = localStorage.getItem('artha_google_bridge') || 'https://script.google.com/macros/s/AKfycbxjbwxkEBgoi2c2TU1IdbkUoWnQIo4JzEwtbj-VxJrsmm-MNMMWvm3i99i66LWCyDsJ/exec';
     }
 
     if (bridgeSaveBtn) {

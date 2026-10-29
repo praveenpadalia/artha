@@ -1214,28 +1214,22 @@
       let mfSuccessCount = 0;
       let stockSuccessCount = 0;
 
-      // 1. Fetch Mutual Fund NAVs from AMFI Open API
+      // 1. Fetch Mutual Fund NAVs via Multi-Source Pipeline (Google Cloud + AMFI + Proxies)
       for (const fund of appData.funds) {
-        if (fund.schemeCode) {
+        const queryCode = fund.schemeCode || fund.ticker;
+        if (queryCode) {
           try {
-            const resp = await fetch(`https://api.mfapi.in/mf/${fund.schemeCode}`);
-            if (resp.ok) {
-              const resData = await resp.json();
-              if (resData && resData.data && resData.data.length > 0) {
-                const latest = resData.data[0];
-                const navVal = parseFloat(latest.nav);
-                if (!isNaN(navVal) && navVal > 0) {
-                  fund.currentNav = navVal;
-                  fund.navDate = latest.date || new Date().toISOString().split('T')[0];
-                  if (resData.meta && resData.meta.scheme_name) {
-                    fund.name = resData.meta.scheme_name;
-                  }
-                  mfSuccessCount++;
-                }
+            const result = await fetchMutualFundLive(queryCode);
+            if (result && result.nav > 0) {
+              fund.currentNav = result.nav;
+              fund.navDate = result.date;
+              if (result.name && (!fund.name || fund.name === queryCode)) {
+                fund.name = result.name;
               }
+              mfSuccessCount++;
             }
           } catch (err) {
-            console.warn(`Could not sync MF ${fund.schemeCode}:`, err);
+            console.warn(`Could not sync MF ${queryCode}:`, err);
           }
         }
       }
@@ -2219,7 +2213,7 @@
           <div>
             <div class="flex items-center justify-between mb-1">
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">AMFI Scheme Code</label>
-              <span class="text-[10px] text-slate-400">e.g. 122639 (PPFAS), 118834 (Mirae)</span>
+              <span class="text-[10px] text-slate-400">AMFI Code (e.g. 122639) or Google Ticker (MUTF_IN:...)</span>
             </div>
             <div class="flex gap-2">
               <input id="field-mf-schemecode" type="text" placeholder="122639" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
@@ -2253,30 +2247,32 @@
           lookupBtn.addEventListener('click', async () => {
             const code = document.getElementById('field-mf-schemecode').value.trim();
             if (!code) {
-              showToast('Please enter an AMFI Scheme Code (e.g., 122639)', 'error');
+              showToast('Please enter an AMFI Scheme Code (e.g., 122639) or Google Ticker', 'error');
               return;
             }
             lookupBtn.textContent = 'Fetching...';
+            lookupBtn.disabled = true;
+
             try {
-              const resp = await fetch(`https://api.mfapi.in/mf/${code}`);
-              if (resp.ok) {
-                const data = await resp.json();
-                if (data && data.meta) {
-                  document.getElementById('field-mf-name').value = data.meta.scheme_name || '';
-                  if (data.data && data.data.length > 0) {
-                    document.getElementById('field-mf-currentnav').value = parseFloat(data.data[0].nav) || '';
-                  }
-                  showToast('Found scheme info from AMFI!');
-                } else {
-                  showToast('Scheme not found on AMFI', 'error');
+              const result = await fetchMutualFundLive(code);
+              if (result && result.nav > 0) {
+                if (result.name) {
+                  document.getElementById('field-mf-name').value = result.name;
                 }
+                document.getElementById('field-mf-currentnav').value = result.nav;
+                const buyNavInput = document.getElementById('field-mf-buynav');
+                if (buyNavInput && (!buyNavInput.value || parseFloat(buyNavInput.value) <= 0)) {
+                  buyNavInput.value = result.nav;
+                }
+                showToast(`NAV: ₹${result.nav} [${result.source}]`);
               } else {
-                showToast('Could not reach AMFI API', 'error');
+                showToast('Could not fetch NAV. You can enter NAV manually.', 'error');
               }
             } catch (err) {
-              showToast('Network error querying AMFI API', 'error');
+              showToast('Error querying Mutual Fund live feed', 'error');
             } finally {
               lookupBtn.textContent = 'Lookup NAV';
+              lookupBtn.disabled = false;
             }
           });
         }

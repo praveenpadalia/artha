@@ -342,49 +342,88 @@
     }
 
     // Unified Live Stock Quote Fetcher (Zero Direct CORS Blocks)
-    async function fetchStockLiveQuote(symbolsQuery) {
-      const q = (symbolsQuery || '').trim().toUpperCase().replace(/\.(NS|BO)$/, '');
-      if (!q) return null;
+    async function fetchStockLiveQuote(symbolsQuery, preferredExchange = 'NSE') {
+      const rawQ = (symbolsQuery || '').trim().toUpperCase();
+      if (!rawQ) return null;
 
-      // 1. Query Your Personal Google Finance Webhook (Zero CORS, 100% Official Google Data)
+      const isExplicitBse = rawQ.endsWith('.BO') || preferredExchange === 'BSE';
+      const cleanSym = rawQ.replace(/\.(NS|BO)$/, '');
+      const exchange = isExplicitBse ? 'BSE' : ((INDIAN_STOCK_DIRECTORY[cleanSym] && INDIAN_STOCK_DIRECTORY[cleanSym].exchange) || preferredExchange || 'NSE');
+
+      // 1. Query Personal Google Finance Webhook
       const customBridge = localStorage.getItem('artha_google_bridge') || 'https://script.google.com/macros/s/AKfycbxjbwxkEBgoi2c2TU1IdbkUoWnQIo4JzEwtbj-VxJrsmm-MNMMWvm3i99i66LWCyDsJ/exec';
       if (customBridge) {
+        // Build tickers to test in priority order based on exchange
+        const tickersToTest = exchange === 'BSE' 
+          ? [`BOM:${cleanSym}`, `BSE:${cleanSym}`, cleanSym, `NSE:${cleanSym}`]
+          : [cleanSym, `NSE:${cleanSym}`, `BOM:${cleanSym}`, `BSE:${cleanSym}`];
+
+        for (const t of tickersToTest) {
+          try {
+            const bridgeUrl = `${customBridge}?ticker=${encodeURIComponent(t)}`;
+            const ctrl = new AbortController();
+            const tid = setTimeout(() => ctrl.abort(), 4500);
+            const res = await fetch(bridgeUrl, { 
+              method: 'GET',
+              mode: 'cors',
+              redirect: 'follow',
+              signal: ctrl.signal 
+            });
+            clearTimeout(tid);
+
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.price && Number(data.price) > 0) {
+                const cleanP = Math.round(Number(data.price) * 100) / 100;
+                const resObj = {};
+                const detectedEx = t.startsWith('BOM') || t.startsWith('BSE') ? 'BSE' : 'NSE';
+                resObj[cleanSym] = { 
+                  price: cleanP, 
+                  name: (data.name && data.name !== '#N/A') ? data.name : (INDIAN_STOCK_DIRECTORY[cleanSym] ? INDIAN_STOCK_DIRECTORY[cleanSym].name : `${cleanSym} Ltd.`), 
+                  exchange: detectedEx,
+                  source: `Google Finance (${detectedEx})` 
+                };
+                return resObj;
+              }
+            }
+          } catch (e) {}
+        }
+      }
+
+      // 2. Query Yahoo Finance via CORS Proxy (Supports both .NS and .BO with cross-exchange fallback)
+      const yahooSuffixes = exchange === 'BSE' ? ['.BO', '.NS'] : ['.NS', '.BO'];
+      for (const suffix of yahooSuffixes) {
         try {
-          const bridgeUrl = `${customBridge}?ticker=${encodeURIComponent(q)}`;
+          const yfTicker = `${cleanSym}${suffix}`;
+          const yfTarget = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yfTicker)}?interval=1d`;
+          const yfUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yfTarget)}`;
           const ctrl = new AbortController();
-          // Allow 8.5 seconds for Google Cloud Apps Script cold start on first request
-          const tid = setTimeout(() => ctrl.abort(), 8500);
-          const res = await fetch(bridgeUrl, { 
-            method: 'GET',
-            mode: 'cors',
-            redirect: 'follow',
-            signal: ctrl.signal 
-          });
+          const tid = setTimeout(() => ctrl.abort(), 3500);
+          const resp = await fetch(yfUrl, { signal: ctrl.signal });
           clearTimeout(tid);
 
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.price && Number(data.price) > 0) {
-              const cleanP = Math.round(Number(data.price) * 100) / 100;
+          if (resp.ok) {
+            const json = await resp.json();
+            const meta = json && json.chart && json.chart.result && json.chart.result[0] && json.chart.result[0].meta;
+            if (meta && (meta.regularMarketPrice || meta.chartPreviousClose)) {
+              const price = meta.regularMarketPrice || meta.chartPreviousClose;
+              const detectedExch = suffix === '.BO' ? 'BSE' : 'NSE';
               const resObj = {};
-              resObj[q] = { 
-                price: cleanP, 
-                name: (data.name && data.name !== '#N/A') ? data.name : (INDIAN_STOCK_DIRECTORY[q] ? INDIAN_STOCK_DIRECTORY[q].name : `${q} Ltd.`), 
-                source: 'Google Finance' 
+              resObj[cleanSym] = { 
+                price: Math.round(price * 100) / 100, 
+                name: meta.shortName || meta.longName || (INDIAN_STOCK_DIRECTORY[cleanSym] ? INDIAN_STOCK_DIRECTORY[cleanSym].name : `${cleanSym} Ltd.`), 
+                exchange: detectedExch,
+                source: `Live Feed (${detectedExch})` 
               };
               return resObj;
             }
           }
-        } catch (e) {
-          console.warn('Google Finance Bridge request attempt error:', e);
-        }
+        } catch (e) {}
       }
 
-      // 2. Query Rediff via reliable CORS proxy (NEVER direct browser call)
-      const rediffTarget = `https://money.rediff.com/money1/current_status_new.php?companylist=${encodeURIComponent(q)}`;
-
-      // Try AllOrigins /raw
+      // 3. Query Rediff via reliable CORS proxy
       try {
+        const rediffTarget = `https://money.rediff.com/money1/current_status_new.php?companylist=${encodeURIComponent(cleanSym)}`;
         const rawUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rediffTarget)}`;
         const ctrl = new AbortController();
         const tid = setTimeout(() => ctrl.abort(), 3500);
@@ -392,44 +431,8 @@
         clearTimeout(tid);
         if (resp.ok) {
           const text = await resp.text();
-          const parsed = parseRediffResponse(text, q);
+          const parsed = parseRediffResponse(text, cleanSym);
           if (parsed && Object.keys(parsed).length > 0) return parsed;
-        }
-      } catch (e) {}
-
-      // Try AllOrigins /get (unpacks .contents)
-      try {
-        const getUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rediffTarget)}`;
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 3500);
-        const resp = await fetch(getUrl, { signal: ctrl.signal });
-        clearTimeout(tid);
-        if (resp.ok) {
-          const json = await resp.json();
-          if (json && json.contents) {
-            const parsed = parseRediffResponse(json.contents, q);
-            if (parsed && Object.keys(parsed).length > 0) return parsed;
-          }
-        }
-      } catch (e) {}
-
-      // 3. Fallback: Query Yahoo Chart via AllOrigins
-      try {
-        const yfTarget = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(q)}.NS?interval=1d`;
-        const yfUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yfTarget)}`;
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 3500);
-        const resp = await fetch(yfUrl, { signal: ctrl.signal });
-        clearTimeout(tid);
-        if (resp.ok) {
-          const json = await resp.json();
-          const meta = json && json.chart && json.chart.result && json.chart.result[0] && json.chart.result[0].meta;
-          if (meta && (meta.regularMarketPrice || meta.chartPreviousClose)) {
-            const price = meta.regularMarketPrice || meta.chartPreviousClose;
-            const resObj = {};
-            resObj[q] = { price, name: meta.shortName || meta.longName || q, source: 'Yahoo Feed' };
-            return resObj;
-          }
         }
       } catch (e) {}
 
@@ -571,25 +574,27 @@
       }
 
       try {
-        const quotes = await fetchStockLiveQuote(symbol);
+        const chosenEx = (exchangeSelect && exchangeSelect.value) || (INDIAN_STOCK_DIRECTORY[symbol] && INDIAN_STOCK_DIRECTORY[symbol].exchange) || 'NSE';
+        const quotes = await fetchStockLiveQuote(symbol, chosenEx);
 
         if (quotes && quotes[symbol] && quotes[symbol].price > 0) {
           const item = quotes[symbol];
           const livePrice = item.price;
           const compTitle = (INDIAN_STOCK_DIRECTORY[symbol] && INDIAN_STOCK_DIRECTORY[symbol].name) || item.name || `${symbol} Ltd.`;
+          const activeEx = item.exchange || chosenEx;
 
           if (nameInput) nameInput.value = compTitle;
           if (currentInput) currentInput.value = livePrice;
           if (buyInput && (!buyInput.value || parseFloat(buyInput.value) <= 0)) {
             buyInput.value = livePrice;
           }
-          if (exchangeSelect && !exchangeSelect.value) exchangeSelect.value = 'NSE';
+          if (exchangeSelect) exchangeSelect.value = activeEx;
 
           if (autoStatus) {
-            autoStatus.textContent = `✓ Live Price: ${symbol} (${compTitle}) • Price: ${formatINR(livePrice)} [${item.source || 'Live'}]`;
+            autoStatus.textContent = `✓ Live Price: ${symbol} (${compTitle}) • Price: ${formatINR(livePrice)} [${item.source || activeEx}]`;
             autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
           }
-          showToast(`Live price fetched for ${symbol}: ${formatINR(livePrice)}`);
+          showToast(`Live price fetched for ${symbol}: ${formatINR(livePrice)} [${activeEx}]`);
           return;
         }
 

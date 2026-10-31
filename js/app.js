@@ -243,7 +243,48 @@
       showToast('✓ Refreshed market feeds from Indian exchanges!');
     });
 
-    // Initial Launch
+    // Automatic External Catalog Loaders (Loads from GitHub data/stocks.json & data/amfi_schemes.json)
+    async function loadExternalCatalogs() {
+      // 1. Load data/stocks.json
+      try {
+        const resp = await fetch(window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + 'data/stocks.json');
+        if (resp.ok) {
+          const list = await resp.json();
+          if (Array.isArray(list)) {
+            list.forEach(item => {
+              const sym = (item.s || item.symbol || '').toUpperCase();
+              const name = item.n || item.name;
+              const ex = item.ex || item.exchange || 'NSE';
+              const div = item.div !== undefined ? item.div : 1.2;
+              if (sym && name && !INDIAN_STOCK_DIRECTORY[sym]) {
+                INDIAN_STOCK_DIRECTORY[sym] = { name, divYield: div, exchange: ex };
+              }
+            });
+          }
+        }
+      } catch (e) {}
+
+      // 2. Load data/amfi_schemes.json
+      try {
+        const resp = await fetch(window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + 'data/amfi_schemes.json');
+        if (resp.ok) {
+          const list = await resp.json();
+          if (Array.isArray(list)) {
+            list.forEach(item => {
+              const code = String(item.schemeCode || item.c || item.code);
+              const name = item.schemeName || item.n || item.name;
+              const nav = parseFloat(item.nav) || null;
+              if (code && name && !POPULAR_MF_DIRECTORY[code]) {
+                POPULAR_MF_DIRECTORY[code] = { name, nav };
+              }
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
+        // Initial Launch
+    loadExternalCatalogs();
     initTheme();
     renderAll();
     applyLayoutMode();

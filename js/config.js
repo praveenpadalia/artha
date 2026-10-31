@@ -1,5 +1,9 @@
     // Comprehensive Indian Stock Master Directory for Instant Auto-Lookup (500+ Top Listed Equities)
     const INDIAN_STOCK_DIRECTORY = {
+  // Exchange & Platform Stocks (NSE is listed on BSE under 544937)
+  '544937': { name: 'National Stock Exchange of India Ltd. (NSE)', divYield: 0.0, exchange: 'BSE' },
+  'NSE': { name: 'National Stock Exchange of India Ltd.', divYield: 0.0, exchange: 'BSE' },
+  'BSE': { name: 'BSE Limited', divYield: 0.4, exchange: 'NSE' },
       // 1. POWER, ENERGY & UTILITIES
       'POWERGRID': { name: 'Power Grid Corporation of India Ltd.', divYield: 3.4, exchange: 'NSE' },
       'PFC': { name: 'Power Finance Corporation Ltd.', divYield: 2.8, exchange: 'NSE' },

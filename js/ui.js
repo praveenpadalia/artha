@@ -864,7 +864,7 @@
 
           const matches = searchIndianStocks(q);
 
-          // Direct Ticker Fallback Row (shown only at the bottom or if no match)
+          // Direct Ticker Fallback Row (shown only at bottom or if no match)
           const liveLookupPrompt = `
             <div class="stock-item-rediff px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 cursor-pointer flex items-center justify-between text-xs transition-colors border-t border-slate-100 dark:border-slate-700/60" data-rediff-sym="${escapeHtml(q.toUpperCase())}">
               <div class="flex items-center gap-2">
@@ -895,20 +895,36 @@
             return;
           }
 
-          const catalogList = matches.map(([sym, data]) => `
-            <div class="stock-item-option px-3.5 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer flex items-center justify-between text-xs transition-colors" data-sym="${sym}">
-              <div class="pr-2 min-w-0">
-                <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <span>${sym}</span>
-                  <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${data.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${data.exchange}</span>
+          const catalogList = matches.map(([sym, data]) => {
+            const isBse = data.exchange === 'BSE';
+            const displaySym = isBse && data.altSymbol ? data.altSymbol : sym;
+            const codeNote = isBse && data.bseCode ? `(${data.bseCode})` : (data.bseCode ? `• BSE: ${data.bseCode}` : '');
+            const targetSym = isBse ? (data.bseCode || sym) : sym;
+
+            return `
+              <div class="stock-item-option px-3.5 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer flex items-center justify-between text-xs transition-colors"
+                   data-sym="${escapeHtml(targetSym)}"
+                   data-alt="${escapeHtml(data.altSymbol || '')}"
+                   data-exchange="${escapeHtml(data.exchange)}"
+                   data-name="${escapeHtml(data.name)}"
+                   data-div="${escapeHtml(String(data.divYield || '1.2'))}">
+                <div class="pr-2 min-w-0">
+                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span>${escapeHtml(displaySym)}</span>
+                    ${isBse ? `<span class="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-normal">${escapeHtml(codeNote)}</span>` : ''}
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${data.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${data.exchange}</span>
+                    ${data.group ? `<span class="text-[9px] px-1 py-0.2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded">Grp ${escapeHtml(data.group)}</span>` : ''}
+                  </div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                    ${escapeHtml(data.name)} ${!isBse && codeNote ? codeNote : ''}
+                  </div>
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${escapeHtml(data.name)}</div>
+                <div class="text-right shrink-0">
+                  <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">Select &amp; Fetch →</span>
+                </div>
               </div>
-              <div class="text-right shrink-0">
-                <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">Select &amp; Fetch →</span>
-              </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
 
           autoList.innerHTML = `${catalogList}${liveLookupPrompt}`;
           autoList.classList.remove('hidden');
@@ -925,10 +941,32 @@
           autoList.querySelectorAll('.stock-item-option').forEach(item => {
             item.addEventListener('click', () => {
               const chosen = item.getAttribute('data-sym');
+              const chosenEx = item.getAttribute('data-exchange') || 'NSE';
+              const chosenName = item.getAttribute('data-name') || '';
+              const chosenDiv = item.getAttribute('data-div') || '';
+
               stockSymbolInput.value = chosen;
+              const exchField = document.getElementById('field-stock-exchange');
+              const nameField = document.getElementById('field-stock-name');
+              const divField = document.getElementById('field-stock-divyield');
+
+              if (exchField) exchField.value = chosenEx;
+              if (nameField) nameField.value = chosenName;
+              if (divField && chosenDiv) divField.value = chosenDiv;
+
               autoList.classList.add('hidden');
-              lookupAndFillStockInfo(chosen);
+              lookupAndFillStockInfo(chosen, chosenEx);
             });
+          });
+        }
+
+        const exchField = document.getElementById('field-stock-exchange');
+        if (exchField) {
+          exchField.addEventListener('change', () => {
+            const currentSym = (stockSymbolInput?.value || '').trim();
+            if (currentSym) {
+              lookupAndFillStockInfo(currentSym, exchField.value);
+            }
           });
         }
 

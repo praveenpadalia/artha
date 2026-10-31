@@ -350,17 +350,37 @@
       const cleanSym = rawQ.replace(/\.(NS|BO)$/, '');
       const exchange = isExplicitBse ? 'BSE' : ((INDIAN_STOCK_DIRECTORY[cleanSym] && INDIAN_STOCK_DIRECTORY[cleanSym].exchange) || preferredExchange || 'NSE');
 
+      // Companion ticker resolution (e.g. TCS -> 532540, 532540 -> TCS)
+      const companionCode = (INDIAN_STOCK_DIRECTORY[cleanSym] && (INDIAN_STOCK_DIRECTORY[cleanSym].bseCode || INDIAN_STOCK_DIRECTORY[cleanSym].altSymbol)) || null;
+
       // 1. Query Personal Google Finance Webhook
       const customBridge = localStorage.getItem('artha_google_bridge') || 'https://script.google.com/macros/s/AKfycbxjbwxkEBgoi2c2TU1IdbkUoWnQIo4JzEwtbj-VxJrsmm-MNMMWvm3i99i66LWCyDsJ/exec';
       if (customBridge) {
-        // Build tickers to test in priority order based on exchange
-        const tickersToTest = exchange === 'BSE' 
-          ? [`BOM:${cleanSym}`, `BSE:${cleanSym}`, cleanSym, `NSE:${cleanSym}`]
-          : [cleanSym, `NSE:${cleanSym}`, `BOM:${cleanSym}`, `BSE:${cleanSym}`];
+        let tickersToTest = [];
+        if (exchange === 'BSE') {
+          tickersToTest = [
+            companionCode && /^\d+$/.test(companionCode) ? ('BOM:' + companionCode) : null,
+            'BOM:' + cleanSym,
+            companionCode ? ('BOM:' + companionCode) : null,
+            'BSE:' + cleanSym,
+            companionCode ? ('BSE:' + companionCode) : null,
+            cleanSym,
+            companionCode,
+            'NSE:' + cleanSym
+          ].filter(Boolean);
+        } else {
+          tickersToTest = [
+            cleanSym,
+            'NSE:' + cleanSym,
+            'BOM:' + cleanSym,
+            companionCode ? ('BOM:' + companionCode) : null,
+            'BSE:' + cleanSym
+          ].filter(Boolean);
+        }
 
         for (const t of tickersToTest) {
           try {
-            const bridgeUrl = `${customBridge}?ticker=${encodeURIComponent(t)}`;
+            const bridgeUrl = customBridge + '?ticker=' + encodeURIComponent(t);
             const ctrl = new AbortController();
             const tid = setTimeout(() => ctrl.abort(), 4500);
             const res = await fetch(bridgeUrl, { 
@@ -379,9 +399,9 @@
                 const detectedEx = t.startsWith('BOM') || t.startsWith('BSE') ? 'BSE' : 'NSE';
                 resObj[cleanSym] = { 
                   price: cleanP, 
-                  name: (data.name && data.name !== '#N/A') ? data.name : (INDIAN_STOCK_DIRECTORY[cleanSym] ? INDIAN_STOCK_DIRECTORY[cleanSym].name : `${cleanSym} Ltd.`), 
+                  name: (data.name && data.name !== '#N/A') ? data.name : (INDIAN_STOCK_DIRECTORY[cleanSym] ? INDIAN_STOCK_DIRECTORY[cleanSym].name : (cleanSym + ' Ltd.')), 
                   exchange: detectedEx,
-                  source: `Google Finance (${detectedEx})` 
+                  source: 'Google Finance (' + detectedEx + ')' 
                 };
                 return resObj;
               }
@@ -391,12 +411,26 @@
       }
 
       // 2. Query Yahoo Finance via CORS Proxy (Supports both .NS and .BO with cross-exchange fallback)
-      const yahooSuffixes = exchange === 'BSE' ? ['.BO', '.NS'] : ['.NS', '.BO'];
-      for (const suffix of yahooSuffixes) {
+      let yahooSuffixes = [];
+      if (exchange === 'BSE') {
+        yahooSuffixes = [
+          companionCode && /^\d+$/.test(companionCode) ? (companionCode + '.BO') : null,
+          cleanSym + '.BO',
+          companionCode ? (companionCode + '.BO') : null,
+          cleanSym + '.NS'
+        ].filter(Boolean);
+      } else {
+        yahooSuffixes = [
+          cleanSym + '.NS',
+          cleanSym + '.BO',
+          companionCode ? (companionCode + '.BO') : null
+        ].filter(Boolean);
+      }
+
+      for (const yfTicker of yahooSuffixes) {
         try {
-          const yfTicker = `${cleanSym}${suffix}`;
-          const yfTarget = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yfTicker)}?interval=1d`;
-          const yfUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(yfTarget)}`;
+          const yfTarget = 'https://query1.finance.yahoo.com/v8/finance/chart/' + encodeURIComponent(yfTicker) + '?interval=1d';
+          const yfUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(yfTarget);
           const ctrl = new AbortController();
           const tid = setTimeout(() => ctrl.abort(), 3500);
           const resp = await fetch(yfUrl, { signal: ctrl.signal });
@@ -407,13 +441,13 @@
             const meta = json && json.chart && json.chart.result && json.chart.result[0] && json.chart.result[0].meta;
             if (meta && (meta.regularMarketPrice || meta.chartPreviousClose)) {
               const price = meta.regularMarketPrice || meta.chartPreviousClose;
-              const detectedExch = suffix === '.BO' ? 'BSE' : 'NSE';
+              const detectedExch = yfTicker.endsWith('.BO') ? 'BSE' : 'NSE';
               const resObj = {};
               resObj[cleanSym] = { 
                 price: Math.round(price * 100) / 100, 
-                name: meta.shortName || meta.longName || (INDIAN_STOCK_DIRECTORY[cleanSym] ? INDIAN_STOCK_DIRECTORY[cleanSym].name : `${cleanSym} Ltd.`), 
+                name: meta.shortName || meta.longName || (INDIAN_STOCK_DIRECTORY[cleanSym] ? INDIAN_STOCK_DIRECTORY[cleanSym].name : (cleanSym + ' Ltd.')), 
                 exchange: detectedExch,
-                source: `Live Feed (${detectedExch})` 
+                source: 'Yahoo Finance (' + detectedExch + ')' 
               };
               return resObj;
             }
@@ -421,18 +455,30 @@
         } catch (e) {}
       }
 
-      // 3. Query Rediff via reliable CORS proxy
+      // 3. Rediff Money Fallback Proxy
       try {
-        const rediffTarget = `https://money.rediff.com/money1/current_status_new.php?companylist=${encodeURIComponent(cleanSym)}`;
-        const rawUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rediffTarget)}`;
+        const rediffUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://money.rediff.com/companies/' + cleanSym);
         const ctrl = new AbortController();
         const tid = setTimeout(() => ctrl.abort(), 3500);
-        const resp = await fetch(rawUrl, { signal: ctrl.signal });
+        const resp = await fetch(rediffUrl, { signal: ctrl.signal });
         clearTimeout(tid);
+
         if (resp.ok) {
-          const text = await resp.text();
-          const parsed = parseRediffResponse(text, cleanSym);
-          if (parsed && Object.keys(parsed).length > 0) return parsed;
+          const html = await resp.text();
+          const matchPrice = html.match(/id=['"]ltpid['"][^>]*>([0-9,.]+)</i) || html.match(/class=['"][^'"]*currentvalue[^'"]*['"][^>]*>([0-9,.]+)</i);
+          if (matchPrice && matchPrice[1]) {
+            const price = parseFloat(matchPrice[1].replace(/,/g, ''));
+            if (!isNaN(price) && price > 0) {
+              const resObj = {};
+              resObj[cleanSym] = { 
+                price: Math.round(price * 100) / 100, 
+                name: (INDIAN_STOCK_DIRECTORY[cleanSym] ? INDIAN_STOCK_DIRECTORY[cleanSym].name : (cleanSym + ' Ltd.')), 
+                exchange: exchange,
+                source: 'Rediff (' + exchange + ')' 
+              };
+              return resObj;
+            }
+          }
         }
       } catch (e) {}
 
@@ -517,7 +563,7 @@
     }
 
     // Automatic Stock Info Lookup Function (Supports Symbol, Company Name & Partial Keywords)
-    async function lookupAndFillStockInfo(symbolRaw) {
+    async function lookupAndFillStockInfo(symbolRaw, forcedExchange = null) {
       const rawTerm = (symbolRaw || '').trim();
       if (!rawTerm) return;
 
@@ -532,25 +578,31 @@
       const autoList = document.getElementById('stock-autocomplete-list');
 
       let symbol = rawTerm.toUpperCase().replace(/\.(NS|BO)$/, '');
+      const chosenEx = forcedExchange || (exchangeSelect && exchangeSelect.value) || 'NSE';
+      if (exchangeSelect && forcedExchange) {
+        exchangeSelect.value = forcedExchange;
+      }
 
       // Smart Resolution: If term is not a direct ticker symbol, search the directory
-      if (!INDIAN_STOCK_DIRECTORY[symbol]) {
+      const directoryEntry = INDIAN_STOCK_DIRECTORY[symbol] || INDIAN_STOCK_DIRECTORY[symbol + '_' + chosenEx];
+      if (!directoryEntry) {
         const candidates = searchIndianStocks(rawTerm);
         if (candidates.length === 1) {
-          // Exactly 1 clear match: auto-select it!
           symbol = candidates[0][0];
           if (stockSymbolInput) stockSymbolInput.value = symbol;
+          if (exchangeSelect && candidates[0][1].exchange) {
+            exchangeSelect.value = candidates[0][1].exchange;
+          }
         } else if (candidates.length > 1) {
-          // Multiple candidate stocks found (e.g. for "POWER" -> POWERGRID, PFC, TATAPOWER)
           if (typeof renderAutocomplete === 'function') {
             renderAutocomplete(rawTerm);
           }
           if (autoStatus) {
             autoStatus.classList.remove('hidden');
             autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
-            autoStatus.textContent = `Found ${candidates.length} stocks matching "${rawTerm}". Select your company from the dropdown below:`;
+            autoStatus.textContent = 'Found ' + candidates.length + ' stocks matching "' + rawTerm + '". Select from dropdown:';
           }
-          showToast(`Found ${candidates.length} stocks matching "${rawTerm}". Please select from dropdown.`);
+          showToast('Found ' + candidates.length + ' stocks matching "' + rawTerm + '". Please select from dropdown.');
           return;
         }
       }
@@ -563,55 +615,55 @@
       }
       if (autoStatus) {
         autoStatus.classList.remove('hidden');
-        autoStatus.textContent = `Fetching live price for ${symbol}...`;
+        autoStatus.textContent = 'Fetching live quote for ' + symbol + ' (' + chosenEx + ')...';
         autoStatus.className = 'text-[11px] text-blue-600 dark:text-blue-400 font-medium';
       }
 
-      if (INDIAN_STOCK_DIRECTORY[symbol] && nameInput) {
-        nameInput.value = INDIAN_STOCK_DIRECTORY[symbol].name;
-        if (exchangeSelect) exchangeSelect.value = INDIAN_STOCK_DIRECTORY[symbol].exchange || 'NSE';
-        if (divInput && !divInput.value) divInput.value = INDIAN_STOCK_DIRECTORY[symbol].divYield || '1.2';
+      const activeDirEntry = INDIAN_STOCK_DIRECTORY[symbol + '_' + chosenEx] || INDIAN_STOCK_DIRECTORY[symbol];
+      if (activeDirEntry && nameInput) {
+        nameInput.value = activeDirEntry.name;
+        if (exchangeSelect) exchangeSelect.value = forcedExchange || activeDirEntry.exchange || chosenEx;
+        if (divInput && !divInput.value) divInput.value = activeDirEntry.divYield || '1.2';
       }
 
       try {
-        const chosenEx = (exchangeSelect && exchangeSelect.value) || (INDIAN_STOCK_DIRECTORY[symbol] && INDIAN_STOCK_DIRECTORY[symbol].exchange) || 'NSE';
-        const quotes = await fetchStockLiveQuote(symbol, chosenEx);
+        const activeEx = (exchangeSelect && exchangeSelect.value) || chosenEx;
+        const quotes = await fetchStockLiveQuote(symbol, activeEx);
 
         if (quotes && quotes[symbol] && quotes[symbol].price > 0) {
           const item = quotes[symbol];
           const livePrice = item.price;
-          const compTitle = (INDIAN_STOCK_DIRECTORY[symbol] && INDIAN_STOCK_DIRECTORY[symbol].name) || item.name || `${symbol} Ltd.`;
-          const activeEx = item.exchange || chosenEx;
+          const compTitle = (activeDirEntry && activeDirEntry.name) || item.name || (symbol + ' Ltd.');
+          const detectedEx = item.exchange || activeEx;
 
           if (nameInput) nameInput.value = compTitle;
           if (currentInput) currentInput.value = livePrice;
           if (buyInput && (!buyInput.value || parseFloat(buyInput.value) <= 0)) {
             buyInput.value = livePrice;
           }
-          if (exchangeSelect) exchangeSelect.value = activeEx;
+          if (exchangeSelect) exchangeSelect.value = detectedEx;
 
           if (autoStatus) {
-            autoStatus.textContent = `✓ Live Price: ${symbol} (${compTitle}) • Price: ${formatINR(livePrice)} [${item.source || activeEx}]`;
+            autoStatus.textContent = '✓ Live Price: ' + symbol + ' (' + compTitle + ') • ' + formatINR(livePrice) + ' [' + (item.source || detectedEx) + ']';
             autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
           }
-          showToast(`Live price fetched for ${symbol}: ${formatINR(livePrice)} [${activeEx}]`);
+          showToast('Live price fetched for ' + symbol + ': ' + formatINR(livePrice) + ' [' + detectedEx + ']');
           return;
         }
 
-        // If no price found from API
+        // Offline / Fallback
         if (autoStatus) {
-          autoStatus.textContent = `Could not auto-fetch quote for "${symbol}". Please enter current price manually.`;
-          autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400';
+          autoStatus.textContent = 'Offline fallback: Enter buy price and quantity to save ' + symbol + ' (' + activeEx + ').';
+          autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400 font-medium';
         }
-        if (nameInput && !nameInput.value) nameInput.value = `${symbol} Ltd.`;
-        showToast(`Please enter current price manually for ${symbol}`, 'error');
+        if (currentInput && (!currentInput.value || parseFloat(currentInput.value) <= 0)) {
+          currentInput.value = (activeDirEntry && activeDirEntry.lastPrice) ? activeDirEntry.lastPrice : '';
+        }
       } catch (err) {
-        console.error('Lookup error:', err);
         if (autoStatus) {
-          autoStatus.textContent = `Could not reach live API for "${symbol}". Please enter price manually.`;
-          autoStatus.className = 'text-[11px] text-amber-600 dark:text-amber-400';
+          autoStatus.textContent = 'Notice: Could not reach live API for "' + symbol + '". You can manually enter current price.';
+          autoStatus.className = 'text-[11px] text-slate-500 font-medium';
         }
-        showToast(`Error querying API for ${symbol}`, 'error');
       } finally {
         if (lookupBtn) {
           lookupBtn.textContent = 'Lookup';

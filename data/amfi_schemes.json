@@ -1,0 +1,637 @@
+[
+  {
+    "schemeCode": "145552",
+    "schemeName": "Motilal Oswal Midcap Fund - Direct Plan - Growth",
+    "nav": 98.4
+  },
+  {
+    "schemeCode": "145551",
+    "schemeName": "Motilal Oswal Midcap Fund - Regular Plan - Growth",
+    "nav": 88.2
+  },
+  {
+    "schemeCode": "147743",
+    "schemeName": "Motilal Oswal Large and Midcap Fund - Direct Plan - Growth",
+    "nav": 42.0
+  },
+  {
+    "schemeCode": "145556",
+    "schemeName": "Motilal Oswal Nasdaq 100 FOF - Direct Plan - Growth",
+    "nav": 38.0
+  },
+  {
+    "schemeCode": "145554",
+    "schemeName": "Motilal Oswal Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 54.2
+  },
+  {
+    "schemeCode": "147683",
+    "schemeName": "Motilal Oswal Nifty Midcap 150 Index Fund - Direct Plan - Growth",
+    "nav": 36.8
+  },
+  {
+    "schemeCode": "147685",
+    "schemeName": "Motilal Oswal Nifty Smallcap 250 Index Fund - Direct Plan - Growth",
+    "nav": 34.5
+  },
+  {
+    "schemeCode": "147687",
+    "schemeName": "Motilal Oswal Nifty 500 Index Fund - Direct Plan - Growth",
+    "nav": 28.4
+  },
+  {
+    "schemeCode": "147689",
+    "schemeName": "Motilal Oswal S&P 500 Index Fund - Direct Plan - Growth",
+    "nav": 22.6
+  },
+  {
+    "schemeCode": "150123",
+    "schemeName": "Motilal Oswal Small Cap Fund - Direct Plan - Growth",
+    "nav": 18.2
+  },
+  {
+    "schemeCode": "145558",
+    "schemeName": "Motilal Oswal ELSS Tax Saver Fund - Direct Plan - Growth",
+    "nav": 44.5
+  },
+  {
+    "schemeCode": "145560",
+    "schemeName": "Motilal Oswal Focused Fund - Direct Plan - Growth",
+    "nav": 48.1
+  },
+  {
+    "schemeCode": "122639",
+    "schemeName": "Parag Parikh Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 78.85
+  },
+  {
+    "schemeCode": "122640",
+    "schemeName": "Parag Parikh Flexi Cap Fund - Regular Plan - Growth",
+    "nav": 72.3
+  },
+  {
+    "schemeCode": "147285",
+    "schemeName": "Parag Parikh Tax Saver Fund - Direct Plan - Growth",
+    "nav": 32.4
+  },
+  {
+    "schemeCode": "148768",
+    "schemeName": "Parag Parikh Conservative Hybrid Fund - Direct Plan - Growth",
+    "nav": 15.2
+  },
+  {
+    "schemeCode": "145110",
+    "schemeName": "Parag Parikh Liquid Fund - Direct Plan - Growth",
+    "nav": 1320.0
+  },
+  {
+    "schemeCode": "151890",
+    "schemeName": "Parag Parikh Dynamic Asset Allocation Fund - Direct Plan - Growth",
+    "nav": 12.4
+  },
+  {
+    "schemeCode": "125497",
+    "schemeName": "Nippon India Small Cap Fund - Direct Growth",
+    "nav": 148.9
+  },
+  {
+    "schemeCode": "120739",
+    "schemeName": "Nippon India Growth Fund (Midcap) - Direct Plan - Growth",
+    "nav": 3850.0
+  },
+  {
+    "schemeCode": "120722",
+    "schemeName": "Nippon India Multi Cap Fund - Direct Plan - Growth",
+    "nav": 285.0
+  },
+  {
+    "schemeCode": "120720",
+    "schemeName": "Nippon India Large Cap Fund - Direct Plan - Growth",
+    "nav": 84.5
+  },
+  {
+    "schemeCode": "120712",
+    "schemeName": "Nippon India Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 18.6
+  },
+  {
+    "schemeCode": "120743",
+    "schemeName": "Nippon India Index Fund - Nifty 50 Plan - Direct - Growth",
+    "nav": 42.5
+  },
+  {
+    "schemeCode": "120745",
+    "schemeName": "Nippon India Index Fund - S&P BSE Sensex Plan - Direct - Growth",
+    "nav": 44.8
+  },
+  {
+    "schemeCode": "144426",
+    "schemeName": "Nippon India ETF Nifty BeES",
+    "nav": 268.0
+  },
+  {
+    "schemeCode": "144428",
+    "schemeName": "Nippon India ETF Bank BeES",
+    "nav": 520.0
+  },
+  {
+    "schemeCode": "144430",
+    "schemeName": "Nippon India ETF Gold BeES",
+    "nav": 72.5
+  },
+  {
+    "schemeCode": "144432",
+    "schemeName": "Nippon India ETF Silver BeES",
+    "nav": 98.0
+  },
+  {
+    "schemeCode": "120714",
+    "schemeName": "Nippon India Power & Infra Fund - Direct Plan - Growth",
+    "nav": 320.0
+  },
+  {
+    "schemeCode": "120716",
+    "schemeName": "Nippon India Pharma Fund - Direct Plan - Growth",
+    "nav": 520.0
+  },
+  {
+    "schemeCode": "119598",
+    "schemeName": "SBI Bluechip Fund - Direct Plan - Growth",
+    "nav": 86.4
+  },
+  {
+    "schemeCode": "125494",
+    "schemeName": "SBI Small Cap Fund - Direct Plan - Growth",
+    "nav": 178.0
+  },
+  {
+    "schemeCode": "119597",
+    "schemeName": "SBI Contra Fund - Direct Plan - Growth",
+    "nav": 410.0
+  },
+  {
+    "schemeCode": "119596",
+    "schemeName": "SBI Magnum Midcap Fund - Direct Plan - Growth",
+    "nav": 225.0
+  },
+  {
+    "schemeCode": "119599",
+    "schemeName": "SBI Focused Equity Fund - Direct Plan - Growth",
+    "nav": 320.0
+  },
+  {
+    "schemeCode": "119601",
+    "schemeName": "SBI Flexicap Fund - Direct Plan - Growth",
+    "nav": 110.0
+  },
+  {
+    "schemeCode": "120152",
+    "schemeName": "SBI Nifty Index Fund - Direct Plan - Growth",
+    "nav": 215.0
+  },
+  {
+    "schemeCode": "119603",
+    "schemeName": "SBI Long Term Equity Fund (ELSS) - Direct Plan - Growth",
+    "nav": 420.0
+  },
+  {
+    "schemeCode": "119605",
+    "schemeName": "SBI Healthcare Opportunities Fund - Direct Plan - Growth",
+    "nav": 380.0
+  },
+  {
+    "schemeCode": "119607",
+    "schemeName": "SBI Technology Opportunities Fund - Direct Plan - Growth",
+    "nav": 210.0
+  },
+  {
+    "schemeCode": "119609",
+    "schemeName": "SBI Equity Hybrid Fund - Direct Plan - Growth",
+    "nav": 275.0
+  },
+  {
+    "schemeCode": "120465",
+    "schemeName": "HDFC Top 100 Fund - Direct Plan - Growth",
+    "nav": 1050.0
+  },
+  {
+    "schemeCode": "120505",
+    "schemeName": "HDFC Mid-Cap Opportunities Fund - Direct Plan - Growth",
+    "nav": 185.0
+  },
+  {
+    "schemeCode": "120503",
+    "schemeName": "HDFC Small Cap Fund - Direct Plan - Growth",
+    "nav": 142.0
+  },
+  {
+    "schemeCode": "118955",
+    "schemeName": "HDFC Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 1950.0
+  },
+  {
+    "schemeCode": "118968",
+    "schemeName": "HDFC Balanced Advantage Fund - Direct Plan - Growth",
+    "nav": 520.0
+  },
+  {
+    "schemeCode": "120531",
+    "schemeName": "HDFC Index Fund - S&P BSE SENSEX Plan - Direct - Growth",
+    "nav": 720.0
+  },
+  {
+    "schemeCode": "120533",
+    "schemeName": "HDFC Index Fund - NIFTY 50 Plan - Direct - Growth",
+    "nav": 230.0
+  },
+  {
+    "schemeCode": "120535",
+    "schemeName": "HDFC ELSS Tax saver - Direct Plan - Growth",
+    "nav": 1250.0
+  },
+  {
+    "schemeCode": "120537",
+    "schemeName": "HDFC Large and Mid Cap Fund - Direct Plan - Growth",
+    "nav": 340.0
+  },
+  {
+    "schemeCode": "120539",
+    "schemeName": "HDFC Capital Builder Value Fund - Direct Plan - Growth",
+    "nav": 710.0
+  },
+  {
+    "schemeCode": "120541",
+    "schemeName": "HDFC Infrastructure Fund - Direct Plan - Growth",
+    "nav": 48.0
+  },
+  {
+    "schemeCode": "120543",
+    "schemeName": "HDFC Defence Fund - Direct Plan - Growth",
+    "nav": 22.5
+  },
+  {
+    "schemeCode": "118989",
+    "schemeName": "ICICI Prudential Bluechip Fund - Direct Plan - Growth",
+    "nav": 108.5
+  },
+  {
+    "schemeCode": "120586",
+    "schemeName": "ICICI Prudential Value Discovery Fund - Direct Plan - Growth",
+    "nav": 430.0
+  },
+  {
+    "schemeCode": "120588",
+    "schemeName": "ICICI Prudential Smallcap Fund - Direct Plan - Growth",
+    "nav": 82.0
+  },
+  {
+    "schemeCode": "120743",
+    "schemeName": "ICICI Prudential Nifty 50 Index Fund - Direct Plan - Growth",
+    "nav": 260.0
+  },
+  {
+    "schemeCode": "120594",
+    "schemeName": "ICICI Prudential Technology Fund - Direct Plan - Growth",
+    "nav": 215.0
+  },
+  {
+    "schemeCode": "120596",
+    "schemeName": "ICICI Prudential Equity & Debt Fund - Direct Plan - Growth",
+    "nav": 390.0
+  },
+  {
+    "schemeCode": "120598",
+    "schemeName": "ICICI Prudential Multi-Asset Fund - Direct Plan - Growth",
+    "nav": 710.0
+  },
+  {
+    "schemeCode": "120600",
+    "schemeName": "ICICI Prudential India Opportunities Fund - Direct Plan - Growth",
+    "nav": 34.0
+  },
+  {
+    "schemeCode": "120602",
+    "schemeName": "ICICI Prudential Large & Mid Cap Fund - Direct Plan - Growth",
+    "nav": 840.0
+  },
+  {
+    "schemeCode": "120604",
+    "schemeName": "ICICI Prudential Commodities Fund - Direct Plan - Growth",
+    "nav": 42.0
+  },
+  {
+    "schemeCode": "120606",
+    "schemeName": "ICICI Prudential Bharat 22 FOF - Direct - Growth",
+    "nav": 28.5
+  },
+  {
+    "schemeCode": "118834",
+    "schemeName": "Mirae Asset Large Cap Fund - Direct Plan - Growth",
+    "nav": 114.6
+  },
+  {
+    "schemeCode": "147318",
+    "schemeName": "Mirae Asset Midcap Fund - Direct Plan - Growth",
+    "nav": 38.9
+  },
+  {
+    "schemeCode": "118825",
+    "schemeName": "Mirae Asset Great Consumer Fund - Direct Plan - Growth",
+    "nav": 88.5
+  },
+  {
+    "schemeCode": "147320",
+    "schemeName": "Mirae Asset ELSS Tax Saver Fund - Direct Plan - Growth",
+    "nav": 48.2
+  },
+  {
+    "schemeCode": "147322",
+    "schemeName": "Mirae Asset Focused Fund - Direct Plan - Growth",
+    "nav": 31.0
+  },
+  {
+    "schemeCode": "147324",
+    "schemeName": "Mirae Asset Healthcare Fund - Direct Plan - Growth",
+    "nav": 42.5
+  },
+  {
+    "schemeCode": "147326",
+    "schemeName": "Mirae Asset Nifty 50 Index Fund - Direct Plan - Growth",
+    "nav": 28.0
+  },
+  {
+    "schemeCode": "147328",
+    "schemeName": "Mirae Asset Artificial Intelligence FOF - Direct Plan - Growth",
+    "nav": 22.0
+  },
+  {
+    "schemeCode": "120828",
+    "schemeName": "Quant Small Cap Fund - Direct Plan - Growth",
+    "nav": 265.0
+  },
+  {
+    "schemeCode": "120847",
+    "schemeName": "Quant Active Fund - Direct Plan - Growth",
+    "nav": 640.0
+  },
+  {
+    "schemeCode": "120844",
+    "schemeName": "Quant Mid Cap Fund - Direct Plan - Growth",
+    "nav": 240.0
+  },
+  {
+    "schemeCode": "120823",
+    "schemeName": "Quant Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 105.0
+  },
+  {
+    "schemeCode": "120839",
+    "schemeName": "Quant Infrastructure Fund - Direct Plan - Growth",
+    "nav": 42.0
+  },
+  {
+    "schemeCode": "120841",
+    "schemeName": "Quant ELSS Tax Saver Fund - Direct Plan - Growth",
+    "nav": 410.0
+  },
+  {
+    "schemeCode": "120843",
+    "schemeName": "Quant Multi Asset Fund - Direct Plan - Growth",
+    "nav": 145.0
+  },
+  {
+    "schemeCode": "120845",
+    "schemeName": "Quant Manufacturing Fund - Direct Plan - Growth",
+    "nav": 18.5
+  },
+  {
+    "schemeCode": "120849",
+    "schemeName": "Quant Large and Mid Cap Fund - Direct Plan - Growth",
+    "nav": 125.0
+  },
+  {
+    "schemeCode": "120503",
+    "schemeName": "Axis Bluechip Fund - Direct Plan - Growth",
+    "nav": 58.2
+  },
+  {
+    "schemeCode": "125354",
+    "schemeName": "Axis Small Cap Fund - Direct Plan - Growth",
+    "nav": 105.0
+  },
+  {
+    "schemeCode": "120466",
+    "schemeName": "Axis Midcap Fund - Direct Plan - Growth",
+    "nav": 108.0
+  },
+  {
+    "schemeCode": "120492",
+    "schemeName": "Axis ELSS Tax Saver Fund - Direct Plan - Growth",
+    "nav": 98.0
+  },
+  {
+    "schemeCode": "120494",
+    "schemeName": "Axis Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 28.0
+  },
+  {
+    "schemeCode": "120496",
+    "schemeName": "Axis Growth Opportunities Fund - Direct Plan - Growth",
+    "nav": 32.0
+  },
+  {
+    "schemeCode": "120498",
+    "schemeName": "Axis Nifty 50 Index Fund - Direct Plan - Growth",
+    "nav": 18.5
+  },
+  {
+    "schemeCode": "120716",
+    "schemeName": "UTI Nifty 50 Index Fund - Direct Plan - Growth",
+    "nav": 172.5
+  },
+  {
+    "schemeCode": "120718",
+    "schemeName": "UTI Nifty Next 50 Index Fund - Direct Plan - Growth",
+    "nav": 78.0
+  },
+  {
+    "schemeCode": "120703",
+    "schemeName": "UTI Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 310.0
+  },
+  {
+    "schemeCode": "120705",
+    "schemeName": "UTI Mid Cap Fund - Direct Plan - Growth",
+    "nav": 320.0
+  },
+  {
+    "schemeCode": "120707",
+    "schemeName": "UTI Value Opportunities Fund - Direct Plan - Growth",
+    "nav": 155.0
+  },
+  {
+    "schemeCode": "119062",
+    "schemeName": "Kotak Emerging Equity Fund (Midcap) - Direct Plan - Growth",
+    "nav": 128.0
+  },
+  {
+    "schemeCode": "119065",
+    "schemeName": "Kotak Small Cap Fund - Direct Plan - Growth",
+    "nav": 285.0
+  },
+  {
+    "schemeCode": "119063",
+    "schemeName": "Kotak Flexicap Fund - Direct Plan - Growth",
+    "nav": 82.0
+  },
+  {
+    "schemeCode": "119067",
+    "schemeName": "Kotak Bluechip Fund - Direct Plan - Growth",
+    "nav": 520.0
+  },
+  {
+    "schemeCode": "119069",
+    "schemeName": "Kotak Equity Opportunities Fund - Direct Plan - Growth",
+    "nav": 340.0
+  },
+  {
+    "schemeCode": "119071",
+    "schemeName": "Kotak ELSS Tax Saver Fund - Direct Plan - Growth",
+    "nav": 145.0
+  },
+  {
+    "schemeCode": "135781",
+    "schemeName": "Tata Digital India Fund - Direct Plan - Growth",
+    "nav": 54.0
+  },
+  {
+    "schemeCode": "145112",
+    "schemeName": "Tata Small Cap Fund - Direct Plan - Growth",
+    "nav": 42.5
+  },
+  {
+    "schemeCode": "145114",
+    "schemeName": "Tata Mid Cap Growth Fund - Direct Plan - Growth",
+    "nav": 410.0
+  },
+  {
+    "schemeCode": "145116",
+    "schemeName": "Tata Ethical Fund - Direct Plan - Growth",
+    "nav": 460.0
+  },
+  {
+    "schemeCode": "145118",
+    "schemeName": "Tata Balanced Advantage Fund - Direct Plan - Growth",
+    "nav": 21.0
+  },
+  {
+    "schemeCode": "147879",
+    "schemeName": "Bandhan Small Cap Fund - Direct Plan - Growth",
+    "nav": 44.0
+  },
+  {
+    "schemeCode": "147881",
+    "schemeName": "Bandhan Sterling Value Fund - Direct Plan - Growth",
+    "nav": 160.0
+  },
+  {
+    "schemeCode": "147883",
+    "schemeName": "Bandhan Core Equity Fund - Direct Plan - Growth",
+    "nav": 120.0
+  },
+  {
+    "schemeCode": "147885",
+    "schemeName": "Bandhan Nifty 50 Index Fund - Direct Plan - Growth",
+    "nav": 22.0
+  },
+  {
+    "schemeCode": "118778",
+    "schemeName": "Canara Robeco Emerging Equities - Direct Plan - Growth",
+    "nav": 240.0
+  },
+  {
+    "schemeCode": "146193",
+    "schemeName": "Canara Robeco Small Cap Fund - Direct Plan - Growth",
+    "nav": 41.0
+  },
+  {
+    "schemeCode": "118780",
+    "schemeName": "Canara Robeco Bluechip Equity Fund - Direct Plan - Growth",
+    "nav": 62.0
+  },
+  {
+    "schemeCode": "118782",
+    "schemeName": "Canara Robeco Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 310.0
+  },
+  {
+    "schemeCode": "119232",
+    "schemeName": "DSP Midcap Fund - Direct Plan - Growth",
+    "nav": 138.0
+  },
+  {
+    "schemeCode": "119239",
+    "schemeName": "DSP Small Cap Fund - Direct Plan - Growth",
+    "nav": 175.0
+  },
+  {
+    "schemeCode": "119241",
+    "schemeName": "DSP Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 98.0
+  },
+  {
+    "schemeCode": "119243",
+    "schemeName": "DSP Healthcare Fund - Direct Plan - Growth",
+    "nav": 42.0
+  },
+  {
+    "schemeCode": "119245",
+    "schemeName": "DSP Top 100 Equity Fund - Direct Plan - Growth",
+    "nav": 410.0
+  },
+  {
+    "schemeCode": "143926",
+    "schemeName": "Edelweiss Recently Listed IPO Fund - Direct - Growth",
+    "nav": 36.0
+  },
+  {
+    "schemeCode": "143928",
+    "schemeName": "Edelweiss Mid Cap Fund - Direct Plan - Growth",
+    "nav": 98.0
+  },
+  {
+    "schemeCode": "143930",
+    "schemeName": "Edelweiss Small Cap Fund - Direct Plan - Growth",
+    "nav": 42.0
+  },
+  {
+    "schemeCode": "120282",
+    "schemeName": "Franklin India Smaller Companies Fund - Direct - Growth",
+    "nav": 185.0
+  },
+  {
+    "schemeCode": "120284",
+    "schemeName": "Franklin India Flexi Cap Fund - Direct - Growth",
+    "nav": 1650.0
+  },
+  {
+    "schemeCode": "120286",
+    "schemeName": "Invesco India Contra Fund - Direct Plan - Growth",
+    "nav": 142.0
+  },
+  {
+    "schemeCode": "120288",
+    "schemeName": "WhiteOak Capital Flexi Cap Fund - Direct Plan - Growth",
+    "nav": 21.0
+  },
+  {
+    "schemeCode": "120290",
+    "schemeName": "Sundaram Mid Cap Fund - Direct Plan - Growth",
+    "nav": 1250.0
+  },
+  {
+    "schemeCode": "120292",
+    "schemeName": "HSBC Small Cap Fund - Direct Plan - Growth",
+    "nav": 88.0
+  }
+]

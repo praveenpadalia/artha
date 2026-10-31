@@ -1,5 +1,8 @@
     // Comprehensive Indian Stock Master Directory for Instant Auto-Lookup (500+ Top Listed Equities)
     const INDIAN_STOCK_DIRECTORY = {
+  // High-volume Power & Industrial
+  'CGPOWER': { name: 'CG Power and Industrial Solutions Ltd.', divYield: 0.2, exchange: 'NSE' },
+  '500093': { name: 'CG Power and Industrial Solutions Ltd. (BSE)', divYield: 0.2, exchange: 'BSE' },
   // Exchange & Platform Stocks (NSE is listed on BSE under 544937)
   '544937': { name: 'National Stock Exchange of India Ltd. (NSE)', divYield: 0.0, exchange: 'BSE' },
   'NSE': { name: 'National Stock Exchange of India Ltd.', divYield: 0.0, exchange: 'BSE' },
@@ -152,7 +155,10 @@
       'AFFLE': { name: 'Affle (India) Ltd.', divYield: 0.0, exchange: 'NSE' },
 
       // 7. AUTOMOBILE & AUTO ANCILLARIES
-      'TATAMOTORS': { name: 'Tata Motors Ltd.', divYield: 0.7, exchange: 'NSE' },
+      'TMPV': { name: 'Tata Motors Passenger Vehicles Ltd. (PV, EV & JLR)', divYield: 0.0, exchange: 'NSE' },
+      'TMCV': { name: 'Tata Motors Limited (Commercial Vehicles - TMCV)', divYield: 0.7, exchange: 'NSE' },
+      '544569': { name: 'Tata Motors Ltd. - Commercial Vehicles (BSE: 544569)', divYield: 0.7, exchange: 'BSE' },
+      'TATAMOTORS': { name: 'Tata Motors (Demerged: See TMPV for PV/EV or TMCV for CV)', divYield: 0.7, exchange: 'NSE' },
       'MARUTI': { name: 'Maruti Suzuki India Ltd.', divYield: 1.0, exchange: 'NSE' },
       'M&M': { name: 'Mahindra & Mahindra Ltd.', divYield: 0.7, exchange: 'NSE' },
       'BAJAJ-AUTO': { name: 'Bajaj Auto Ltd.', divYield: 0.9, exchange: 'NSE' },
@@ -355,69 +361,118 @@
     };
 
     // Smart Multi-Token & Prioritized Indian Stock Search (Matches both Symbol and Company Name)
+    // Master In-Memory Stocks Catalog (loaded from data/stocks.json with 6,000+ NSE & BSE stocks)
+    
+
+    // Smart Multi-Token & Prioritized Indian Stock Search (Dual Exchange: NSE & BSE)
+    // Master In-Memory Stocks Catalog (loaded from data/stocks.json with 6,000+ NSE & BSE stocks)
+    
+
+    // Smart Multi-Token & Prioritized Indian Stock Search (Dual Exchange: NSE & BSE)
+    // Master In-Memory Stocks Catalog (loaded from data/stocks.json with 6,000+ NSE & BSE stocks)
+    
+
+    // Smart Multi-Token & Prioritized Indian Stock Search (Dual Exchange: NSE & BSE)
+    var ALL_STOCKS_LIST = window.ALL_STOCKS_LIST || [];
+
     function searchIndianStocks(query) {
       const qRaw = (query || '').trim();
       if (!qRaw) return [];
       const q = qRaw.toUpperCase();
       const tokens = q.split(/[\s,.-]+/).filter(Boolean);
 
-      const exactSym = [];
-      const startsSym = [];
-      const startsName = [];
+      // Search external catalog if loaded, or fallback to INDIAN_STOCK_DIRECTORY
+      const sourceList = (typeof ALL_STOCKS_LIST !== 'undefined' && ALL_STOCKS_LIST && ALL_STOCKS_LIST.length > 0)
+        ? ALL_STOCKS_LIST
+        : Object.entries(INDIAN_STOCK_DIRECTORY).map(([sym, d]) => ({
+            s: sym,
+            alt: d.altSymbol || d.bseCode || '',
+            bseCode: d.bseCode || (d.exchange === 'BSE' ? sym : ''),
+            n: d.name,
+            ex: d.exchange || 'NSE',
+            grp: d.group || 'A',
+            div: d.divYield !== undefined ? d.divYield : 1.2
+          }));
+
+      const exact = [];
+      const starts = [];
       const tokenMatch = [];
-      const containsAny = [];
       const seen = new Set();
 
-      for (const [sym, data] of Object.entries(INDIAN_STOCK_DIRECTORY)) {
-        if (sym === q) {
-          exactSym.push([sym, data]);
-          seen.add(sym);
+      for (let i = 0; i < sourceList.length; i++) {
+        const item = sourceList[i];
+        const s = (item.s || '').toUpperCase();
+        const alt = (item.alt || item.altSymbol || '').toUpperCase();
+        const bse = (item.bseCode || '').toUpperCase();
+        const ex = item.ex || item.exchange || 'NSE';
+        const key = s + '_' + ex;
+        if (seen.has(key)) continue;
+
+        if (s === q || alt === q || bse === q) {
+          exact.push(item);
+          seen.add(key);
         }
       }
 
-      for (const [sym, data] of Object.entries(INDIAN_STOCK_DIRECTORY)) {
-        if (seen.has(sym)) continue;
-        if (sym.startsWith(q)) {
-          startsSym.push([sym, data]);
-          seen.add(sym);
+      for (let i = 0; i < sourceList.length; i++) {
+        const item = sourceList[i];
+        const s = (item.s || '').toUpperCase();
+        const alt = (item.alt || item.altSymbol || '').toUpperCase();
+        const bse = (item.bseCode || '').toUpperCase();
+        const ex = item.ex || item.exchange || 'NSE';
+        const key = s + '_' + ex;
+        if (seen.has(key)) continue;
+
+        if (s.startsWith(q) || alt.startsWith(q) || bse.startsWith(q)) {
+          starts.push(item);
+          seen.add(key);
         }
       }
 
-      for (const [sym, data] of Object.entries(INDIAN_STOCK_DIRECTORY)) {
-        if (seen.has(sym)) continue;
-        const nameUp = (data.name || '').toUpperCase();
-        const words = nameUp.split(/[\s,.-]+/);
-        if (words.some(w => w.startsWith(q))) {
-          startsName.push([sym, data]);
-          seen.add(sym);
+      for (let i = 0; i < sourceList.length; i++) {
+        const item = sourceList[i];
+        const s = (item.s || '').toUpperCase();
+        const alt = (item.alt || item.altSymbol || '').toUpperCase();
+        const bse = (item.bseCode || '').toUpperCase();
+        const n = (item.n || item.name || '').toUpperCase();
+        const ex = item.ex || item.exchange || 'NSE';
+        const key = s + '_' + ex;
+        if (seen.has(key)) continue;
+
+        const allTokens = tokens.every(t => s.includes(t) || alt.includes(t) || bse.includes(t) || n.includes(t));
+        if (allTokens) {
+          tokenMatch.push(item);
+          seen.add(key);
         }
       }
 
-      for (const [sym, data] of Object.entries(INDIAN_STOCK_DIRECTORY)) {
-        if (seen.has(sym)) continue;
-        const nameUp = (data.name || '').toUpperCase();
-        // Check if all tokens match either symbol or company name
-        const allTokensMatch = tokens.every(t => sym.includes(t) || nameUp.includes(t));
-        if (allTokensMatch) {
-          tokenMatch.push([sym, data]);
-          seen.add(sym);
-        }
-      }
+      // Priority sort: Group A first, then Group B, then others
+      const sortGroup = (a, b) => {
+        const gA = (a.grp || a.group) === 'A' ? 0 : ((a.grp || a.group) === 'B' ? 1 : 2);
+        const gB = (b.grp || b.group) === 'A' ? 0 : ((b.grp || b.group) === 'B' ? 1 : 2);
+        return gA - gB;
+      };
 
-      for (const [sym, data] of Object.entries(INDIAN_STOCK_DIRECTORY)) {
-        if (seen.has(sym)) continue;
-        const nameUp = (data.name || '').toUpperCase();
-        if (sym.includes(q) || nameUp.includes(q)) {
-          containsAny.push([sym, data]);
-          seen.add(sym);
-        }
-      }
+      exact.sort(sortGroup);
+      starts.sort(sortGroup);
+      tokenMatch.sort(sortGroup);
 
-      return [...exactSym, ...startsSym, ...startsName, ...tokenMatch, ...containsAny].slice(0, 10);
+      const combined = [...exact, ...starts, ...tokenMatch].slice(0, 15);
+      return combined.map(item => {
+        const sym = item.s || item.symbol;
+        const data = {
+          name: item.n || item.name,
+          exchange: item.ex || item.exchange || 'NSE',
+          altSymbol: item.alt || item.altSymbol || '',
+          bseCode: item.bseCode || (item.ex === 'BSE' ? sym : ''),
+          group: item.grp || item.group || 'A',
+          isin: item.isin || '',
+          divYield: item.div !== undefined ? item.div : (item.divYield !== undefined ? item.divYield : 1.2)
+        };
+        return [sym, data];
+      });
     }
 
-
-        // Comprehensive Popular Indian Mutual Fund Directory (150+ Top Direct & Growth Schemes across all AMCs)
     const POPULAR_MF_DIRECTORY = {
       // 1. MOTILAL OSWAL
       '145552': { name: 'Motilal Oswal Midcap Fund - Direct Plan - Growth', nav: 98.40 },

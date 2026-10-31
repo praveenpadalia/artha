@@ -245,19 +245,34 @@
 
     // Automatic External Catalog Loaders (Loads from GitHub data/stocks.json & data/amfi_schemes.json)
     async function loadExternalCatalogs() {
-      // 1. Load data/stocks.json
+      // 1. Load data/stocks.json (Dual Exchange NSE & BSE master catalog)
       try {
         const resp = await fetch(window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + 'data/stocks.json');
         if (resp.ok) {
           const list = await resp.json();
           if (Array.isArray(list)) {
+            window.ALL_STOCKS_LIST = list;
             list.forEach(item => {
               const sym = (item.s || item.symbol || '').toUpperCase();
+              const alt = (item.alt || item.altSymbol || '').toUpperCase();
+              const bse = (item.bseCode || '').toUpperCase();
               const name = item.n || item.name;
               const ex = item.ex || item.exchange || 'NSE';
               const div = item.div !== undefined ? item.div : 1.2;
-              if (sym && name && !INDIAN_STOCK_DIRECTORY[sym]) {
-                INDIAN_STOCK_DIRECTORY[sym] = { name, divYield: div, exchange: ex };
+              const grp = item.grp || 'A';
+              const isin = item.isin || '';
+
+              const entry = { name, divYield: div, exchange: ex, bseCode: bse, altSymbol: alt, group: grp, isin };
+
+              if (sym && !INDIAN_STOCK_DIRECTORY[sym]) {
+                INDIAN_STOCK_DIRECTORY[sym] = entry;
+              }
+              if (alt && !INDIAN_STOCK_DIRECTORY[alt]) {
+                INDIAN_STOCK_DIRECTORY[alt] = entry;
+              }
+              INDIAN_STOCK_DIRECTORY[sym + '_' + ex] = entry;
+              if (alt) {
+                INDIAN_STOCK_DIRECTORY[alt + '_' + ex] = entry;
               }
             });
           }
@@ -283,7 +298,7 @@
       } catch (e) {}
     }
 
-        // Initial Launch
+    // Initial Launch
     loadExternalCatalogs();
     initTheme();
     renderAll();

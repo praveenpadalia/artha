@@ -143,7 +143,7 @@
 
       // 2. Query Live AMFI Search API for 37,000+ schemes
       // If user typed multi-word like "motilal midcap", use the most distinctive token (e.g. "motilal") for API query
-      if (tokens.length > 0 && tokens[0].length >= 2) {
+      if (results.length < 8 && tokens.length > 0 && tokens[0].length >= 2) {
         const primaryApiToken = tokens[0];
         try {
           const searchUrl = `https://api.mfapi.in/mf/search?q=${encodeURIComponent(primaryApiToken)}`;

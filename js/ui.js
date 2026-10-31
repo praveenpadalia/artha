@@ -1198,17 +1198,21 @@
               return;
             }
 
-            // Instant 0ms Match in Local Catalog
+            // Instant 0ms Match in Local Catalog (Smart Multi-Token Matching)
             const instantMatches = [];
-            const qLower = val.toLowerCase();
-            for (const [code, item] of Object.entries(POPULAR_MF_DIRECTORY)) {
-              if (code.includes(qLower) || item.name.toLowerCase().includes(qLower)) {
-                instantMatches.push({
-                  schemeCode: code,
-                  schemeName: item.name,
-                  nav: item.nav,
-                  source: 'Verified Catalog'
-                });
+            const qTokens = val.toLowerCase().split(/[\s,.-]+/).filter(Boolean);
+            if (qTokens.length > 0) {
+              for (const [code, item] of Object.entries(POPULAR_MF_DIRECTORY)) {
+                const combined = (code + ' ' + (item.name || '')).toLowerCase();
+                if (qTokens.every(t => combined.includes(t))) {
+                  instantMatches.push({
+                    schemeCode: code,
+                    schemeName: item.name,
+                    nav: item.nav,
+                    source: 'Verified Catalog'
+                  });
+                  if (instantMatches.length >= 8) break;
+                }
               }
             }
             if (instantMatches.length > 0) {

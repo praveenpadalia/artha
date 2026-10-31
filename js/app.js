@@ -289,7 +289,7 @@
               const code = String(item.schemeCode || item.c || item.code);
               const name = item.schemeName || item.n || item.name;
               const nav = parseFloat(item.nav) || null;
-              if (code && name && !POPULAR_MF_DIRECTORY[code]) {
+              if (code && name) {
                 POPULAR_MF_DIRECTORY[code] = { name, nav };
               }
             });

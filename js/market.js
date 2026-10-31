@@ -86,31 +86,67 @@
     }
 
 
-    // Live Mutual Fund Name Search (Instant Local Catalog + Live AMFI Open Search API)
+    // Smart Multi-Token & Partial Mutual Fund Search (e.g. "motilal midcap" matches "Motilal Oswal Midcap Direct Growth")
     async function searchMutualFundsByName(query) {
-      const q = (query || "").trim().toLowerCase();
-      if (!q) return [];
+      const qRaw = (query || "").trim();
+      if (!qRaw) return [];
+
+      const q = qRaw.toLowerCase();
+      const tokens = q.split(/[\s,.-]+/).filter(t => t.length > 0);
+      if (tokens.length === 0) return [];
 
       const results = [];
       const seenCodes = new Set();
 
-      // 1. Instant 0ms Match in Local Catalog
+      // 1. Instant Match in Local Directory with Smart Token Scoring
       for (const [code, item] of Object.entries(POPULAR_MF_DIRECTORY)) {
-        if (code.includes(q) || item.name.toLowerCase().includes(q)) {
+        const nameLower = (item.name || '').toLowerCase();
+        const codeStr = String(code);
+        const combinedTarget = `${codeStr} ${nameLower}`;
+
+        // Exact AMFI code match
+        if (codeStr === q) {
           results.push({
-            schemeCode: code,
+            schemeCode: codeStr,
             schemeName: item.name,
             nav: item.nav,
-            source: "Verified Catalog"
+            source: "Verified Catalog",
+            score: 200
           });
-          seenCodes.add(String(code));
+          seenCodes.add(codeStr);
+          continue;
+        }
+
+        // Count how many user tokens match
+        const matchedTokens = tokens.filter(t => combinedTarget.includes(t));
+        if (matchedTokens.length > 0) {
+          const matchRatio = matchedTokens.length / tokens.length;
+          
+          // Require at least matching all tokens OR at least 2 primary tokens if long query
+          if (matchRatio >= 0.75 || (tokens.length >= 2 && matchedTokens.length >= 2)) {
+            let score = matchRatio * 100;
+            if (nameLower.startsWith(tokens[0])) score += 30;
+            if (nameLower.includes('direct')) score += 20;
+            if (nameLower.includes('growth')) score += 10;
+
+            results.push({
+              schemeCode: codeStr,
+              schemeName: item.name,
+              nav: item.nav,
+              source: "Verified Catalog",
+              score: score
+            });
+            seenCodes.add(codeStr);
+          }
         }
       }
 
       // 2. Query Live AMFI Search API for 37,000+ schemes
-      if (q.length >= 2) {
+      // If user typed multi-word like "motilal midcap", use the most distinctive token (e.g. "motilal") for API query
+      if (tokens.length > 0 && tokens[0].length >= 2) {
+        const primaryApiToken = tokens[0];
         try {
-          const searchUrl = `https://api.mfapi.in/mf/search?q=${encodeURIComponent(query.trim())}`;
+          const searchUrl = `https://api.mfapi.in/mf/search?q=${encodeURIComponent(primaryApiToken)}`;
           const ctrl = new AbortController();
           const tid = setTimeout(() => ctrl.abort(), 3500);
           const resp = await fetch(searchUrl, { signal: ctrl.signal });
@@ -121,12 +157,24 @@
             if (Array.isArray(data)) {
               for (const item of data) {
                 const cStr = String(item.schemeCode);
-                if (!seenCodes.has(cStr)) {
+                if (seenCodes.has(cStr)) continue;
+
+                const nameLower = (item.schemeName || '').toLowerCase();
+                const combined = `${cStr} ${nameLower}`;
+                const matched = tokens.filter(t => combined.includes(t));
+
+                if (matched.length / tokens.length >= 0.75 || (tokens.length >= 2 && matched.length >= 2)) {
+                  let score = (matched.length / tokens.length) * 80;
+                  if (nameLower.startsWith(primaryApiToken)) score += 25;
+                  if (nameLower.includes('direct')) score += 20;
+                  if (nameLower.includes('growth')) score += 10;
+
                   results.push({
                     schemeCode: cStr,
                     schemeName: item.schemeName,
                     nav: null,
-                    source: "AMFI API"
+                    source: "AMFI API",
+                    score: score
                   });
                   seenCodes.add(cStr);
                 }
@@ -136,7 +184,7 @@
         } catch (e) {
           // Fallback via CORS proxy if direct fetch is blocked
           try {
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.mfapi.in/mf/search?q=${encodeURIComponent(query.trim())}`)}`;
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.mfapi.in/mf/search?q=${encodeURIComponent(primaryApiToken)}`)}`;
             const ctrl = new AbortController();
             const tid = setTimeout(() => ctrl.abort(), 4000);
             const resp = await fetch(proxyUrl, { signal: ctrl.signal });
@@ -147,12 +195,23 @@
               if (Array.isArray(data)) {
                 for (const item of data) {
                   const cStr = String(item.schemeCode);
-                  if (!seenCodes.has(cStr)) {
+                  if (seenCodes.has(cStr)) continue;
+
+                  const nameLower = (item.schemeName || '').toLowerCase();
+                  const combined = `${cStr} ${nameLower}`;
+                  const matched = tokens.filter(t => combined.includes(t));
+
+                  if (matched.length / tokens.length >= 0.75 || (tokens.length >= 2 && matched.length >= 2)) {
+                    let score = (matched.length / tokens.length) * 70;
+                    if (nameLower.includes('direct')) score += 20;
+                    if (nameLower.includes('growth')) score += 10;
+
                     results.push({
                       schemeCode: cStr,
                       schemeName: item.schemeName,
                       nav: null,
-                      source: "AMFI Live"
+                      source: "AMFI Live",
+                      score: score
                     });
                     seenCodes.add(cStr);
                   }
@@ -163,13 +222,8 @@
         }
       }
 
-      // Rank Direct Plan Growth to the top for investor convenience
-      return results.sort((a, b) => {
-        const aDirect = a.schemeName.toLowerCase().includes("direct") ? 1 : 0;
-        const bDirect = b.schemeName.toLowerCase().includes("direct") ? 1 : 0;
-        if (aDirect !== bDirect) return bDirect - aDirect;
-        return a.schemeName.localeCompare(b.schemeName);
-      }).slice(0, 10);
+      // Sort by relevance score (highest score first)
+      return results.sort((a, b) => (b.score || 0) - (a.score || 0)).slice(0, 12);
     }
 
     // Unified Mutual Fund NAV Fetcher (Direct AMFI + Google Webhook + CORS Proxy + Catalog Fallback)
@@ -459,11 +513,12 @@
       showToast(`Synced ${mfSuccessCount} Mutual Funds & refreshed ${stockSuccessCount} Stocks!`);
     }
 
-    // Automatic Stock Info Lookup Function
+    // Automatic Stock Info Lookup Function (Supports Symbol, Company Name & Partial Keywords)
     async function lookupAndFillStockInfo(symbolRaw) {
-      const symbol = (symbolRaw || '').trim().toUpperCase().replace(/\.(NS|BO)$/, '');
-      if (!symbol) return;
+      const rawTerm = (symbolRaw || '').trim();
+      if (!rawTerm) return;
 
+      const stockSymbolInput = document.getElementById('field-stock-symbol');
       const nameInput = document.getElementById('field-stock-name');
       const currentInput = document.getElementById('field-stock-current');
       const buyInput = document.getElementById('field-stock-buy');
@@ -472,6 +527,31 @@
       const lookupBtn = document.getElementById('btn-fetch-stock-info');
       const autoStatus = document.getElementById('stock-auto-status');
       const autoList = document.getElementById('stock-autocomplete-list');
+
+      let symbol = rawTerm.toUpperCase().replace(/\.(NS|BO)$/, '');
+
+      // Smart Resolution: If term is not a direct ticker symbol, search the directory
+      if (!INDIAN_STOCK_DIRECTORY[symbol]) {
+        const candidates = searchIndianStocks(rawTerm);
+        if (candidates.length === 1) {
+          // Exactly 1 clear match: auto-select it!
+          symbol = candidates[0][0];
+          if (stockSymbolInput) stockSymbolInput.value = symbol;
+        } else if (candidates.length > 1) {
+          // Multiple candidate stocks found (e.g. for "POWER" -> POWERGRID, PFC, TATAPOWER)
+          if (typeof renderAutocomplete === 'function') {
+            renderAutocomplete(rawTerm);
+          }
+          if (autoStatus) {
+            autoStatus.classList.remove('hidden');
+            autoStatus.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
+            autoStatus.textContent = `Found ${candidates.length} stocks matching "${rawTerm}". Select your company from the dropdown below:`;
+          }
+          showToast(`Found ${candidates.length} stocks matching "${rawTerm}". Please select from dropdown.`);
+          return;
+        }
+      }
+
       if (autoList) autoList.classList.add('hidden');
 
       if (lookupBtn) {
@@ -480,7 +560,7 @@
       }
       if (autoStatus) {
         autoStatus.classList.remove('hidden');
-        autoStatus.textContent = `Fetching live price from Google Finance for ${symbol}...`;
+        autoStatus.textContent = `Fetching live price for ${symbol}...`;
         autoStatus.className = 'text-[11px] text-blue-600 dark:text-blue-400 font-medium';
       }
 

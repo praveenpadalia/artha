@@ -855,42 +855,41 @@
 
         function renderAutocomplete(query) {
           if (!autoList) return;
-          const q = query.trim().toUpperCase();
+          const q = (query || '').trim();
           if (q.length < 1) {
             autoList.classList.add('hidden');
             autoList.innerHTML = '';
             return;
           }
 
-          const matches = Object.entries(INDIAN_STOCK_DIRECTORY).filter(([sym, data]) => {
-            return sym.includes(q) || data.name.toUpperCase().includes(q);
-          }).slice(0, 7);
+          const matches = searchIndianStocks(q);
 
-          // Live Rediff Money lookup button right inside dropdown
-          const rediffPromptItem = `
-            <div class="stock-item-rediff px-3.5 py-2.5 bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 cursor-pointer flex items-center justify-between text-xs transition-colors border-b border-emerald-100 dark:border-emerald-900/50" data-rediff-sym="${q}">
+          // Direct Ticker Fallback Row (shown only at the bottom or if no match)
+          const liveLookupPrompt = `
+            <div class="stock-item-rediff px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 cursor-pointer flex items-center justify-between text-xs transition-colors border-t border-slate-100 dark:border-slate-700/60" data-rediff-sym="${escapeHtml(q.toUpperCase())}">
               <div class="flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="font-bold text-emerald-800 dark:text-emerald-300">⚡ Fetch Real-Time Quote for "${q}" via Google Finance</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200">Fetch Quote for exact symbol "${escapeHtml(q.toUpperCase())}"</span>
               </div>
-              <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Query Google Cloud →</span>
+              <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Query Live Feed →</span>
             </div>
           `;
 
           if (matches.length === 0) {
             autoList.innerHTML = `
-              ${rediffPromptItem}
-              <div class="px-3 py-2 text-[11px] text-slate-500 dark:text-slate-400">
-                <span>Not in quick catalog. Click above to fetch real-time price from Rediff Money live feed.</span>
+              <div class="px-3.5 py-2.5 text-[11px] text-slate-500 dark:text-slate-400">
+                No company name or symbol matching "<strong>${escapeHtml(q)}</strong>" in catalog.
               </div>
+              ${liveLookupPrompt}
             `;
             autoList.classList.remove('hidden');
+
             const rediffTrigger = autoList.querySelector('.stock-item-rediff');
             if (rediffTrigger) {
               rediffTrigger.addEventListener('click', () => {
-                stockSymbolInput.value = q;
+                stockSymbolInput.value = q.toUpperCase();
                 autoList.classList.add('hidden');
-                lookupAndFillStockInfo(q);
+                lookupAndFillStockInfo(q.toUpperCase());
               });
             }
             return;
@@ -898,29 +897,28 @@
 
           const catalogList = matches.map(([sym, data]) => `
             <div class="stock-item-option px-3.5 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer flex items-center justify-between text-xs transition-colors" data-sym="${sym}">
-              <div>
+              <div class="pr-2 min-w-0">
                 <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  ${sym}
+                  <span>${sym}</span>
                   <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${data.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${data.exchange}</span>
                 </div>
-                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[200px]">${escapeHtml(data.name)}</div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${escapeHtml(data.name)}</div>
               </div>
-              <div class="text-right">
-                <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">Get Live Price →</span>
+              <div class="text-right shrink-0">
+                <span class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded">Select &amp; Fetch →</span>
               </div>
             </div>
           `).join('');
 
-          autoList.innerHTML = `${rediffPromptItem}${catalogList}`;
-
+          autoList.innerHTML = `${catalogList}${liveLookupPrompt}`;
           autoList.classList.remove('hidden');
 
           const rediffTrigger = autoList.querySelector('.stock-item-rediff');
           if (rediffTrigger) {
             rediffTrigger.addEventListener('click', () => {
-              stockSymbolInput.value = q;
+              stockSymbolInput.value = q.toUpperCase();
               autoList.classList.add('hidden');
-              lookupAndFillStockInfo(q);
+              lookupAndFillStockInfo(q.toUpperCase());
             });
           }
 

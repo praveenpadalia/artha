@@ -515,7 +515,7 @@
 
         <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800 shrink-0">
           <button id="modal-cancel-btn" type="button" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl">Cancel</button>
-          <button type="submit" class="px-5 py-2.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs">Save Entry</button>
+          <button id="modal-submit-btn" type="submit" class="px-5 py-2.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs">Save Entry</button>
         </div>
       </form>
     </div>
@@ -1103,21 +1103,143 @@
       return results;
     }
 
-        // Popular Indian Mutual Fund Directory for Instant Scheme Matching & Fallback
+        // Comprehensive Popular Indian Mutual Fund Directory for Instant 0ms Matching & Fallback
     const POPULAR_MF_DIRECTORY = {
       '122639': { name: 'Parag Parikh Flexi Cap Fund - Direct Plan - Growth', nav: 78.85 },
+      '147285': { name: 'Parag Parikh Tax Saver Fund - Direct Plan - Growth', nav: 32.40 },
       '118834': { name: 'Mirae Asset Large Cap Fund - Direct Plan - Growth', nav: 114.60 },
+      '147318': { name: 'Mirae Asset Midcap Fund - Direct Plan - Growth', nav: 38.90 },
+      '118825': { name: 'Mirae Asset Great Consumer Fund - Direct Plan - Growth', nav: 88.50 },
       '125497': { name: 'Nippon India Small Cap Fund - Direct Growth', nav: 148.90 },
+      '120739': { name: 'Nippon India Growth Fund - Direct Plan - Growth', nav: 3850.00 },
+      '120722': { name: 'Nippon India Multi Cap Fund - Direct Plan - Growth', nav: 285.00 },
+      '120720': { name: 'Nippon India Large Cap Fund - Direct Plan - Growth', nav: 84.50 },
       '120503': { name: 'Axis Bluechip Fund - Direct Plan - Growth', nav: 58.20 },
+      '125354': { name: 'Axis Small Cap Fund - Direct Plan - Growth', nav: 105.00 },
+      '120466': { name: 'Axis Midcap Fund - Direct Plan - Growth', nav: 108.00 },
+      '120492': { name: 'Axis ELSS Tax Saver Fund - Direct Plan - Growth', nav: 98.00 },
       '119598': { name: 'SBI Bluechip Fund - Direct Plan - Growth', nav: 86.40 },
+      '125494': { name: 'SBI Small Cap Fund - Direct Plan - Growth', nav: 178.00 },
+      '119597': { name: 'SBI Contra Fund - Direct Plan - Growth', nav: 410.00 },
+      '119596': { name: 'SBI Magnum Midcap Fund - Direct Plan - Growth', nav: 225.00 },
+      '119599': { name: 'SBI Focused Equity Fund - Direct Plan - Growth', nav: 320.00 },
       '120716': { name: 'UTI Nifty 50 Index Fund - Direct Plan - Growth', nav: 172.50 },
+      '120718': { name: 'UTI Nifty Next 50 Index Fund - Direct Plan - Growth', nav: 78.00 },
+      '120703': { name: 'UTI Flexi Cap Fund - Direct Plan - Growth', nav: 310.00 },
       '120465': { name: 'HDFC Top 100 Fund - Direct Plan - Growth', nav: 1050.00 },
+      '120505': { name: 'HDFC Mid-Cap Opportunities Fund - Direct Plan - Growth', nav: 185.00 },
+      '118968': { name: 'HDFC Balanced Advantage Fund - Direct Plan - Growth', nav: 520.00 },
+      '118955': { name: 'HDFC Flexi Cap Fund - Direct Plan - Growth', nav: 1950.00 },
+      '120531': { name: 'HDFC Index Fund - S&P BSE SENSEX Plan - Direct - Growth', nav: 720.00 },
       '118989': { name: 'ICICI Prudential Bluechip Fund - Direct Plan - Growth', nav: 108.50 },
+      '120586': { name: 'ICICI Prudential Value Discovery Fund - Direct Plan - Growth', nav: 430.00 },
+      '120588': { name: 'ICICI Prudential Smallcap Fund - Direct Plan - Growth', nav: 82.00 },
+      '120743': { name: 'ICICI Prudential Nifty 50 Index Fund - Direct Plan - Growth', nav: 260.00 },
       '120828': { name: 'Quant Small Cap Fund - Direct Plan - Growth', nav: 265.00 },
       '120847': { name: 'Quant Active Fund - Direct Plan - Growth', nav: 640.00 },
+      '120844': { name: 'Quant Mid Cap Fund - Direct Plan - Growth', nav: 240.00 },
+      '120823': { name: 'Quant Flexi Cap Fund - Direct Plan - Growth', nav: 105.00 },
+      '120839': { name: 'Quant Infrastructure Fund - Direct Plan - Growth', nav: 42.00 },
       '145552': { name: 'Motilal Oswal Midcap Fund - Direct Plan - Growth', nav: 98.40 },
-      '119062': { name: 'Kotak Emerging Equity Fund - Direct Plan - Growth', nav: 128.00 }
+      '147743': { name: 'Motilal Oswal Large and Midcap Fund - Direct Plan - Growth', nav: 42.00 },
+      '145556': { name: 'Motilal Oswal Nasdaq 100 FOF - Direct Plan - Growth', nav: 38.00 },
+      '119062': { name: 'Kotak Emerging Equity Fund - Direct Plan - Growth', nav: 128.00 },
+      '119065': { name: 'Kotak Small Cap Fund - Direct Plan - Growth', nav: 285.00 },
+      '119063': { name: 'Kotak Flexicap Fund - Direct Plan - Growth', nav: 82.00 },
+      '135781': { name: 'Tata Digital India Fund - Direct Plan - Growth', nav: 54.00 },
+      '145112': { name: 'Tata Small Cap Fund - Direct Plan - Growth', nav: 42.50 },
+      '147879': { name: 'Bandhan Small Cap Fund - Direct Plan - Growth', nav: 44.00 },
+      '118778': { name: 'Canara Robeco Emerging Equities - Direct Plan - Growth', nav: 240.00 },
+      '146193': { name: 'Canara Robeco Small Cap Fund - Direct Plan - Growth', nav: 41.00 },
+      '119232': { name: 'DSP Midcap Fund - Direct Plan - Growth', nav: 138.00 },
+      '119239': { name: 'DSP Small Cap Fund - Direct Plan - Growth', nav: 175.00 }
     };
+
+    // Live Mutual Fund Name Search (Instant Local Catalog + Live AMFI Open Search API)
+    async function searchMutualFundsByName(query) {
+      const q = (query || "").trim().toLowerCase();
+      if (!q) return [];
+
+      const results = [];
+      const seenCodes = new Set();
+
+      // 1. Instant 0ms Match in Local Catalog
+      for (const [code, item] of Object.entries(POPULAR_MF_DIRECTORY)) {
+        if (code.includes(q) || item.name.toLowerCase().includes(q)) {
+          results.push({
+            schemeCode: code,
+            schemeName: item.name,
+            nav: item.nav,
+            source: "Verified Catalog"
+          });
+          seenCodes.add(String(code));
+        }
+      }
+
+      // 2. Query Live AMFI Search API for 37,000+ schemes
+      if (q.length >= 2) {
+        try {
+          const searchUrl = `https://api.mfapi.in/mf/search?q=${encodeURIComponent(query.trim())}`;
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 3500);
+          const resp = await fetch(searchUrl, { signal: ctrl.signal });
+          clearTimeout(tid);
+
+          if (resp.ok) {
+            const data = await resp.json();
+            if (Array.isArray(data)) {
+              for (const item of data) {
+                const cStr = String(item.schemeCode);
+                if (!seenCodes.has(cStr)) {
+                  results.push({
+                    schemeCode: cStr,
+                    schemeName: item.schemeName,
+                    nav: null,
+                    source: "AMFI API"
+                  });
+                  seenCodes.add(cStr);
+                }
+              }
+            }
+          }
+        } catch (e) {
+          // Fallback via CORS proxy if direct fetch is blocked
+          try {
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.mfapi.in/mf/search?q=${encodeURIComponent(query.trim())}`)}`;
+            const ctrl = new AbortController();
+            const tid = setTimeout(() => ctrl.abort(), 4000);
+            const resp = await fetch(proxyUrl, { signal: ctrl.signal });
+            clearTimeout(tid);
+
+            if (resp.ok) {
+              const data = await resp.json();
+              if (Array.isArray(data)) {
+                for (const item of data) {
+                  const cStr = String(item.schemeCode);
+                  if (!seenCodes.has(cStr)) {
+                    results.push({
+                      schemeCode: cStr,
+                      schemeName: item.schemeName,
+                      nav: null,
+                      source: "AMFI Live"
+                    });
+                    seenCodes.add(cStr);
+                  }
+                }
+              }
+            }
+          } catch (err) {}
+        }
+      }
+
+      // Rank Direct Plan Growth to the top for investor convenience
+      return results.sort((a, b) => {
+        const aDirect = a.schemeName.toLowerCase().includes("direct") ? 1 : 0;
+        const bDirect = b.schemeName.toLowerCase().includes("direct") ? 1 : 0;
+        if (aDirect !== bDirect) return bDirect - aDirect;
+        return a.schemeName.localeCompare(b.schemeName);
+      }).slice(0, 10);
+    }
 
     // Unified Mutual Fund NAV Fetcher (Direct AMFI + Google Webhook + CORS Proxy + Catalog Fallback)
     async function fetchMutualFundLive(codeOrTicker) {
@@ -1347,7 +1469,16 @@
 
       // 1. Fetch Mutual Fund NAVs via Multi-Source Pipeline (Google Cloud + AMFI + Proxies)
       for (const fund of appData.funds) {
-        const queryCode = fund.schemeCode || fund.ticker;
+        let queryCode = fund.schemeCode || fund.ticker;
+        if (!queryCode && fund.name) {
+          try {
+            const matches = await searchMutualFundsByName(fund.name);
+            if (matches && matches.length > 0) {
+              fund.schemeCode = matches[0].schemeCode;
+              queryCode = fund.schemeCode;
+            }
+          } catch (e) {}
+        }
         if (queryCode) {
           try {
             const result = await fetchMutualFundLive(queryCode);
@@ -1554,7 +1685,16 @@
               ${isRd ? '<div class="text-[9px] text-slate-400 uppercase font-semibold">Total Target</div>' : ''}
             </td>
             <td class="px-4 py-3 text-right">
-              <button type="button" data-delete-bank="${bank.id}" class="text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-medium">Delete</button>
+              <div class="flex items-center justify-end gap-1.5">
+                <button type="button" data-edit-bank="${bank.id}" title="Edit Account" class="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-medium px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  <span>Edit</span>
+                </button>
+                <button type="button" data-delete-bank="${bank.id}" title="Delete Account" class="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-medium px-2 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <span>Delete</span>
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -1612,8 +1752,15 @@
               <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-0.5">
                 ${(isFd || isRd) && bank.maturityAmount ? `Matures: ${formatINR(maturityVal)}` : `+${formatINR(annualInterest)}/yr`}
               </div>
-              <div class="mt-1 flex justify-end">
-                <button type="button" data-delete-bank="${bank.id}" class="text-[10px] text-rose-500 hover:text-rose-700 p-0.5 font-bold">✕ Delete</button>
+              <div class="mt-1 flex items-center justify-end gap-1">
+                <button type="button" data-edit-bank="${bank.id}" title="Edit Account" class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 p-1 font-semibold hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  <span>Edit</span>
+                </button>
+                <button type="button" data-delete-bank="${bank.id}" title="Delete Account" class="inline-flex items-center gap-0.5 text-[11px] text-rose-500 hover:text-rose-700 p-1 font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  <span>Delete</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1682,7 +1829,16 @@
               </div>
             </td>
             <td class="px-4 py-3 text-right">
-              <button type="button" data-delete-stock="${stock.id}" class="text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-medium">Delete</button>
+              <div class="flex items-center justify-end gap-1.5">
+                <button type="button" data-edit-stock="${stock.id}" title="Edit Stock" class="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-medium px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  <span>Edit</span>
+                </button>
+                <button type="button" data-delete-stock="${stock.id}" title="Delete Stock" class="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-medium px-2 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <span>Delete</span>
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -1714,7 +1870,16 @@
                 <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isProfit ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'}">
                   ${isProfit ? '+' : ''}${formatINR(pnl)} (${pnlPct.toFixed(1)}%)
                 </span>
-                <button type="button" data-delete-stock="${stock.id}" class="text-[10px] text-rose-500 hover:text-rose-700 p-0.5">✕</button>
+              </div>
+              <div class="mt-1 flex items-center justify-end gap-1">
+                <button type="button" data-edit-stock="${stock.id}" title="Edit Stock" class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 p-1 font-semibold hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  <span>Edit</span>
+                </button>
+                <button type="button" data-delete-stock="${stock.id}" title="Delete Stock" class="inline-flex items-center gap-0.5 text-[11px] text-rose-500 hover:text-rose-700 p-1 font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  <span>Delete</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1775,7 +1940,16 @@
               </div>
             </td>
             <td class="px-4 py-3 text-right">
-              <button type="button" data-delete-fund="${fund.id}" class="text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-medium">Delete</button>
+              <div class="flex items-center justify-end gap-1.5">
+                <button type="button" data-edit-fund="${fund.id}" title="Edit Fund" class="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-medium px-2 py-1 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/50 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  <span>Edit</span>
+                </button>
+                <button type="button" data-delete-fund="${fund.id}" title="Delete Fund" class="inline-flex items-center gap-1 text-xs text-rose-500 hover:text-rose-700 dark:hover:text-rose-400 font-medium px-2 py-1 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <span>Delete</span>
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -1807,7 +1981,16 @@
                 <span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isProfit ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-400'}">
                   ${isProfit ? '+' : ''}${formatINR(pnl)} (${pnlPct.toFixed(1)}%)
                 </span>
-                <button type="button" data-delete-fund="${fund.id}" class="text-[10px] text-rose-500 hover:text-rose-700 p-0.5">✕</button>
+              </div>
+              <div class="mt-1 flex items-center justify-end gap-1">
+                <button type="button" data-edit-fund="${fund.id}" title="Edit Fund" class="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 p-1 font-semibold hover:bg-emerald-50 dark:hover:bg-emerald-950/40 rounded-lg transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                  <span>Edit</span>
+                </button>
+                <button type="button" data-delete-fund="${fund.id}" title="Delete Fund" class="inline-flex items-center gap-0.5 text-[11px] text-rose-500 hover:text-rose-700 p-1 font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  <span>Delete</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1936,13 +2119,24 @@
     }
 
     // Modal Form Configuration
+        // Global editing state & Edit Modal Trigger
+    let editingItemId = null;
+
+    function openEditModal(category, id) {
+      editingItemId = id;
+      switchTab(category);
+      openModal();
+    }
+
     function openModal() {
       const modal = document.getElementById('modal-container');
       const title = document.getElementById('modal-title');
       const fieldsContainer = document.getElementById('modal-form-fields');
 
       if (activeTab === 'banks') {
-        title.textContent = 'Add Account / Deposit (Savings, FD, RD)';
+        title.textContent = editingItemId ? 'Edit Account / Deposit (Savings, FD, RD)' : 'Add Account / Deposit (Savings, FD, RD)';
+        const submitBtn = document.getElementById('modal-submit-btn');
+        if (submitBtn) submitBtn.textContent = editingItemId ? 'Update Account' : 'Save Entry';
         fieldsContainer.innerHTML = `
           <!-- 1. ACCOUNT TYPE IS FIRST -->
           <div>
@@ -2172,8 +2366,36 @@
         rdMonths.addEventListener('input', calcRd);
 
         handleAccountTypeChange();
+
+        if (editingItemId) {
+          const bank = appData.banks.find(b => b.id === editingItemId);
+          if (bank) {
+            typeSelect.value = bank.type || 'Savings Account';
+            handleAccountTypeChange();
+            nameInput.value = bank.name || '';
+            rateInput.value = bank.interestRate !== undefined ? bank.interestRate : 3.5;
+            if (bank.type === 'Fixed Deposit (FD)') {
+              fdPrincipal.value = bank.balance || '';
+              if (bank.tenure) fdTenure.value = bank.tenure;
+              if (bank.endDate) fdEndDate.value = bank.endDate;
+              calcFd();
+            } else if (bank.type === 'Recurring Deposit (RD)') {
+              rdMonthly.value = bank.monthlyDeposit || '';
+              if (bank.tenure) {
+                const m = parseInt(bank.tenure);
+                if (m > 0) rdMonths.value = m;
+              }
+              if (bank.endDate) rdEndDate.value = bank.endDate;
+              calcRd();
+            } else {
+              balInput.value = bank.balance !== undefined ? bank.balance : '';
+            }
+          }
+        }
       } else if (activeTab === 'stocks') {
-        title.textContent = 'Add Stock Holding (BSE / NSE)';
+        title.textContent = editingItemId ? 'Edit Stock Holding (BSE / NSE)' : 'Add Stock Holding (BSE / NSE)';
+        const submitBtn = document.getElementById('modal-submit-btn');
+        if (submitBtn) submitBtn.textContent = editingItemId ? 'Update Stock' : 'Save Entry';
         fieldsContainer.innerHTML = `
           <div class="relative">
             <div class="flex items-center justify-between mb-1">
@@ -2338,29 +2560,74 @@
           }
         });
 
+        if (editingItemId) {
+          const stock = appData.stocks.find(s => s.id === editingItemId);
+          if (stock) {
+            stockSymbolInput.value = stock.symbol;
+            const nameField = document.getElementById('field-stock-name');
+            if (nameField) nameField.value = stock.name || stock.symbol;
+            const exchField = document.getElementById('field-stock-exchange');
+            if (exchField) exchField.value = stock.exchange || 'NSE';
+            const qtyField = document.getElementById('field-stock-qty');
+            if (qtyField) qtyField.value = stock.qty;
+            const buyField = document.getElementById('field-stock-buy');
+            if (buyField) buyField.value = stock.buyPrice;
+            const currField = document.getElementById('field-stock-current');
+            if (currField) currField.value = stock.currentPrice;
+            const divField = document.getElementById('field-stock-divyield');
+            if (divField) divField.value = stock.divYield !== undefined ? stock.divYield : 1.5;
+
+            const autoStatus = document.getElementById('stock-auto-status');
+            if (autoStatus) {
+              autoStatus.classList.remove('hidden');
+              autoStatus.className = 'mt-1 text-[11px] text-blue-600 dark:text-blue-400 font-medium';
+              autoStatus.textContent = `Editing ${stock.symbol} (${stock.name || stock.symbol})`;
+            }
+          }
+        }
+
       } else if (activeTab === 'funds') {
-        title.textContent = 'Add Mutual Fund Scheme';
+        title.textContent = editingItemId ? 'Edit Mutual Fund Scheme' : 'Add Mutual Fund Scheme';
+        const submitBtn = document.getElementById('modal-submit-btn');
+        if (submitBtn) submitBtn.textContent = editingItemId ? 'Update Mutual Fund' : 'Save Entry';
         fieldsContainer.innerHTML = `
-          <div>
+          <!-- 1. Google Finance Style Mutual Fund Search Input -->
+          <div class="relative">
             <div class="flex items-center justify-between mb-1">
-              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">AMFI Scheme Code</label>
-              <span class="text-[10px] text-slate-400">AMFI Code (e.g. 122639) or Google Ticker (MUTF_IN:...)</span>
+              <label class="block text-xs font-bold text-slate-800 dark:text-slate-200">Search Mutual Fund (by Name or Code)</label>
+              <span class="text-[10px] text-slate-400">Search 37,000+ schemes or type AMFI code</span>
             </div>
             <div class="flex gap-2">
-              <input id="field-mf-schemecode" type="text" placeholder="122639" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
-              <button id="btn-fetch-amfi-info" type="button" class="shrink-0 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors">
+              <div class="relative flex-1">
+                <input required id="field-mf-search" type="text" autocomplete="off" placeholder="e.g. Parag Parikh, SBI Bluechip, Quant, HDFC..." class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border-2 border-emerald-500/40 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold transition-all">
+                <!-- Autocomplete Dropdown List -->
+                <div id="mf-autocomplete-list" class="absolute z-50 left-0 right-0 top-full mt-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl max-h-64 overflow-y-auto hidden divide-y divide-slate-100 dark:divide-slate-700/60"></div>
+              </div>
+              <button id="btn-fetch-amfi-info" type="button" class="shrink-0 px-3.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 Lookup NAV
               </button>
             </div>
+            <div id="mf-auto-status" class="mt-1.5 text-[11px] text-slate-500 hidden"></div>
           </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Scheme Name</label>
-            <input required id="field-mf-name" type="text" placeholder="e.g. Parag Parikh Flexi Cap Direct Growth" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+
+          <!-- 2. Auto-Populated Scheme Details (Name & AMFI Code) -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Scheme Name</label>
+              <input required id="field-mf-name" type="text" placeholder="Auto-populated or enter custom name" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">AMFI Scheme Code</label>
+              <input id="field-mf-schemecode" type="text" placeholder="e.g. 122639" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
+            </div>
           </div>
+
+          <!-- 3. Units, Buy NAV, Current NAV -->
           <div class="grid grid-cols-3 gap-2.5">
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Units Allocated</label>
-              <input required id="field-mf-units" type="number" min="0.001" step="0.001" placeholder="150.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden">
+              <input required id="field-mf-units" type="number" min="0.001" step="0.001" placeholder="150.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-hidden font-bold">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Buy NAV (₹)</label>
@@ -2373,39 +2640,223 @@
           </div>
         `;
 
+        const searchInput = document.getElementById('field-mf-search');
+        const nameInput = document.getElementById('field-mf-name');
+        const codeInput = document.getElementById('field-mf-schemecode');
+        const currentNavInput = document.getElementById('field-mf-currentnav');
+        const buyNavInput = document.getElementById('field-mf-buynav');
+        const unitsInput = document.getElementById('field-mf-units');
+        const autoList = document.getElementById('mf-autocomplete-list');
+        const autoStatus = document.getElementById('mf-auto-status');
         const lookupBtn = document.getElementById('btn-fetch-amfi-info');
-        if (lookupBtn) {
-          lookupBtn.addEventListener('click', async () => {
-            const code = document.getElementById('field-mf-schemecode').value.trim();
-            if (!code) {
-              showToast('Please enter an AMFI Scheme Code (e.g., 122639) or Google Ticker', 'error');
+
+        let mfDebounceTimer = null;
+
+        async function selectSchemeItem(schemeCode, schemeName, knownNav) {
+          if (autoList) autoList.classList.add('hidden');
+          if (searchInput) searchInput.value = schemeName;
+          if (nameInput) nameInput.value = schemeName;
+          if (codeInput) codeInput.value = schemeCode;
+
+          if (autoStatus) {
+            autoStatus.classList.remove('hidden');
+            autoStatus.className = 'mt-1.5 text-[11px] text-blue-600 dark:text-blue-400 font-medium';
+            autoStatus.textContent = `Fetching live NAV for ${schemeName}...`;
+          }
+
+          if (knownNav && knownNav > 0) {
+            if (currentNavInput) currentNavInput.value = knownNav;
+            if (buyNavInput && (!buyNavInput.value || parseFloat(buyNavInput.value) <= 0)) {
+              buyNavInput.value = knownNav;
+            }
+          }
+
+          try {
+            const live = await fetchMutualFundLive(schemeCode);
+            if (live && live.nav > 0) {
+              if (currentNavInput) currentNavInput.value = live.nav;
+              if (buyNavInput && (!buyNavInput.value || parseFloat(buyNavInput.value) <= 0)) {
+                buyNavInput.value = live.nav;
+              }
+              if (live.name && nameInput) nameInput.value = live.name;
+              if (autoStatus) {
+                autoStatus.className = 'mt-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
+                autoStatus.textContent = `✓ Selected: ${live.name || schemeName} • Code: ${schemeCode} • Live NAV: ₹${live.nav}`;
+              }
+              showToast(`Selected: ₹${live.nav} NAV`);
+            } else if (knownNav && knownNav > 0) {
+              if (autoStatus) {
+                autoStatus.className = 'mt-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold';
+                autoStatus.textContent = `✓ Selected: ${schemeName} • Code: ${schemeCode} • NAV: ₹${knownNav}`;
+              }
+            } else {
+              if (autoStatus) {
+                autoStatus.className = 'mt-1.5 text-[11px] text-amber-600 dark:text-amber-400';
+                autoStatus.textContent = `Scheme code ${schemeCode} selected. Please enter current NAV if not updated.`;
+              }
+            }
+          } catch (err) {
+            if (autoStatus) {
+              autoStatus.className = 'mt-1.5 text-[11px] text-amber-600 dark:text-amber-400';
+              autoStatus.textContent = `Selected: ${schemeName}. Please enter NAV manually if offline.`;
+            }
+          }
+
+          if (unitsInput) {
+            setTimeout(() => unitsInput.focus(), 150);
+          }
+        }
+
+        function renderMfDropdown(items, query) {
+          if (!autoList) return;
+          if (!items || items.length === 0) {
+            autoList.innerHTML = `
+              <div class="px-3.5 py-2.5 text-[11px] text-slate-500 dark:text-slate-400">
+                No mutual funds found matching "<strong>${escapeHtml(query)}</strong>". Try typing fund house name (e.g. Parag, SBI, HDFC, Quant) or AMFI code.
+              </div>
+            `;
+            autoList.classList.remove('hidden');
+            return;
+          }
+
+          autoList.innerHTML = items.map(item => {
+            const isDirect = item.schemeName.toLowerCase().includes('direct');
+            const isGrowth = item.schemeName.toLowerCase().includes('growth');
+            return `
+              <div class="mf-item-option px-3.5 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-700/60 cursor-pointer flex items-center justify-between text-xs transition-colors"
+                   data-code="${item.schemeCode}" data-name="${escapeHtml(item.schemeName)}" data-nav="${item.nav || ''}">
+                <div class="pr-2 flex-1 min-w-0">
+                  <div class="font-bold text-slate-900 dark:text-white truncate">${escapeHtml(item.schemeName)}</div>
+                  <div class="flex items-center gap-1.5 mt-0.5 text-[10px] text-slate-500 dark:text-slate-400">
+                    <span class="font-mono font-semibold text-emerald-600 dark:text-emerald-400">AMFI: ${item.schemeCode}</span>
+                    ${isDirect ? '<span class="px-1.5 py-0.2 rounded bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-semibold">Direct</span>' : '<span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 font-semibold">Regular</span>'}
+                    ${isGrowth ? '<span class="px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-semibold">Growth</span>' : ''}
+                    <span>• ${item.source || 'AMFI'}</span>
+                  </div>
+                </div>
+                ${item.nav ? `<div class="text-right shrink-0 font-bold text-slate-800 dark:text-slate-200">₹${Number(item.nav).toFixed(2)}</div>` : '<div class="text-right shrink-0 text-[10px] text-emerald-600 font-semibold">Select →</div>'}
+              </div>
+            `;
+          }).join('');
+
+          autoList.classList.remove('hidden');
+
+          autoList.querySelectorAll('.mf-item-option').forEach(el => {
+            el.addEventListener('click', () => {
+              const c = el.getAttribute('data-code');
+              const n = el.getAttribute('data-name');
+              const nv = parseFloat(el.getAttribute('data-nav')) || null;
+              selectSchemeItem(c, n, nv);
+            });
+          });
+        }
+
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (val.length < 1) {
+              if (autoList) {
+                autoList.classList.add('hidden');
+                autoList.innerHTML = '';
+              }
               return;
             }
-            lookupBtn.textContent = 'Fetching...';
+
+            // Instant 0ms Match in Local Catalog
+            const instantMatches = [];
+            const qLower = val.toLowerCase();
+            for (const [code, item] of Object.entries(POPULAR_MF_DIRECTORY)) {
+              if (code.includes(qLower) || item.name.toLowerCase().includes(qLower)) {
+                instantMatches.push({
+                  schemeCode: code,
+                  schemeName: item.name,
+                  nav: item.nav,
+                  source: 'Verified Catalog'
+                });
+              }
+            }
+            if (instantMatches.length > 0) {
+              renderMfDropdown(instantMatches.slice(0, 8), val);
+            }
+
+            // Debounced Live Search against full AMFI database
+            clearTimeout(mfDebounceTimer);
+            mfDebounceTimer = setTimeout(async () => {
+              const fullMatches = await searchMutualFundsByName(val);
+              renderMfDropdown(fullMatches, val);
+            }, 250);
+          });
+
+          searchInput.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter') {
+              ev.preventDefault();
+              lookupBtn?.click();
+            }
+          });
+
+          // Close dropdown on click outside
+          document.addEventListener('click', (ev) => {
+            if (autoList && !autoList.contains(ev.target) && ev.target !== searchInput) {
+              autoList.classList.add('hidden');
+            }
+          });
+        }
+
+        if (lookupBtn) {
+          lookupBtn.addEventListener('click', async () => {
+            const searchVal = (searchInput?.value || codeInput?.value || '').trim();
+            if (!searchVal) {
+              showToast('Please enter a mutual fund name (e.g. Parag Parikh) or AMFI code', 'error');
+              return;
+            }
+
+            lookupBtn.textContent = 'Searching...';
             lookupBtn.disabled = true;
 
             try {
-              const result = await fetchMutualFundLive(code);
-              if (result && result.nav > 0) {
-                if (result.name) {
-                  document.getElementById('field-mf-name').value = result.name;
+              const cleanCode = searchVal.replace(/[^0-9]/g, '');
+              if (cleanCode && cleanCode.length >= 5) {
+                const result = await fetchMutualFundLive(cleanCode);
+                if (result && result.nav > 0) {
+                  selectSchemeItem(cleanCode, result.name || `Mutual Fund Scheme ${cleanCode}`, result.nav);
+                } else {
+                  showToast('Could not fetch NAV for code. You can enter NAV manually.', 'error');
                 }
-                document.getElementById('field-mf-currentnav').value = result.nav;
-                const buyNavInput = document.getElementById('field-mf-buynav');
-                if (buyNavInput && (!buyNavInput.value || parseFloat(buyNavInput.value) <= 0)) {
-                  buyNavInput.value = result.nav;
-                }
-                showToast(`NAV: ₹${result.nav} [${result.source}]`);
               } else {
-                showToast('Could not fetch NAV. You can enter NAV manually.', 'error');
+                const matches = await searchMutualFundsByName(searchVal);
+                if (matches && matches.length > 0) {
+                  const top = matches[0];
+                  await selectSchemeItem(top.schemeCode, top.schemeName, top.nav);
+                  showToast(`Selected: ${top.schemeName}`);
+                } else {
+                  showToast(`No mutual funds found matching "${searchVal}". Enter details manually.`, 'error');
+                }
               }
             } catch (err) {
-              showToast('Could not fetch NAV for code. You can enter NAV manually.', 'error');
+              showToast('Search error. Please enter details manually.', 'error');
             } finally {
               lookupBtn.textContent = 'Lookup NAV';
               lookupBtn.disabled = false;
             }
           });
+        }
+
+        if (editingItemId) {
+          const fund = appData.funds.find(f => f.id === editingItemId);
+          if (fund) {
+            if (searchInput) searchInput.value = fund.name;
+            if (nameInput) nameInput.value = fund.name;
+            if (codeInput) codeInput.value = fund.schemeCode || '';
+            if (unitsInput) unitsInput.value = fund.units;
+            if (buyNavInput) buyNavInput.value = fund.buyNav;
+            if (currentNavInput) currentNavInput.value = fund.currentNav;
+
+            if (autoStatus) {
+              autoStatus.classList.remove('hidden');
+              autoStatus.className = 'mt-1.5 text-[11px] text-blue-600 dark:text-blue-400 font-medium';
+              autoStatus.textContent = `Editing: ${fund.name} (AMFI: ${fund.schemeCode || 'Custom'})`;
+            }
+          }
         }
       }
 
@@ -2413,6 +2864,9 @@
     }
 
     function closeModal() {
+      editingItemId = null;
+      const submitBtn = document.getElementById('modal-submit-btn');
+      if (submitBtn) submitBtn.textContent = 'Save Entry';
       document.getElementById('modal-container').classList.add('hidden');
     }
 
@@ -2513,7 +2967,7 @@
       event.target.value = '';
     }
 
-    // Handle Form Submit
+    // Handle Form Submit (Supports Add & Edit Updates)
     document.getElementById('active-entry-form').addEventListener('submit', (e) => {
       e.preventDefault();
 
@@ -2543,7 +2997,6 @@
             years = parseFloat(tenureLower) || 1;
           }
           maturityAmount = principal * Math.pow(1 + (interestRate / 400), 4 * years);
-          showToast(`Added Fixed Deposit of ${formatINR(principal)} in ${name}!`);
 
         } else if (type === 'Recurring Deposit (RD)') {
           monthlyDeposit = parseFloat(document.getElementById('field-rd-monthly').value) || 0;
@@ -2559,25 +3012,41 @@
             maturity += monthlyDeposit * Math.pow(1 + (interestRate / 400), quarters);
           }
           maturityAmount = maturity;
-          showToast(`Added Recurring Deposit (${formatINR(monthlyDeposit)}/mo) in ${name}!`);
 
         } else {
           balance = parseFloat(document.getElementById('field-bank-balance').value) || 0;
           maturityAmount = balance;
+        }
+
+        if (editingItemId) {
+          const existing = appData.banks.find(b => b.id === editingItemId);
+          if (existing) {
+            existing.name = name;
+            existing.type = type;
+            existing.balance = balance;
+            existing.interestRate = interestRate;
+            existing.tenure = tenure;
+            existing.endDate = endDate;
+            existing.monthlyDeposit = monthlyDeposit;
+            existing.maturityAmount = Math.round(maturityAmount);
+            showToast(`Updated ${name}!`);
+          }
+          editingItemId = null;
+        } else {
+          appData.banks.push({
+            id: 'b_' + Date.now(),
+            name,
+            type,
+            balance,
+            interestRate,
+            tenure,
+            endDate,
+            monthlyDeposit,
+            maturityAmount: Math.round(maturityAmount)
+          });
           showToast(`Added ${name}!`);
         }
 
-        appData.banks.push({
-          id: 'b_' + Date.now(),
-          name,
-          type,
-          balance,
-          interestRate,
-          tenure,
-          endDate,
-          monthlyDeposit,
-          maturityAmount: Math.round(maturityAmount)
-        });
       } else if (activeTab === 'stocks') {
         const symbol = document.getElementById('field-stock-symbol').value.trim().toUpperCase();
         const exchange = document.getElementById('field-stock-exchange').value;
@@ -2588,18 +3057,34 @@
         const divInput = document.getElementById('field-stock-divyield');
         const divYield = divInput && divInput.value ? parseFloat(divInput.value) : 1.5;
 
-        appData.stocks.push({
-          id: 's_' + Date.now(),
-          symbol,
-          name,
-          exchange,
-          qty,
-          buyPrice,
-          currentPrice,
-          divYield,
-          lastSync: 'Manual'
-        });
-        showToast(`Added ${symbol} (${exchange})!`);
+        if (editingItemId) {
+          const existing = appData.stocks.find(s => s.id === editingItemId);
+          if (existing) {
+            existing.symbol = symbol;
+            existing.name = name;
+            existing.exchange = exchange;
+            existing.qty = qty;
+            existing.buyPrice = buyPrice;
+            existing.currentPrice = currentPrice;
+            existing.divYield = divYield;
+            showToast(`Updated ${symbol}!`);
+          }
+          editingItemId = null;
+        } else {
+          appData.stocks.push({
+            id: 's_' + Date.now(),
+            symbol,
+            name,
+            exchange,
+            qty,
+            buyPrice,
+            currentPrice,
+            divYield,
+            lastSync: 'Manual'
+          });
+          showToast(`Added ${symbol} (${exchange})!`);
+        }
+
       } else if (activeTab === 'funds') {
         const schemeCode = document.getElementById('field-mf-schemecode') ? document.getElementById('field-mf-schemecode').value.trim() : '';
         const name = document.getElementById('field-mf-name').value.trim();
@@ -2607,16 +3092,29 @@
         const buyNav = parseFloat(document.getElementById('field-mf-buynav').value) || 0;
         const currentNav = parseFloat(document.getElementById('field-mf-currentnav').value) || 0;
 
-        appData.funds.push({
-          id: 'f_' + Date.now(),
-          schemeCode,
-          name,
-          units,
-          buyNav,
-          currentNav,
-          navDate: 'Today'
-        });
-        showToast(`Added ${name}!`);
+        if (editingItemId) {
+          const existing = appData.funds.find(f => f.id === editingItemId);
+          if (existing) {
+            existing.schemeCode = schemeCode;
+            existing.name = name;
+            existing.units = units;
+            existing.buyNav = buyNav;
+            existing.currentNav = currentNav;
+            showToast(`Updated ${name}!`);
+          }
+          editingItemId = null;
+        } else {
+          appData.funds.push({
+            id: 'f_' + Date.now(),
+            schemeCode,
+            name,
+            units,
+            buyNav,
+            currentNav,
+            navDate: 'Today'
+          });
+          showToast(`Added ${name}!`);
+        }
       }
 
       saveData();
@@ -2624,20 +3122,32 @@
       closeModal();
     });
 
-    // Delegated Delete Actions
+    // Delegated Action Listeners (Edit & Delete)
     function attachDeleteListeners(elementId, filterKey) {
       const container = document.getElementById(elementId);
       if (!container) return;
       container.addEventListener('click', (e) => {
-        const btn = e.target.closest(`[data-delete-${filterKey}]`);
-        if (!btn) return;
-        const id = btn.getAttribute(`data-delete-${filterKey}`);
-        if (filterKey === 'bank') appData.banks = appData.banks.filter(b => b.id !== id);
-        if (filterKey === 'stock') appData.stocks = appData.stocks.filter(s => s.id !== id);
-        if (filterKey === 'fund') appData.funds = appData.funds.filter(f => f.id !== id);
-        saveData();
-        renderAll();
-        showToast('Item removed');
+        // Delete Handler
+        const delBtn = e.target.closest(`[data-delete-${filterKey}]`);
+        if (delBtn) {
+          const id = delBtn.getAttribute(`data-delete-${filterKey}`);
+          if (filterKey === 'bank') appData.banks = appData.banks.filter(b => b.id !== id);
+          if (filterKey === 'stock') appData.stocks = appData.stocks.filter(s => s.id !== id);
+          if (filterKey === 'fund') appData.funds = appData.funds.filter(f => f.id !== id);
+          saveData();
+          renderAll();
+          showToast('Item removed');
+          return;
+        }
+
+        // Edit Handler
+        const editBtn = e.target.closest(`[data-edit-${filterKey}]`);
+        if (editBtn) {
+          const id = editBtn.getAttribute(`data-edit-${filterKey}`);
+          const tabMap = { bank: 'banks', stock: 'stocks', fund: 'funds' };
+          openEditModal(tabMap[filterKey], id);
+          return;
+        }
       });
     }
 
@@ -2688,7 +3198,10 @@
       });
     });
 
-    document.getElementById('btn-open-add-modal').addEventListener('click', openModal);
+    document.getElementById('btn-open-add-modal').addEventListener('click', () => {
+      editingItemId = null;
+      openModal();
+    });
     document.getElementById('modal-close-btn').addEventListener('click', closeModal);
     document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
 

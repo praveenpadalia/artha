@@ -236,7 +236,6 @@
       }
     };
 
-
     // State
     let activeTab = 'banks';
     let currentScreen = 'portfolio';

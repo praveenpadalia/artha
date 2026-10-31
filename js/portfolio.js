@@ -18,7 +18,6 @@
       }, 3000);
     };
 
-
     // Calculations & Metrics
     function computeMetrics() {
       const bankTotal = appData.banks.reduce((acc, b) => acc + (Number(b.balance) || 0), 0);

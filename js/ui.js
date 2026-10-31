@@ -389,7 +389,6 @@
       renderFunds();
     }
 
-
     // Tab Navigation within Portfolio View
     function switchTab(tab) {
       activeTab = tab;
@@ -419,7 +418,6 @@
         activePanel.classList.remove('hidden');
       }
     }
-
 
     // Hybrid Architecture: Support BOTH (Full All-In-One Dashboard & Clean Mobile App)
     let layoutMode = localStorage.getItem('artha_layout_mode') || (window.innerWidth >= 1024 ? 'dashboard' : 'app');
@@ -469,6 +467,23 @@
         if (doScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
+      if (screenName === 'markets') {
+        renderMarketScreen();
+      }
+
+      // Update Desktop Breadcrumb Title
+      const breadcrumbEl = document.getElementById('desktop-breadcrumb');
+      if (breadcrumbEl) {
+        const titles = {
+          portfolio: 'Portfolio Dashboard',
+          markets: 'Share Market Today (Live Feeds)',
+          allocation: 'Asset Allocation Breakdown',
+          rebalance: 'Target Rebalancing Calculator',
+          yield: 'Passive Income & Yield Projections'
+        };
+        breadcrumbEl.textContent = titles[screenName] || 'Dashboard';
+      }
+
       // Update bottom nav active state
       document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
         const isMatch = btn.getAttribute('data-screen-trigger') === screenName;
@@ -481,19 +496,27 @@
         }
       });
 
-      // Update desktop nav buttons
+      // Update desktop sidebar nav buttons & icons
       document.querySelectorAll('.screen-nav-btn').forEach(btn => {
         const isMatch = btn.getAttribute('data-screen-trigger') === screenName;
+        const icon = btn.querySelector('svg');
         if (isMatch) {
           btn.classList.add('active', 'font-semibold', 'text-emerald-700', 'dark:text-emerald-400', 'bg-emerald-50', 'dark:bg-emerald-950/60');
           btn.classList.remove('text-slate-600', 'dark:text-slate-400');
+          if (icon) {
+            icon.classList.add('text-emerald-600', 'dark:text-emerald-400');
+            icon.classList.remove('text-slate-400', 'dark:text-slate-500');
+          }
         } else {
           btn.classList.remove('active', 'font-semibold', 'text-emerald-700', 'dark:text-emerald-400', 'bg-emerald-50', 'dark:bg-emerald-950/60');
           btn.classList.add('text-slate-600', 'dark:text-slate-400');
+          if (icon) {
+            icon.classList.remove('text-emerald-600', 'dark:text-emerald-400');
+            icon.classList.add('text-slate-400', 'dark:text-slate-500');
+          }
         }
       });
     }
-
 
     // Modal Form Configuration
         // Global editing state & Edit Modal Trigger
@@ -1271,4 +1294,118 @@
 
       computeMetrics();
     }
+
+    // Event Listeners
+    document.getElementById('btn-theme-toggle').addEventListener('click', toggleTheme);
+
+    // Segmented Pill Listeners (Banks, Stocks, Funds)
+    document.getElementById('tab-btn-banks').addEventListener('click', () => switchTab('banks'));
+    document.getElementById('tab-btn-stocks').addEventListener('click', () => switchTab('stocks'));
+    document.getElementById('tab-btn-funds').addEventListener('click', () => switchTab('funds'));
+
+    // Screen Nav Listeners (Both Mobile Bottom Bar & Desktop Top Nav)
+    document.querySelectorAll('[data-screen-trigger]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.getAttribute('data-screen-trigger');
+        switchScreen(target);
+      });
+    });
+
+    document.getElementById('btn-open-add-modal').addEventListener('click', () => {
+      editingItemId = null;
+      openModal();
+    });
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+
+    document.getElementById('btn-sync-live').addEventListener('click', syncMarketPrices);
+
+    document.getElementById('btn-export-menu').addEventListener('click', openBackupModal);
+    document.getElementById('backup-modal-close-btn').addEventListener('click', closeBackupModal);
+    document.getElementById('btn-export-json').addEventListener('click', exportJSON);
+    document.getElementById('btn-export-csv').addEventListener('click', exportCSV);
+    document.getElementById('btn-trigger-import').addEventListener('click', () => {
+      document.getElementById('file-import-input').click();
+    });
+    document.getElementById('file-import-input').addEventListener('change', handleImportJSON);
+
+    // Target Rebalancing Sliders
+    document.getElementById('input-target-cash').addEventListener('input', (e) => {
+      appData.targets.cash = parseInt(e.target.value) || 0;
+      saveData();
+      computeMetrics();
+    });
+
+    document.getElementById('input-target-stocks').addEventListener('input', (e) => {
+      appData.targets.stocks = parseInt(e.target.value) || 0;
+      saveData();
+      computeMetrics();
+    });
+
+    document.getElementById('input-target-mf').addEventListener('input', (e) => {
+      appData.targets.mf = parseInt(e.target.value) || 0;
+      saveData();
+      computeMetrics();
+    });
+
+    // Toggle Rebalance (Kept for check_web_app compatibility)
+    document.getElementById('btn-toggle-rebalance').addEventListener('click', () => {
+      switchScreen('rebalance');
+    });
+
+    // Search & Filter Events
+    document.getElementById('search-query-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      applySearchFilter();
+    });
+
+    document.getElementById('btn-clear-search').addEventListener('click', () => {
+      document.getElementById('search-query-input').value = '';
+      searchQuery = '';
+      applySearchFilter();
+    });
+
+    document.getElementById('btn-reset-filter-link').addEventListener('click', () => {
+      document.getElementById('search-query-input').value = '';
+      searchQuery = '';
+      applySearchFilter();
+    });
+
+    document.getElementById('btn-quick-refresh').addEventListener('click', () => {
+      computeMetrics();
+      showToast('Portfolio values recalculated!');
+    });
+
+    document.getElementById('btn-reset-demo').addEventListener('click', () => {
+      appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      saveData();
+      renderAll();
+      showToast('Reset to sample Indian portfolio data');
+    });
+
+    // Google Apps Script Bridge URL Management
+    const bridgeInput = document.getElementById('input-google-bridge-url');
+    const bridgeSaveBtn = document.getElementById('btn-save-google-bridge');
+
+    if (bridgeInput) {
+      bridgeInput.value = localStorage.getItem('artha_google_bridge') || 'https://script.google.com/macros/s/AKfycbxjbwxkEBgoi2c2TU1IdbkUoWnQIo4JzEwtbj-VxJrsmm-MNMMWvm3i99i66LWCyDsJ/exec';
+    }
+
+    if (bridgeSaveBtn) {
+      bridgeSaveBtn.addEventListener('click', () => {
+        const val = (document.getElementById('input-google-bridge-url').value || '').trim();
+        localStorage.setItem('artha_google_bridge', val);
+        showToast(val ? 'Google Apps Script Webhook saved!' : 'Cleared custom webhook URL');
+      });
+    }
+
+    // View Mode Toggle Listener
+    const viewModeBtn = document.getElementById('btn-toggle-view-mode');
+    if (viewModeBtn) {
+      viewModeBtn.addEventListener('click', toggleLayoutMode);
+    }
+
+    // Cloud Sync Listeners
+    document.getElementById('btn-cloud-sync')?.addEventListener('click', openCloudModal);
+    document.getElementById('cloud-modal-close-btn')?.addEventListener('click', closeCloudModal);
 

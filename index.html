@@ -23,105 +23,168 @@
   <!-- Supabase Cloud Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col pb-20 sm:pb-6 transition-colors duration-200">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col lg:flex-row transition-colors duration-200 antialiased">
 
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- Mobile-First Compact Header -->
-  <header class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs transition-colors">
-    <div class="max-w-7xl mx-auto px-4 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+    <!-- ============================================== -->
+  <!-- 1. MODERN DESKTOP SIDEBAR (Visible on Laptops) -->
+  <!-- ============================================== -->
+  <aside class="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 fixed inset-y-0 left-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-r border-slate-200/80 dark:border-slate-800/80 p-5 justify-between select-none">
+    <div class="space-y-6">
       <!-- Brand & Tagline -->
-      <div class="flex items-center gap-2.5">
-        <div class="h-9 w-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shadow-sm font-bold text-base shrink-0">
+      <div class="flex items-center gap-3 px-1">
+        <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-emerald-700 via-emerald-600 to-emerald-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 font-bold text-lg shrink-0">
           अ
         </div>
         <div>
           <div class="flex items-center gap-1.5">
-            <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white leading-none">Artha</h1>
-            <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-semibold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
+            <h1 class="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-none">Artha</h1>
+            <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
               Live
             </span>
           </div>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-tight mt-0.5">
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-tight mt-1">
             <span class="font-semibold text-emerald-600 dark:text-emerald-400">धन से समृद्धि तक</span>
           </p>
         </div>
       </div>
 
-      <!-- Quick Action Buttons -->
-      <div class="flex items-center gap-1.5 sm:gap-2">
-        <span id="sync-status-label" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden lg:inline">Last sync: Initialized</span>
+      <!-- Main Navigation Menu -->
+      <nav class="space-y-1.5" aria-label="Main Navigation">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3 mb-2">Navigation</div>
         
-        <!-- Theme Toggle -->
-        <!-- Cloud Sync (Supabase) -->
-        <button id="btn-cloud-sync" type="button" title="Sync portfolio across devices with Supabase" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 transition-colors shadow-xs">
-          <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path>
-          </svg>
-          <span id="cloud-sync-btn-text" class="hidden sm:inline">Cloud Sync</span>
+        <button type="button" data-screen-trigger="portfolio" class="screen-nav-btn active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-bold text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 transition-all shadow-xs text-left">
+          <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          <span class="flex-1">Portfolio</span>
         </button>
 
-        <!-- View Mode Switcher (Keep Both: Mobile App & Full Desktop Dashboard) -->
-        <button id="btn-toggle-view-mode" type="button" title="Switch between App Mode and Full Dashboard View" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors">
-          <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-          <span id="view-mode-label">Switch View</span>
+        <button type="button" data-screen-trigger="markets" class="screen-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-left">
+          <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+          <span class="flex-1">Markets Today</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         </button>
 
-        <button id="btn-theme-toggle"  type="button" aria-label="Toggle Theme" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors">
-          <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-          <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+        <button type="button" data-screen-trigger="allocation" class="screen-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-left">
+          <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+          <span class="flex-1">Asset Allocation</span>
         </button>
 
-        <!-- Sync Live Prices -->
-        <button id="btn-sync-live" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl shadow-xs transition-all">
-          <svg id="sync-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-          <span id="sync-btn-text" class="hidden sm:inline">Sync Live Prices</span>
+        <button type="button" data-screen-trigger="rebalance" class="screen-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-left">
+          <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+          <span class="flex-1">Target Rebalance</span>
         </button>
 
-        <!-- Recalculate (Kept for check_web_app compatibility) -->
-        <button id="btn-quick-refresh" type="button" class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors">
-          Recalculate
+        <button type="button" data-screen-trigger="yield" class="screen-nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-left">
+          <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="flex-1">Passive Yield</span>
         </button>
-
-        <!-- Backup / Export -->
-        <button id="btn-export-menu" type="button" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors">
-          <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-          <span class="hidden sm:inline">Backup / Export</span>
-        </button>
-
-        <!-- Reset Sample Data (Kept for check_web_app compatibility) -->
-        <button id="btn-reset-demo" type="button" class="hidden md:inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-700 rounded-xl transition-colors">
-          Reset Sample Data
-        </button>
-      </div>
+      </nav>
     </div>
 
-    <!-- Desktop Navigation Bar (hidden on mobile, uses bottom nav instead) -->
-    <div class="hidden sm:block border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
-      <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-xs font-medium">
-        <div class="flex space-x-1 py-1">
-          <button type="button" data-screen-trigger="portfolio" class="screen-nav-btn active px-3.5 py-1.5 rounded-lg text-emerald-700 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/60 transition-colors">
-            Portfolio
+    <!-- Sidebar Bottom Utilities & Account -->
+    <div class="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+      <!-- Cloud Account Card / Trigger -->
+      <button id="btn-cloud-sync" type="button" title="Sync portfolio across devices with Supabase" class="w-full flex items-center justify-between p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 bg-slate-50/60 dark:bg-slate-800/40 transition-all text-left group">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-emerald-600 transition-colors">
+              <span id="cloud-sync-btn-text">Cloud Sync</span>
+            </div>
+            <div class="text-[10px] text-slate-400 truncate">Supabase Cloud DB</div>
+          </div>
+        </div>
+        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </button>
+
+      <!-- Sidebar Utility Actions Row -->
+      <div class="flex items-center justify-between px-1 text-slate-500 dark:text-slate-400 text-xs">
+        <div class="flex items-center gap-1">
+          <!-- Theme Toggle -->
+          <button id="btn-theme-toggle" type="button" title="Toggle Light/Dark Theme" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <svg id="theme-icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            <svg id="theme-icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
           </button>
-          <button type="button" data-screen-trigger="allocation" class="screen-nav-btn px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-            Asset Allocation
+
+          <!-- Backup / Export -->
+          <button id="btn-export-menu" type="button" title="Backup & Export Portfolio" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span class="sr-only">Backup / Export</span>
           </button>
-          <button type="button" data-screen-trigger="rebalance" class="screen-nav-btn px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-            Target Rebalance
+
+          <!-- Recalculate -->
+          <button id="btn-quick-refresh" type="button" title="Recalculate portfolio values" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            <span class="sr-only">Recalculate</span>
           </button>
-          <button type="button" data-screen-trigger="yield" class="screen-nav-btn px-3.5 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-            Passive Yield
+
+          <!-- View Mode (Kept for compatibility) -->
+          <button id="btn-toggle-view-mode" type="button" title="Switch View Mode" class="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 transition-colors">
+            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            <span id="view-mode-label" class="sr-only">Switch View</span>
           </button>
         </div>
-        <div class="text-[11px] text-slate-400">
-          BSE • NSE • AMFI Mutual Funds
+
+        <div class="flex items-center gap-1">
+          <!-- Reset Sample Data -->
+          <button id="btn-reset-demo" type="button" title="Reset to Sample Indian Portfolio" class="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors px-1 py-0.5">
+            Reset Sample Data
+          </button>
         </div>
       </div>
     </div>
-  </header>
+  </aside>
+
+  <!-- ============================================== -->
+  <!-- 2. MAIN APP SHELL (Laptops: pl-64/pl-72)        -->
+  <!-- ============================================== -->
+  <div class="flex-1 lg:pl-64 xl:pl-72 min-w-0 flex flex-col pb-24 lg:pb-12">
+    <!-- Top Modern App Header (Desktop + Mobile Responsive) -->
+    <header class="bg-white/85 dark:bg-slate-900/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 sticky top-0 z-30 transition-colors shadow-xs">
+      <div class="max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
+        <!-- Left: Mobile Brand OR Desktop Breadcrumbs -->
+        <div class="flex items-center gap-3">
+          <!-- Mobile Brand Logo -->
+          <div class="lg:hidden flex items-center gap-2">
+            <div class="h-8 w-8 rounded-xl bg-gradient-to-tr from-emerald-700 to-emerald-500 flex items-center justify-center text-white shadow-xs font-bold text-sm shrink-0">
+              अ
+            </div>
+            <div>
+              <div class="flex items-center gap-1">
+                <h1 class="text-base font-extrabold text-slate-900 dark:text-white leading-none">Artha</h1>
+                <span class="px-1 py-0.2 rounded text-[8px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">Live</span>
+              </div>
+              <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold leading-none mt-0.5">धन से समृद्धि तक</div>
+            </div>
+          </div>
+
+          <!-- Desktop Breadcrumbs -->
+          <div class="hidden lg:flex items-center gap-2 text-xs font-medium">
+            <span class="text-slate-400">Artha</span>
+            <span class="text-slate-300 dark:text-slate-700">/</span>
+            <span id="desktop-breadcrumb" class="font-bold text-slate-900 dark:text-white">Portfolio Dashboard</span>
+          </div>
+        </div>
+
+        <!-- Right: Status & Action Buttons -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <span id="sync-status-label" class="text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:inline">Last sync: Initialized</span>
+
+          <!-- Sync Live Prices Button -->
+          <button id="btn-sync-live" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl shadow-xs transition-all">
+            <svg id="sync-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <span id="sync-btn-text">Sync Live Prices</span>
+          </button>
+        </div>
+      </div>
+    </header>
 
   <!-- MAIN APP CONTAINER -->
   <main class="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-6 w-full flex-1">
@@ -303,6 +366,180 @@
     </div>
 
     <!-- ========================================== -->
+    <!-- SCREEN: SHARE MARKET TODAY (GROWW STYLE)   -->
+    <!-- ========================================== -->
+    <div id="screen-markets" class="screen-panel hidden space-y-5">
+      <!-- Market Hero Header -->
+      <section class="bg-gradient-to-br from-emerald-900 via-slate-900 to-slate-950 rounded-3xl p-5 sm:p-7 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl"></div>
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Live Market Dashboard • Indian Exchanges
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight">Share Market Today</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+              Track benchmark indices, FII &amp; DII institutional cash flows, and top movers across NSE &amp; BSE. Tap any stock to add it directly to your portfolio.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button id="btn-refresh-market-data" type="button" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/10 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              Refresh Feeds
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1. Major Benchmark Indices Strip (Groww Style) -->
+      <section class="space-y-2">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+            Major Market Indices
+          </h3>
+          <span class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">BSE &amp; NSE</span>
+        </div>
+        <div id="market-indices-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- 2. Institutional Activity (FII & DII Flows in ₹ Cr) -->
+      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-bold text-slate-900 dark:text-white">Institutional Cash Market Flows (FII &amp; DII)</h3>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">₹ in Crores</span>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Daily foreign vs. domestic institutional investment sentiment</p>
+          </div>
+          <div id="fii-dii-badge" class="shrink-0 px-3 py-1 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Net Buying: +₹629.80 Cr</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-4">
+          <!-- FII Card -->
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+              <span>Foreign Investors (FII)</span>
+              <span class="text-[10px] uppercase font-bold text-rose-600 dark:text-rose-400">Net Seller</span>
+            </div>
+            <div class="text-lg font-extrabold text-rose-600 dark:text-rose-400 mt-1">-₹1,850.40 Cr</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Gross Sales exceed Gross Purchases</div>
+          </div>
+
+          <!-- DII Card -->
+          <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+              <span>Domestic Institutions (DII)</span>
+              <span class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Net Buyer</span>
+            </div>
+            <div class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">+₹2,480.20 Cr</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Strong Mutual Fund &amp; DII SIP support</div>
+          </div>
+
+          <!-- Net Difference -->
+          <div class="p-3.5 rounded-xl border border-emerald-200/60 dark:border-emerald-900/40 bg-emerald-50/30 dark:bg-emerald-950/20">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+              <span>Total Institutional Net</span>
+              <span class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Net Support</span>
+            </div>
+            <div class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">+₹629.80 Cr</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">DII buying absorbed FII selling</div>
+          </div>
+        </div>
+
+        <!-- 3-day history strip -->
+        <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span class="text-slate-500 dark:text-slate-400 font-medium text-[11px]">Recent Trading Days:</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+              30 Oct: FII <strong class="text-emerald-600">+₹3,598 Cr</strong> • DII <strong class="text-rose-600">-₹817 Cr</strong>
+            </span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+              29 Oct: FII <strong class="text-rose-600">-₹943 Cr</strong> • DII <strong class="text-emerald-600">+₹1,924 Cr</strong>
+            </span>
+            <span class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+              28 Oct: FII <strong class="text-emerald-600">+₹871 Cr</strong> • DII <strong class="text-emerald-600">+₹643 Cr</strong>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Sector Performance Heatmap (Groww Style) -->
+      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white">Sectoral Performance Today</h3>
+          <span class="text-[11px] text-slate-400">Sector Indices</span>
+        </div>
+        <div id="sector-pills-container" class="flex flex-wrap gap-2">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- 4. Market Movers Dashboard (Tabs: Gainers, Losers, Most Active, 52W Highs) -->
+      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Market Movers</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Top trending stocks by price action and trading volume</p>
+          </div>
+
+          <!-- Market Cap Filter -->
+          <div class="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-xs font-semibold self-start sm:self-auto">
+            <button id="cap-filter-all" type="button" class="cap-filter-btn active px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all">All</button>
+            <button id="cap-filter-large" type="button" class="cap-filter-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">Large Cap</button>
+            <button id="cap-filter-mid" type="button" class="cap-filter-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">Mid Cap</button>
+          </div>
+        </div>
+
+        <!-- Mover Category Tabs (Groww Style) -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-100 dark:border-slate-800 text-xs font-bold">
+          <button id="tab-mover-gainers" type="button" class="mover-tab-btn active px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition-colors flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Top Gainers
+          </button>
+          <button id="tab-mover-losers" type="button" class="mover-tab-btn px-3.5 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            Top Losers
+          </button>
+          <button id="tab-mover-volume" type="button" class="mover-tab-btn px-3.5 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+            Most Active (Volume)
+          </button>
+          <button id="tab-mover-52whigh" type="button" class="mover-tab-btn px-3.5 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            52-Week Highs
+          </button>
+        </div>
+
+        <!-- Stock Cards Grid -->
+        <div id="market-movers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- 5. Market Pulse & News Highlights -->
+      <section class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-5">
+        <div class="flex items-center justify-between mb-3.5">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+            Market Headlines &amp; Stock Updates
+          </h3>
+          <span class="text-[11px] text-slate-400">Indian Business News</span>
+        </div>
+        <div id="market-news-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ========================================== -->
     <!-- SCREEN 2: ASSET ALLOCATION (DONUT CHART)   -->
     <!-- ========================================== -->
     <div id="screen-allocation" class="screen-panel hidden space-y-4">
@@ -470,9 +707,15 @@
   <!-- MOBILE BOTTOM NAVIGATION BAR (True Mobile-First UX) -->
   <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 flex items-center justify-around py-1.5 px-2">
     <!-- Portfolio Tab -->
-    <button type="button" data-screen-trigger="portfolio" class="bottom-nav-btn active flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-emerald-600 dark:text-emerald-400 font-semibold transition-colors">
+    <button type="button" data-screen-trigger="portfolio" class="bottom-nav-btn active flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-emerald-600 dark:text-emerald-400 font-semibold transition-colors">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
       <span class="text-[10px]">Portfolio</span>
+    </button>
+
+    <!-- Markets Tab (Groww Style) -->
+    <button type="button" data-screen-trigger="markets" class="bottom-nav-btn flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 font-medium transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+      <span class="text-[10px]">Markets</span>
     </button>
 
     <!-- Allocation Tab -->
@@ -636,5 +879,6 @@
   <script src="js/market.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/app.js"></script>
+  </div>
 </body>
 </html>

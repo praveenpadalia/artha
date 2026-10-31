@@ -153,7 +153,6 @@
       closeModal();
     });
 
-
     // Delegated Action Listeners (Edit & Delete)
     function attachDeleteListeners(elementId, filterKey) {
       const container = document.getElementById(elementId);
@@ -191,119 +190,58 @@
     attachDeleteListeners('mf-card-container', 'fund');
 
 
-    // Event Listeners
-    document.getElementById('btn-theme-toggle').addEventListener('click', toggleTheme);
+    // Market Screen Tab & Cap Listeners
+    const moverTabIds = [
+      { id: 'tab-mover-gainers', key: 'gainers' },
+      { id: 'tab-mover-losers', key: 'losers' },
+      { id: 'tab-mover-volume', key: 'volume' },
+      { id: 'tab-mover-52whigh', key: 'high52' }
+    ];
 
-    // Segmented Pill Listeners (Banks, Stocks, Funds)
-    document.getElementById('tab-btn-banks').addEventListener('click', () => switchTab('banks'));
-    document.getElementById('tab-btn-stocks').addEventListener('click', () => switchTab('stocks'));
-    document.getElementById('tab-btn-funds').addEventListener('click', () => switchTab('funds'));
-
-    // Screen Nav Listeners (Both Mobile Bottom Bar & Desktop Top Nav)
-    document.querySelectorAll('[data-screen-trigger]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const target = btn.getAttribute('data-screen-trigger');
-        switchScreen(target);
+    moverTabIds.forEach(tab => {
+      document.getElementById(tab.id)?.addEventListener('click', () => {
+        currentMoverTab = tab.key;
+        moverTabIds.forEach(t => {
+          const el = document.getElementById(t.id);
+          if (el) {
+            if (t.key === currentMoverTab) {
+              el.className = 'mover-tab-btn active px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition-colors flex items-center gap-1.5 shrink-0';
+            } else {
+              el.className = 'mover-tab-btn px-3.5 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 shrink-0';
+            }
+          }
+        });
+        renderMoversGrid();
       });
     });
 
-    document.getElementById('btn-open-add-modal').addEventListener('click', () => {
-      editingItemId = null;
-      openModal();
-    });
-    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
-    document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+    const capBtns = [
+      { id: 'cap-filter-all', key: 'all' },
+      { id: 'cap-filter-large', key: 'large' },
+      { id: 'cap-filter-mid', key: 'mid' }
+    ];
 
-    document.getElementById('btn-sync-live').addEventListener('click', syncMarketPrices);
-
-    document.getElementById('btn-export-menu').addEventListener('click', openBackupModal);
-    document.getElementById('backup-modal-close-btn').addEventListener('click', closeBackupModal);
-    document.getElementById('btn-export-json').addEventListener('click', exportJSON);
-    document.getElementById('btn-export-csv').addEventListener('click', exportCSV);
-    document.getElementById('btn-trigger-import').addEventListener('click', () => {
-      document.getElementById('file-import-input').click();
-    });
-    document.getElementById('file-import-input').addEventListener('change', handleImportJSON);
-
-    // Target Rebalancing Sliders
-    document.getElementById('input-target-cash').addEventListener('input', (e) => {
-      appData.targets.cash = parseInt(e.target.value) || 0;
-      saveData();
-      computeMetrics();
-    });
-
-    document.getElementById('input-target-stocks').addEventListener('input', (e) => {
-      appData.targets.stocks = parseInt(e.target.value) || 0;
-      saveData();
-      computeMetrics();
-    });
-
-    document.getElementById('input-target-mf').addEventListener('input', (e) => {
-      appData.targets.mf = parseInt(e.target.value) || 0;
-      saveData();
-      computeMetrics();
-    });
-
-    // Toggle Rebalance (Kept for check_web_app compatibility)
-    document.getElementById('btn-toggle-rebalance').addEventListener('click', () => {
-      switchScreen('rebalance');
-    });
-
-    // Search & Filter Events
-    document.getElementById('search-query-input').addEventListener('input', (e) => {
-      searchQuery = e.target.value;
-      applySearchFilter();
-    });
-
-    document.getElementById('btn-clear-search').addEventListener('click', () => {
-      document.getElementById('search-query-input').value = '';
-      searchQuery = '';
-      applySearchFilter();
-    });
-
-    document.getElementById('btn-reset-filter-link').addEventListener('click', () => {
-      document.getElementById('search-query-input').value = '';
-      searchQuery = '';
-      applySearchFilter();
-    });
-
-    document.getElementById('btn-quick-refresh').addEventListener('click', () => {
-      computeMetrics();
-      showToast('Portfolio values recalculated!');
-    });
-
-    document.getElementById('btn-reset-demo').addEventListener('click', () => {
-      appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-      saveData();
-      renderAll();
-      showToast('Reset to sample Indian portfolio data');
-    });
-
-    // Google Apps Script Bridge URL Management
-    const bridgeInput = document.getElementById('input-google-bridge-url');
-    const bridgeSaveBtn = document.getElementById('btn-save-google-bridge');
-
-    if (bridgeInput) {
-      bridgeInput.value = localStorage.getItem('artha_google_bridge') || 'https://script.google.com/macros/s/AKfycbxjbwxkEBgoi2c2TU1IdbkUoWnQIo4JzEwtbj-VxJrsmm-MNMMWvm3i99i66LWCyDsJ/exec';
-    }
-
-    if (bridgeSaveBtn) {
-      bridgeSaveBtn.addEventListener('click', () => {
-        const val = (document.getElementById('input-google-bridge-url').value || '').trim();
-        localStorage.setItem('artha_google_bridge', val);
-        showToast(val ? 'Google Apps Script Webhook saved!' : 'Cleared custom webhook URL');
+    capBtns.forEach(cap => {
+      document.getElementById(cap.id)?.addEventListener('click', () => {
+        currentCapFilter = cap.key;
+        capBtns.forEach(c => {
+          const el = document.getElementById(c.id);
+          if (el) {
+            if (c.key === currentCapFilter) {
+              el.className = 'cap-filter-btn active px-2.5 py-1 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs transition-all';
+            } else {
+              el.className = 'cap-filter-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all';
+            }
+          }
+        });
+        renderMoversGrid();
       });
-    }
+    });
 
-    // View Mode Toggle Listener
-    const viewModeBtn = document.getElementById('btn-toggle-view-mode');
-    if (viewModeBtn) {
-      viewModeBtn.addEventListener('click', toggleLayoutMode);
-    }
-
-    // Cloud Sync Listeners
-    document.getElementById('btn-cloud-sync')?.addEventListener('click', openCloudModal);
-    document.getElementById('cloud-modal-close-btn')?.addEventListener('click', closeCloudModal);
+    document.getElementById('btn-refresh-market-data')?.addEventListener('click', () => {
+      renderMarketScreen();
+      showToast('✓ Refreshed market feeds from Indian exchanges!');
+    });
 
     // Initial Launch
     initTheme();

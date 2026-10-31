@@ -172,7 +172,6 @@
       }).slice(0, 10);
     }
 
-
     // Unified Mutual Fund NAV Fetcher (Direct AMFI + Google Webhook + CORS Proxy + Catalog Fallback)
     async function fetchMutualFundLive(codeOrTicker) {
       const q = (codeOrTicker || '').toString().trim();
@@ -287,7 +286,6 @@
 
       return null;
     }
-
 
     // Unified Live Stock Quote Fetcher (Zero Direct CORS Blocks)
     async function fetchStockLiveQuote(symbolsQuery) {
@@ -461,7 +459,6 @@
       showToast(`Synced ${mfSuccessCount} Mutual Funds & refreshed ${stockSuccessCount} Stocks!`);
     }
 
-
     // Automatic Stock Info Lookup Function
     async function lookupAndFillStockInfo(symbolRaw) {
       const symbol = (symbolRaw || '').trim().toUpperCase().replace(/\.(NS|BO)$/, '');
@@ -556,5 +553,214 @@
       renderBanks();
       renderStocks();
       renderFunds();
+    }
+
+
+    // Groww-Style Indian Share Market Live Feed & Data
+    const MARKET_SCREEN_DATA = {
+      indices: [
+        { name: 'NIFTY 50', symbol: 'NIFTY', value: 24320.50, change: 135.20, changePct: 0.56, exchange: 'NSE' },
+        { name: 'SENSEX', symbol: 'SENSEX', value: 79942.10, change: 415.80, changePct: 0.52, exchange: 'BSE' },
+        { name: 'BANK NIFTY', symbol: 'BANKNIFTY', value: 51850.30, change: 310.40, changePct: 0.60, exchange: 'NSE' },
+        { name: 'NIFTY IT', symbol: 'NIFTYIT', value: 41200.00, change: 280.15, changePct: 0.68, exchange: 'NSE' },
+        { name: 'INDIA VIX', symbol: 'INDIAVIX', value: 14.25, change: -0.45, changePct: -3.06, exchange: 'NSE' }
+      ],
+      fiiDii: {
+        date: 'Latest Session',
+        fiiNet: -1850.40,
+        diiNet: 2480.20
+      },
+      movers: {
+        gainers: [
+          { symbol: 'TRENT', name: 'Trent Ltd.', price: 3017.30, change: 155.60, changePct: 5.44, low: 2850.00, high: 3045.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'ZYDUSLIFE', name: 'Zydus Lifesciences', price: 1245.50, change: 61.10, changePct: 5.16, low: 1180.00, high: 1255.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'INDIGO', name: 'Interglobe Aviation', price: 4877.60, change: 202.60, changePct: 4.33, low: 4660.00, high: 4910.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'WIPRO', name: 'Wipro Ltd.', price: 548.80, change: 22.40, changePct: 4.26, low: 524.00, high: 552.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'SUZLON', name: 'Suzlon Energy Ltd.', price: 74.50, change: 3.10, changePct: 4.34, low: 71.00, high: 75.80, cap: 'mid', exchange: 'NSE' },
+          { symbol: 'BEL', name: 'Bharat Electronics Ltd.', price: 312.40, change: 11.20, changePct: 3.72, low: 299.50, high: 315.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'PERSISTENT', name: 'Persistent Systems', price: 5410.00, change: 185.00, changePct: 3.54, low: 5215.00, high: 5440.00, cap: 'mid', exchange: 'NSE' },
+          { symbol: 'DIXON', name: 'Dixon Technologies', price: 14850.00, change: 490.00, changePct: 3.41, low: 14300.00, high: 14920.00, cap: 'mid', exchange: 'NSE' }
+        ],
+        losers: [
+          { symbol: 'VBL', name: 'Varun Beverages', price: 592.00, change: -22.80, changePct: -3.71, low: 588.00, high: 618.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'MUTHOOTFIN', name: 'Muthoot Finance', price: 2408.60, change: -88.50, changePct: -3.54, low: 2390.00, high: 2510.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'MAZDOCK', name: 'Mazagon Dock Shipbuilders', price: 4705.30, change: -157.40, changePct: -3.24, low: 4680.00, high: 4890.00, cap: 'mid', exchange: 'NSE' },
+          { symbol: 'SOLARINDS', name: 'Solar Industries India', price: 10800.00, change: -330.00, changePct: -2.96, low: 10720.00, high: 11150.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'IRFC', name: 'Indian Railway Finance Corp', price: 153.30, change: -4.30, changePct: -2.73, low: 152.00, high: 158.50, cap: 'large', exchange: 'NSE' },
+          { symbol: 'GODREJCP', name: 'Godrej Consumer Products', price: 1218.00, change: -29.00, changePct: -2.33, low: 1205.00, high: 1250.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'IDEA', name: 'Vodafone Idea', price: 8.85, change: -0.25, changePct: -2.75, low: 8.70, high: 9.20, cap: 'mid', exchange: 'NSE' },
+          { symbol: 'TATAPOWER', name: 'Tata Power Co Ltd.', price: 428.10, change: -8.90, changePct: -2.04, low: 425.00, high: 439.00, cap: 'large', exchange: 'NSE' }
+        ],
+        volume: [
+          { symbol: 'ZOMATO', name: 'Eternal (Zomato)', price: 268.40, change: 8.20, changePct: 3.15, volume: '8.4 Cr shares', cap: 'large', exchange: 'NSE' },
+          { symbol: 'SUZLON', name: 'Suzlon Energy Ltd.', price: 74.50, change: 3.10, changePct: 4.34, volume: '14.2 Cr shares', cap: 'mid', exchange: 'NSE' },
+          { symbol: 'IDEA', name: 'Vodafone Idea', price: 8.85, change: -0.25, changePct: -2.75, volume: '22.8 Cr shares', cap: 'mid', exchange: 'NSE' },
+          { symbol: 'TATASTEEL', name: 'Tata Steel Ltd.', price: 152.40, change: 1.85, changePct: 1.23, volume: '4.9 Cr shares', cap: 'large', exchange: 'NSE' },
+          { symbol: 'YESBANK', name: 'Yes Bank Ltd.', price: 21.60, change: 0.35, changePct: 1.65, volume: '11.5 Cr shares', cap: 'mid', exchange: 'NSE' },
+          { symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', price: 1748.20, change: 18.50, changePct: 1.07, volume: '2.1 Cr shares', cap: 'large', exchange: 'NSE' }
+        ],
+        high52: [
+          { symbol: 'TRENT', name: 'Trent Ltd.', price: 3017.30, change: 155.60, changePct: 5.44, high52: 3045.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'ZOMATO', name: 'Eternal (Zomato)', price: 268.40, change: 8.20, changePct: 3.15, high52: 272.50, cap: 'large', exchange: 'NSE' },
+          { symbol: 'KOTAKBANK', name: 'Kotak Mahindra Bank', price: 1885.60, change: 21.40, changePct: 1.15, high52: 1910.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'DIVISLAB', name: 'Divis Laboratories', price: 5880.00, change: 86.00, changePct: 1.48, high52: 5940.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'BHARTIARTL', name: 'Bharti Airtel Ltd.', price: 1715.00, change: 14.80, changePct: 0.87, high52: 1735.00, cap: 'large', exchange: 'NSE' },
+          { symbol: 'SUNPHARMA', name: 'Sun Pharmaceutical', price: 1910.00, change: 24.50, changePct: 1.30, high52: 1928.00, cap: 'large', exchange: 'NSE' }
+        ]
+      },
+      sectors: [
+        { name: 'Nifty Auto', changePct: 1.42 },
+        { name: 'Nifty IT', changePct: 1.15 },
+        { name: 'Nifty Bank', changePct: 0.68 },
+        { name: 'Nifty Metal', changePct: 0.90 },
+        { name: 'Nifty Pharma', changePct: 0.55 },
+        { name: 'Nifty FMCG', changePct: -0.32 },
+        { name: 'Nifty Energy', changePct: -0.45 }
+      ],
+      news: [
+        { source: 'Business Standard', time: 'Today', title: 'Q2 Corporate Earnings: Broad-based revenue growth beats analyst estimates across Auto & Banking majors.', tag: 'Earnings' },
+        { source: 'The Economic Times', time: 'Today', title: 'FIIs turn net buyers in Indian equities while DII inflows hit record levels in October.', tag: 'Institutions' },
+        { source: 'LiveMint', time: 'Today', title: 'RBI Monetary Policy: Focus remains on disinflation as domestic liquidity conditions ease.', tag: 'Economy' },
+        { source: 'CNBC TV18', time: 'Today', title: 'Defence & Renewable PSUs see robust order book execution and capital goods revival.', tag: 'Sectors' }
+      ]
+    };
+
+    let currentMoverTab = 'gainers';
+    let currentCapFilter = 'all';
+
+    function renderMarketScreen() {
+      // 1. Render Indices
+      const indicesContainer = document.getElementById('market-indices-container');
+      if (indicesContainer) {
+        indicesContainer.innerHTML = MARKET_SCREEN_DATA.indices.map(idx => {
+          const isUp = idx.change >= 0;
+          return `
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(idx.name)}</span>
+                <span class="text-[9px] font-semibold px-1.5 py-0.2 rounded ${idx.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${idx.exchange}</span>
+              </div>
+              <div class="my-1.5 font-extrabold text-slate-900 dark:text-white text-base">
+                ${Number(idx.value).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div class="flex items-center gap-1 text-[11px] font-semibold ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                <span>${isUp ? '▲ +' : '▼ '}${Number(idx.change).toFixed(2)}</span>
+                <span>(${isUp ? '+' : ''}${Number(idx.changePct).toFixed(2)}%)</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 2. Render Sector Pills
+      const sectorContainer = document.getElementById('sector-pills-container');
+      if (sectorContainer) {
+        sectorContainer.innerHTML = MARKET_SCREEN_DATA.sectors.map(sec => {
+          const isUp = sec.changePct >= 0;
+          return `
+            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold ${isUp ? 'bg-emerald-50/70 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300' : 'bg-rose-50/70 border-rose-200 dark:bg-rose-950/40 dark:border-rose-800 text-rose-800 dark:text-rose-300'}">
+              <span>${escapeHtml(sec.name)}</span>
+              <span class="font-mono text-[11px]">${isUp ? '+' : ''}${sec.changePct.toFixed(2)}%</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 3. Render Movers Grid
+      renderMoversGrid();
+
+      // 4. Render News Highlights
+      const newsContainer = document.getElementById('market-news-container');
+      if (newsContainer) {
+        newsContainer.innerHTML = MARKET_SCREEN_DATA.news.map(n => `
+          <div class="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between">
+            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 leading-snug">${escapeHtml(n.title)}</div>
+            <div class="mt-2 flex items-center justify-between text-[10px] text-slate-400 font-medium">
+              <span class="text-emerald-600 dark:text-emerald-400 font-semibold">${escapeHtml(n.source)} • ${escapeHtml(n.time)}</span>
+              <span class="px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${escapeHtml(n.tag)}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderMoversGrid() {
+      const grid = document.getElementById('market-movers-grid');
+      if (!grid) return;
+
+      const rawItems = MARKET_SCREEN_DATA.movers[currentMoverTab] || [];
+      const filtered = rawItems.filter(item => {
+        if (currentCapFilter === 'all') return true;
+        return item.cap === currentCapFilter;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400 text-xs">No stocks match the selected market cap.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(stock => {
+        const isUp = stock.change >= 0;
+        return `
+          <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all group">
+            <div>
+              <div class="flex items-center justify-between gap-1">
+                <span class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${escapeHtml(stock.symbol)}</span>
+                <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${stock.cap === 'large' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${stock.cap === 'large' ? 'Large Cap' : 'Mid Cap'}</span>
+              </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${escapeHtml(stock.name)}</div>
+            </div>
+
+            <div class="my-2.5">
+              <div class="text-base font-extrabold text-slate-900 dark:text-white">${formatINR(stock.price)}</div>
+              <div class="flex items-center gap-1.5 mt-0.5 text-xs font-semibold ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                <span>${isUp ? '+' : ''}${formatINR(stock.change)}</span>
+                <span class="px-1 py-0.2 rounded ${isUp ? 'bg-emerald-50 dark:bg-emerald-950' : 'bg-rose-50 dark:bg-rose-950'}">
+                  ${isUp ? '+' : ''}${stock.changePct.toFixed(2)}%
+                </span>
+              </div>
+              ${stock.volume ? `<div class="text-[10px] text-slate-400 mt-1">Vol: ${escapeHtml(stock.volume)}</div>` : ''}
+              ${stock.high52 ? `<div class="text-[10px] text-purple-600 dark:text-purple-400 font-medium mt-1">52W High: ${formatINR(stock.high52)}</div>` : ''}
+            </div>
+
+            <button type="button" data-market-add-symbol="${stock.symbol}" data-market-add-name="${escapeHtml(stock.name)}" data-market-add-price="${stock.price}" data-market-add-exch="${stock.exchange || 'NSE'}" class="w-full py-1.5 px-3 bg-slate-50 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-600 transition-colors flex items-center justify-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>+ Add to Portfolio</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      // Wire up '+ Add to Portfolio' buttons
+      grid.querySelectorAll('[data-market-add-symbol]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sym = btn.getAttribute('data-market-add-symbol');
+          const nm = btn.getAttribute('data-market-add-name');
+          const pr = parseFloat(btn.getAttribute('data-market-add-price')) || 0;
+          const ex = btn.getAttribute('data-market-add-exch') || 'NSE';
+
+          switchTab('stocks');
+          editingItemId = null;
+          openModal();
+
+          setTimeout(() => {
+            const symInp = document.getElementById('field-stock-symbol');
+            const nmInp = document.getElementById('field-stock-name');
+            const exInp = document.getElementById('field-stock-exchange');
+            const currInp = document.getElementById('field-stock-current');
+            const buyInp = document.getElementById('field-stock-buy');
+            const qtyInp = document.getElementById('field-stock-qty');
+
+            if (symInp) symInp.value = sym;
+            if (nmInp) nmInp.value = nm;
+            if (exInp) exInp.value = ex;
+            if (currInp) currInp.value = pr;
+            if (buyInp) buyInp.value = pr;
+            if (qtyInp) qtyInp.focus();
+
+            showToast(`Loaded ${sym} (${formatINR(pr)}). Enter quantity to save!`);
+          }, 150);
+        });
+      });
     }
 

@@ -211,45 +211,48 @@
             <div id="bar-stocks" class="bg-indigo-500 transition-all duration-300" style="width: 33%"></div>
             <div id="bar-mf" class="bg-emerald-500 transition-all duration-300" style="width: 34%"></div>
           </div>
-          <div class="grid grid-cols-3 text-center text-[11px] pt-1">
-            <div class="flex flex-col items-center">
+          <div class="grid grid-cols-3 text-center text-[11px] pt-1 gap-1">
+            <button id="hero-stat-cash" type="button" title="View Bank Accounts" class="flex flex-col items-center p-1.5 rounded-xl hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer">
               <span class="text-blue-300 flex items-center gap-1 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>Cash</span>
               <span id="stat-bank-total" class="font-bold text-white text-xs mt-0.5">₹0</span>
               <span id="stat-bank-count" class="text-[9px] text-slate-400 hidden sm:inline">0 accounts</span>
-            </div>
-            <div class="flex flex-col items-center">
+            </button>
+            <button id="hero-stat-stocks" type="button" title="View Stocks (NSE / BSE)" class="flex flex-col items-center p-1.5 rounded-xl hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer">
               <span class="text-indigo-300 flex items-center gap-1 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>Stocks</span>
               <span id="stat-stocks-total" class="font-bold text-white text-xs mt-0.5">₹0</span>
               <span id="stat-stocks-pnl" class="text-[10px] text-emerald-300 font-semibold">Invested: ₹0</span>
-            </div>
-            <div class="flex flex-col items-center">
+            </button>
+            <button id="hero-stat-funds" type="button" title="View Mutual Funds" class="flex flex-col items-center p-1.5 rounded-xl hover:bg-white/10 active:bg-white/20 transition-all cursor-pointer">
               <span class="text-emerald-300 flex items-center gap-1 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Mutual Funds</span>
               <span id="stat-mf-total" class="font-bold text-white text-xs mt-0.5">₹0</span>
               <span id="stat-mf-pnl" class="text-[10px] text-emerald-300 font-semibold">Invested: ₹0</span>
-            </div>
+            </button>
           </div>
         </div>
       </section>
 
       <!-- Asset Category Pill Switcher & Filter Toolbar -->
       <div class="space-y-2.5">
-        <div class="flex items-center justify-between gap-2">
-          <!-- Segmented Pill Tabs -->
-          <nav class="flex p-1 bg-slate-200/70 dark:bg-slate-900 rounded-xl max-w-full overflow-x-auto text-xs" aria-label="Tabs">
-            <button id="tab-btn-banks" type="button" class="tab-trigger active px-3 py-1.5 font-bold rounded-lg text-emerald-800 dark:text-emerald-300 bg-white dark:bg-slate-800 shadow-xs transition-all whitespace-nowrap">
-              Bank Accounts
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <!-- Segmented Pill Tabs: Full visibility for all 3 asset classes -->
+          <nav class="grid grid-cols-3 sm:flex p-1 bg-slate-200/70 dark:bg-slate-900 rounded-xl text-xs gap-1 sm:gap-1.5" aria-label="Tabs">
+            <button id="tab-btn-banks" type="button" class="tab-trigger active px-3 py-2 font-bold rounded-lg text-emerald-800 dark:text-emerald-300 bg-white dark:bg-slate-800 shadow-xs transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>🏦</span>
+              <span class="truncate">Banks</span>
             </button>
-            <button id="tab-btn-stocks" type="button" class="tab-trigger px-3 py-1.5 font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap">
-              Stocks (BSE / NSE)
+            <button id="tab-btn-stocks" type="button" class="tab-trigger px-3 py-2 font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>📈</span>
+              <span class="truncate">Stocks</span>
             </button>
-            <button id="tab-btn-funds" type="button" class="tab-trigger px-3 py-1.5 font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap">
-              Mutual Funds
+            <button id="tab-btn-funds" type="button" class="tab-trigger px-3 py-2 font-medium rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer">
+              <span>📊</span>
+              <span class="truncate">Mutual Funds</span>
             </button>
           </nav>
 
-          <!-- Add Button -->
-          <div id="tab-action-container" class="shrink-0">
-            <button id="btn-open-add-modal" type="button" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1">
+          <!-- Primary Add Button: Cleanly positioned, dynamically updates label per tab -->
+          <div id="tab-action-container" class="shrink-0 flex items-center justify-end">
+            <button id="btn-open-add-modal" type="button" class="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
               <span id="btn-add-label">Add Account</span>
             </button>
@@ -274,6 +277,22 @@
 
       <!-- TAB 1: BANK ACCOUNTS -->
       <section id="tab-panel-banks" class="tab-panel space-y-3">
+        <!-- Bank Accounts Section Header with Dedicated Reconcile Button -->
+        <div class="flex items-center justify-between gap-3 p-3 sm:p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">
+              ₹
+            </div>
+            <div>
+              <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Bank &amp; Cash Accounts</div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400">Track savings, current accounts, FDs &amp; liquid deposits</div>
+            </div>
+          </div>
+          <button id="btn-reconcile-banks" type="button" title="Quick Reconcile All Bank Balances" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white text-xs font-semibold rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0">
+            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <span>Update Balances</span>
+          </button>
+        </div>
         <!-- Mobile Card List View (Visible on phones) -->
         <div id="bank-card-container" class="sm:hidden space-y-2.5">
           <!-- Rendered via JS -->
@@ -784,6 +803,59 @@
       <!-- Body -->
       <div id="cloud-modal-body" class="p-5 space-y-4 overflow-y-auto">
         <!-- Rendered dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- MODAL: QUICK RECONCILE BANK BALANCES -->
+  <div id="reconcile-modal-container" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <!-- Header -->
+      <div class="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between shrink-0 bg-gradient-to-r from-amber-500/5 via-transparent to-transparent">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Quick Balance Reconcile</h3>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400">Glance at GPay, PhonePe or mobile banking &amp; update all in 15 sec</p>
+          </div>
+        </div>
+        <button id="reconcile-modal-close-btn" type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Quick Tip Banner -->
+      <div class="bg-slate-50 dark:bg-slate-800/50 px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-2 shrink-0">
+        <span class="text-amber-500 text-sm">💡</span>
+        <span>Check your live balances in your banking apps, adjust the numbers below, and click save.</span>
+      </div>
+
+      <!-- Account List -->
+      <div id="reconcile-modal-list" class="p-4 sm:p-5 space-y-3 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80">
+        <!-- Rendered dynamically by JS -->
+      </div>
+
+      <!-- Live Summary Footer -->
+      <div class="p-4 sm:p-5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200 dark:border-slate-800 shrink-0 space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-slate-500 dark:text-slate-400 font-medium">Total Bank Cash:</span>
+          <div class="text-right">
+            <span id="reconcile-total-new" class="font-bold text-sm text-slate-900 dark:text-white">₹0</span>
+            <span id="reconcile-total-diff" class="text-[11px] ml-1.5 font-semibold text-slate-400"></span>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-2.5">
+          <button id="reconcile-modal-cancel-btn" type="button" class="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white rounded-xl cursor-pointer">Cancel</button>
+          <button id="reconcile-modal-save-btn" type="button" class="px-5 py-2.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span>Save All Balances</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

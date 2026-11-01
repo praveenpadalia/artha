@@ -155,9 +155,29 @@
       });
 
       if (filtered.length === 0) {
-        const emptyMsg = query ? 'No matching stocks found.' : 'No stocks added yet. Tap "+ Add Stock" to start.';
-        tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-8 text-center text-slate-400 text-xs">${emptyMsg}</td></tr>`;
-        cardContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">${emptyMsg}</div>`;
+        if (query) {
+          const emptyMsg = `No matching stocks found for "${escapeHtml(query)}".`;
+          tbody.innerHTML = `<tr><td colspan="9" class="px-4 py-8 text-center text-slate-400 text-xs">${emptyMsg}</td></tr>`;
+          cardContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">${emptyMsg}</div>`;
+        } else {
+          const emptyCard = `
+            <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl">
+                📈
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">No Stocks Added Yet</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Track real-time prices for over 6,000+ NSE &amp; BSE listed companies with auto-lookup and dividend yields.</p>
+              </div>
+              <button type="button" onclick="openAddStockModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Add Your First Stock</span>
+              </button>
+            </div>
+          `;
+          tbody.innerHTML = `<tr><td colspan="9" class="p-0 border-0">${emptyCard}</td></tr>`;
+          cardContainer.innerHTML = emptyCard;
+        }
         return;
       }
 
@@ -273,9 +293,29 @@
       });
 
       if (filtered.length === 0) {
-        const emptyMsg = query ? 'No matching mutual funds found.' : 'No mutual funds added yet. Tap "+ Add Mutual Fund" to start.';
-        tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-400 text-xs">${emptyMsg}</td></tr>`;
-        cardContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">${emptyMsg}</div>`;
+        if (query) {
+          const emptyMsg = `No matching mutual funds found for "${escapeHtml(query)}".`;
+          tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-400 text-xs">${emptyMsg}</td></tr>`;
+          cardContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">${emptyMsg}</div>`;
+        } else {
+          const emptyCard = `
+            <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+              <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl">
+                📊
+              </div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white">No Mutual Funds Added Yet</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Track your SIPs and lump-sum investments across 14,400+ Indian mutual fund schemes with official AMFI NAVs.</p>
+              </div>
+              <button type="button" onclick="openAddFundModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Add Your First Mutual Fund</span>
+              </button>
+            </div>
+          `;
+          tbody.innerHTML = `<tr><td colspan="7" class="p-0 border-0">${emptyCard}</td></tr>`;
+          cardContainer.innerHTML = emptyCard;
+        }
         return;
       }
 
@@ -400,6 +440,8 @@
       };
 
       document.getElementById('btn-add-label').textContent = tabConfigs[tab].label;
+
+
 
       document.querySelectorAll('.tab-trigger').forEach(btn => {
         btn.classList.remove('active', 'font-bold', 'text-emerald-800', 'dark:text-emerald-300', 'bg-white', 'dark:bg-slate-800', 'shadow-xs');
@@ -1311,6 +1353,184 @@
     }
 
 
+    
+    // Quick Balance Reconcile Modal Logic (Option 3: Fast Multi-Account Balance Sync)
+    function openReconcileModal() {
+      const modal = document.getElementById('reconcile-modal-container');
+      const listContainer = document.getElementById('reconcile-modal-list');
+      if (!modal || !listContainer) return;
+
+      const banks = appData.banks || [];
+      if (banks.length === 0) {
+        listContainer.innerHTML = `
+          <div class="text-center py-6 text-slate-500 dark:text-slate-400">
+            <svg class="w-10 h-10 mx-auto mb-2 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            <p class="font-bold text-sm text-slate-700 dark:text-slate-300">No Bank Accounts Found</p>
+            <p class="text-xs mt-1">Add your savings, current, or FD accounts first to reconcile balances.</p>
+          </div>
+        `;
+        document.getElementById('reconcile-total-new').textContent = '₹0';
+        document.getElementById('reconcile-total-diff').textContent = '';
+        document.getElementById('reconcile-modal-save-btn').disabled = true;
+        modal.classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('reconcile-modal-save-btn').disabled = false;
+
+      let initialTotal = 0;
+      listContainer.innerHTML = banks.map(bank => {
+        const bal = Number(bank.balance) || 0;
+        initialTotal += bal;
+        const initial = (bank.name || 'BA').trim().substring(0, 2).toUpperCase();
+        return `
+          <div class="pt-3 first:pt-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5" data-reconcile-row="${bank.id}">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 font-bold flex items-center justify-center text-xs shrink-0">
+                ${initial}
+              </div>
+              <div class="min-w-0">
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">${escapeHtml(bank.name)}</div>
+                <div class="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                  <span class="px-1.5 py-0.5 rounded-sm bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium">${escapeHtml(bank.type || 'Savings')}</span>
+                  <span>Previous: ${formatINR(bal)}</span>
+                  ${bank.lastReconciled ? `<span class="text-emerald-600 dark:text-emerald-400 font-medium">• Reconciled: ${escapeHtml(bank.lastReconciled)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+              <div class="relative">
+                <span class="absolute left-2.5 top-2 text-xs text-slate-400 font-semibold">₹</span>
+                <input type="number" step="0.01" min="0" 
+                       class="reconcile-balance-input w-36 pl-6 pr-2.5 py-1.5 text-xs font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-hidden text-right"
+                       data-bank-id="${bank.id}" 
+                       data-orig-balance="${bal}" 
+                       value="${bal}">
+              </div>
+              <span class="reconcile-diff-tag text-[10px] w-16 text-right font-semibold text-slate-400 shrink-0">No change</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('reconcile-total-new').textContent = formatINR(initialTotal);
+      const diffEl = document.getElementById('reconcile-total-diff');
+      diffEl.textContent = '(Current)';
+      diffEl.className = 'text-[11px] ml-1.5 font-semibold text-slate-400';
+
+      // Attach dynamic calculation to inputs
+      const inputs = listContainer.querySelectorAll('.reconcile-balance-input');
+      inputs.forEach(inp => {
+        inp.addEventListener('input', updateReconcileTotals);
+      });
+
+      modal.classList.remove('hidden');
+    }
+
+    function updateReconcileTotals() {
+      const inputs = document.querySelectorAll('.reconcile-balance-input');
+      let totalNew = 0;
+      let totalOrig = 0;
+
+      inputs.forEach(inp => {
+        const row = inp.closest('[data-reconcile-row]');
+        const diffTag = row ? row.querySelector('.reconcile-diff-tag') : null;
+        const curVal = parseFloat(inp.value) || 0;
+        const origVal = parseFloat(inp.getAttribute('data-orig-balance')) || 0;
+        totalNew += curVal;
+        totalOrig += origVal;
+
+        const diff = curVal - origVal;
+        if (diffTag) {
+          if (Math.abs(diff) < 0.01) {
+            diffTag.textContent = 'No change';
+            diffTag.className = 'reconcile-diff-tag text-[10px] w-16 text-right font-semibold text-slate-400 shrink-0';
+          } else if (diff > 0) {
+            diffTag.textContent = `+${formatINR(diff)}`;
+            diffTag.className = 'reconcile-diff-tag text-[10px] w-16 text-right font-semibold text-emerald-600 dark:text-emerald-400 shrink-0';
+          } else {
+            diffTag.textContent = `-${formatINR(Math.abs(diff))}`;
+            diffTag.className = 'reconcile-diff-tag text-[10px] w-16 text-right font-semibold text-rose-500 dark:text-rose-400 shrink-0';
+          }
+        }
+      });
+
+      const totalNewEl = document.getElementById('reconcile-total-new');
+      const totalDiffEl = document.getElementById('reconcile-total-diff');
+      if (totalNewEl) totalNewEl.textContent = formatINR(totalNew);
+
+      if (totalDiffEl) {
+        const netDiff = totalNew - totalOrig;
+        if (Math.abs(netDiff) < 0.01) {
+          totalDiffEl.textContent = '(No change)';
+          totalDiffEl.className = 'text-[11px] ml-1.5 font-semibold text-slate-400';
+        } else if (netDiff > 0) {
+          totalDiffEl.textContent = `(+${formatINR(netDiff)})`;
+          totalDiffEl.className = 'text-[11px] ml-1.5 font-semibold text-emerald-600 dark:text-emerald-400';
+        } else {
+          totalDiffEl.textContent = `(-${formatINR(Math.abs(netDiff))})`;
+          totalDiffEl.className = 'text-[11px] ml-1.5 font-semibold text-rose-500 dark:text-rose-400';
+        }
+      }
+    }
+
+    function saveReconciledBalances() {
+      const inputs = document.querySelectorAll('.reconcile-balance-input');
+      if (!inputs || inputs.length === 0) {
+        closeReconcileModal();
+        return;
+      }
+
+      const todayStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      let updatedCount = 0;
+      let totalBal = 0;
+
+      inputs.forEach(inp => {
+        const id = inp.getAttribute('data-bank-id');
+        const newVal = parseFloat(inp.value) || 0;
+        totalBal += newVal;
+
+        const bank = appData.banks.find(b => b.id === id);
+        if (bank) {
+          const oldVal = Number(bank.balance) || 0;
+          if (Math.abs(newVal - oldVal) >= 0.01) {
+            updatedCount++;
+          }
+          bank.balance = newVal;
+          bank.lastReconciled = todayStr;
+
+          // Recompute maturity for FDs if applicable
+          if ((bank.type || '').includes('Fixed Deposit')) {
+            const rate = Number(bank.interestRate) || 0;
+            let years = 1;
+            const tLower = (bank.tenure || '').toLowerCase();
+            if (tLower.includes('month')) {
+              years = (parseFloat(tLower) || 12) / 12;
+            } else {
+              years = parseFloat(tLower) || 1;
+            }
+            bank.maturityAmount = Math.round(newVal * Math.pow(1 + (rate / 400), 4 * years));
+          }
+        }
+      });
+
+      saveData();
+      renderAll();
+      closeReconcileModal();
+
+      if (updatedCount > 0) {
+        showToast(`Reconciled ${updatedCount} bank account${updatedCount > 1 ? 's' : ''}! New total: ${formatINR(totalBal)}`);
+      } else {
+        showToast(`All balances verified! Total cash: ${formatINR(totalBal)}`);
+      }
+    }
+
+    function closeReconcileModal() {
+      const modal = document.getElementById('reconcile-modal-container');
+      if (modal) modal.classList.add('hidden');
+    }
+
+
     // Theme Toggle Logic
     function initTheme() {
       const savedTheme = localStorage.getItem('artha_theme_v6') || localStorage.getItem('dhantrack_theme_v5');
@@ -1367,6 +1587,41 @@
     document.getElementById('btn-trigger-import').addEventListener('click', () => {
       document.getElementById('file-import-input').click();
     });
+
+    
+    // Direct asset modal helpers for empty states & quick actions
+    window.openAddStockModal = function() {
+      switchTab('stocks');
+      editingItemId = null;
+      openModal();
+    };
+
+    window.openAddFundModal = function() {
+      switchTab('funds');
+      editingItemId = null;
+      openModal();
+    };
+
+    window.openAddBankModal = function() {
+      switchTab('banks');
+      editingItemId = null;
+      openModal();
+    };
+
+    // Hero stat card click listeners (quick tab switching)
+    document.getElementById('hero-stat-cash')?.addEventListener('click', () => switchTab('banks'));
+    document.getElementById('hero-stat-stocks')?.addEventListener('click', () => switchTab('stocks'));
+    document.getElementById('hero-stat-funds')?.addEventListener('click', () => switchTab('funds'));
+
+// Reconcile Modal Listeners
+    document.getElementById('btn-reconcile-banks')?.addEventListener('click', openReconcileModal);
+    document.getElementById('reconcile-modal-close-btn')?.addEventListener('click', closeReconcileModal);
+    document.getElementById('reconcile-modal-cancel-btn')?.addEventListener('click', closeReconcileModal);
+    document.getElementById('reconcile-modal-save-btn')?.addEventListener('click', saveReconciledBalances);
+    document.getElementById('reconcile-modal-container')?.addEventListener('click', (e) => {
+      if (e.target.id === 'reconcile-modal-container') closeReconcileModal();
+    });
+
     document.getElementById('file-import-input').addEventListener('change', handleImportJSON);
 
     // Target Rebalancing Sliders

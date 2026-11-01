@@ -548,6 +548,40 @@
         }
       }
 
+      // 3. Fetch Watchlist Live Quotes (Stocks & Mutual Funds)
+      if (appData.watchlist && appData.watchlist.length > 0) {
+        const watchStocks = appData.watchlist.filter(w => w.type === 'stock' && w.symbol);
+        if (watchStocks.length > 0) {
+          const cleanWatchSyms = watchStocks.map(s => s.symbol.toUpperCase().replace(/\.(NS|BO)$/, '')).filter(Boolean);
+          try {
+            const quotes = await fetchStockLiveQuote(cleanWatchSyms.join('|'));
+            if (quotes) {
+              for (const item of watchStocks) {
+                const symKey = item.symbol.toUpperCase().replace(/\.(NS|BO)$/, '');
+                if (quotes[symKey] && quotes[symKey].price > 0) {
+                  item.currentPrice = quotes[symKey].price;
+                  if (quotes[symKey].changePct !== undefined) {
+                    item.dayChange = quotes[symKey].changePct;
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            console.warn('Watchlist sync error:', e);
+          }
+        }
+
+        const watchFunds = appData.watchlist.filter(w => w.type === 'fund' && w.schemeCode);
+        for (const fItem of watchFunds) {
+          try {
+            const res = await fetchMutualFundLive(fItem.schemeCode);
+            if (res && res.nav > 0) {
+              fItem.currentPrice = res.nav;
+            }
+          } catch (e) {}
+        }
+      }
+
       saveData();
       renderAll();
 
@@ -860,13 +894,32 @@
               ${stock.high52 ? `<div class="text-[10px] text-purple-600 dark:text-purple-400 font-medium mt-1">52W High: ${formatINR(stock.high52)}</div>` : ''}
             </div>
 
-            <button type="button" data-market-add-symbol="${stock.symbol}" data-market-add-name="${escapeHtml(stock.name)}" data-market-add-price="${stock.price}" data-market-add-exch="${stock.exchange || 'NSE'}" class="w-full py-1.5 px-3 bg-slate-50 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-600 transition-colors flex items-center justify-center gap-1">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-              <span>+ Add to Portfolio</span>
-            </button>
+            <div class="flex items-center gap-2 mt-2">
+              <button type="button" data-market-watch-symbol="${stock.symbol}" data-market-watch-name="${escapeHtml(stock.name)}" data-market-watch-price="${stock.price}" data-market-watch-change="${stock.changePct}" data-market-watch-exch="${stock.exchange || 'NSE'}" class="p-2 rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors cursor-pointer shrink-0" title="Add to Watchlist">
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              </button>
+              <button type="button" data-market-add-symbol="${stock.symbol}" data-market-add-name="${escapeHtml(stock.name)}" data-market-add-price="${stock.price}" data-market-add-exch="${stock.exchange || 'NSE'}" class="flex-1 py-1.5 px-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-600 transition-colors flex items-center justify-center gap-1 cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>+ Portfolio</span>
+              </button>
+            </div>
           </div>
         `;
       }).join('');
+
+      // Wire up '+ Add to Watchlist' buttons
+      grid.querySelectorAll('[data-market-watch-symbol]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sym = btn.getAttribute('data-market-watch-symbol');
+          const nm = btn.getAttribute('data-market-watch-name');
+          const pr = parseFloat(btn.getAttribute('data-market-watch-price')) || 0;
+          const ch = parseFloat(btn.getAttribute('data-market-watch-change')) || 0;
+          const ex = btn.getAttribute('data-market-watch-exch') || 'NSE';
+          if (typeof addToWatchlistFromMarket === 'function') {
+            addToWatchlistFromMarket(sym, nm, pr, ch, ex);
+          }
+        });
+      });
 
       // Wire up '+ Add to Portfolio' buttons
       grid.querySelectorAll('[data-market-add-symbol]').forEach(btn => {

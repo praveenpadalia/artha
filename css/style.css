@@ -11,3 +11,16 @@ body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparen
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     .dark ::-webkit-scrollbar-thumb { background: #334155; }
+
+
+/* Privacy Stealth Mode Styling (Clean XXX Masking without Blur) */
+body.privacy-mode .money-val {
+  letter-spacing: 0.08em;
+  font-family: inherit;
+  user-select: none;
+}
+
+/* Smooth Tabs and Badge Animations */
+.tab-trigger {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}

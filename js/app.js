@@ -146,6 +146,38 @@
           });
           showToast(`Added ${name}!`);
         }
+      } else if (activeTab === 'gold') {
+        const cat = document.getElementById('field-asset-category')?.value || 'gold';
+        const name = (document.getElementById('field-asset-name')?.value || '').trim() || 'Asset';
+        const type = document.getElementById('field-asset-type')?.value || 'Gold';
+        const amount = parseFloat(document.getElementById('field-asset-amount')?.value) || 0;
+        const rate = parseFloat(document.getElementById('field-asset-rate')?.value) || 0;
+
+        if (cat === 'retirement') {
+          if (!appData.retirement) appData.retirement = [];
+          appData.retirement.push({
+            id: 'r_' + Date.now(),
+            name,
+            type,
+            balance: amount,
+            interestRate: rate || 8.25
+          });
+          showToast(`Added ${name} to Retirement assets!`);
+        } else {
+          if (!appData.gold) appData.gold = [];
+          const units = parseFloat(document.getElementById('field-asset-units')?.value) || 1;
+          const buyPrice = amount > 0 && units > 0 ? (amount / units) : 7500;
+          appData.gold.push({
+            id: 'g_' + Date.now(),
+            name,
+            type,
+            units,
+            buyPrice,
+            currentPrice: buyPrice * 1.05,
+            interestRate: type.includes('SGB') ? 2.5 : 0
+          });
+          showToast(`Added ${name} to Gold & SGB assets!`);
+        }
       }
 
       saveData();
@@ -165,6 +197,8 @@
           if (filterKey === 'bank') appData.banks = appData.banks.filter(b => b.id !== id);
           if (filterKey === 'stock') appData.stocks = appData.stocks.filter(s => s.id !== id);
           if (filterKey === 'fund') appData.funds = appData.funds.filter(f => f.id !== id);
+          if (filterKey === 'gold') appData.gold = (appData.gold || []).filter(g => g.id !== id);
+          if (filterKey === 'ret') appData.retirement = (appData.retirement || []).filter(r => r.id !== id);
           saveData();
           renderAll();
           showToast('Item removed');
@@ -188,6 +222,8 @@
     attachDeleteListeners('stocks-card-container', 'stock');
     attachDeleteListeners('mf-table-body', 'fund');
     attachDeleteListeners('mf-card-container', 'fund');
+    attachDeleteListeners('gold-card-container', 'gold');
+    attachDeleteListeners('ret-card-container', 'ret');
 
 
     // Market Screen Tab & Cap Listeners
@@ -301,6 +337,120 @@
     // Initial Launch
     loadExternalCatalogs();
     initTheme();
+    if (appData.settings && appData.settings.privacyMode) {
+      applyPrivacyMode(true);
+    }
     renderAll();
     applyLayoutMode();
     initSupabaseAuth();
+    if (typeof initCalculators === 'function') initCalculators();
+
+
+    // Register PWA Service Worker for offline mobile app capability
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+
+
+    // Watchlist Modal Form Submit Handler
+    const watchModalForm = document.getElementById('watchlist-modal-form');
+    if (watchModalForm) {
+      watchModalForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const id = document.getElementById('watch-field-id').value;
+        const type = document.getElementById('watch-field-type').value || 'stock';
+        const curPrice = parseFloat(document.getElementById('watch-field-current').value) || 0;
+        const targetPrice = parseFloat(document.getElementById('watch-field-target').value) || 0;
+        const low52 = parseFloat(document.getElementById('watch-field-low').value) || (curPrice * 0.8);
+        const high52 = parseFloat(document.getElementById('watch-field-high').value) || (curPrice * 1.25);
+        const notes = (document.getElementById('watch-field-notes').value || '').trim();
+
+        if (!appData.watchlist) appData.watchlist = [];
+
+        if (type === 'stock') {
+          const symbol = (document.getElementById('watch-field-symbol').value || '').trim().toUpperCase();
+          const name = (document.getElementById('watch-field-name').value || '').trim() || symbol;
+          const exchange = document.getElementById('watch-field-exchange').value || 'NSE';
+
+          if (!symbol) {
+            showToast('Please enter a stock symbol');
+            return;
+          }
+
+          if (id) {
+            const existing = appData.watchlist.find(w => w.id === id);
+            if (existing) {
+              existing.symbol = symbol;
+              existing.name = name;
+              existing.exchange = exchange;
+              existing.currentPrice = curPrice;
+              existing.targetPrice = targetPrice;
+              existing.low52 = low52;
+              existing.high52 = high52;
+              existing.notes = notes;
+              showToast(`Updated ${symbol} in Watchlist!`);
+            }
+          } else {
+            appData.watchlist.push({
+              id: 'w_' + Date.now(),
+              type: 'stock',
+              symbol,
+              name,
+              exchange,
+              currentPrice: curPrice,
+              dayChange: 0,
+              targetPrice,
+              low52,
+              high52,
+              notes,
+              addedDate: new Date().toISOString().split('T')[0]
+            });
+            showToast(`Added ${symbol} to Watchlist!`);
+          }
+        } else {
+          const name = (document.getElementById('watch-field-fund-name').value || '').trim();
+          const schemeCode = (document.getElementById('watch-field-fund-code').value || '').trim();
+
+          if (!name) {
+            showToast('Please enter a mutual fund name');
+            return;
+          }
+
+          if (id) {
+            const existing = appData.watchlist.find(w => w.id === id);
+            if (existing) {
+              existing.name = name;
+              existing.schemeCode = schemeCode;
+              existing.currentPrice = curPrice;
+              existing.targetPrice = targetPrice;
+              existing.low52 = low52;
+              existing.high52 = high52;
+              existing.notes = notes;
+              showToast(`Updated ${name} in Watchlist!`);
+            }
+          } else {
+            appData.watchlist.push({
+              id: 'w_' + Date.now(),
+              type: 'fund',
+              name,
+              schemeCode,
+              currentPrice: curPrice,
+              dayChange: 0,
+              targetPrice,
+              low52,
+              high52,
+              notes,
+              addedDate: new Date().toISOString().split('T')[0]
+            });
+            showToast(`Added ${name} to Watchlist!`);
+          }
+        }
+
+        saveData();
+        renderWatchlist();
+        closeWatchlistModal();
+      });
+    }

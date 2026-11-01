@@ -1,5 +1,8 @@
-    // Formatters
-    const formatINR = (val) => {
+    // Formatters (Supports Clean ₹ XXX Masking in Privacy Mode)
+    const formatINR = (val, forceReal = false) => {
+      if (!forceReal && ((typeof appData !== 'undefined' && appData.settings?.privacyMode) || document.body.classList.contains('privacy-mode'))) {
+        return '₹ XXX';
+      }
       const num = Number(val) || 0;
       return '₹' + num.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
     };
@@ -32,37 +35,108 @@
       const mfPnl = mfCurrent - mfInvested;
       const mfPnlPct = mfInvested > 0 ? (mfPnl / mfInvested) * 100 : 0;
 
-      const netWorth = bankTotal + stocksCurrent + mfCurrent;
+      // Gold & Sovereign Gold Bonds (SGB)
+      const goldInvested = (appData.gold || []).reduce((acc, g) => acc + ((Number(g.units) || 1) * (Number(g.buyPrice) || 0)), 0);
+      const goldCurrent = (appData.gold || []).reduce((acc, g) => acc + ((Number(g.units) || 1) * (Number(g.currentPrice || g.buyPrice) || 0)), 0);
+      const goldPnl = goldCurrent - goldInvested;
+      const goldPnlPct = goldInvested > 0 ? (goldPnl / goldInvested) * 100 : 0;
+
+      // Retirement (EPF / PPF / NPS)
+      const retTotal = (appData.retirement || []).reduce((acc, r) => acc + (Number(r.balance) || 0), 0);
+
+      // Unified Net Worth across all 5 asset classes
+      const netWorth = bankTotal + stocksCurrent + mfCurrent + goldCurrent + retTotal;
+      const totalInvested = bankTotal + stocksInvested + mfInvested + goldInvested + retTotal;
+      const totalPnl = stocksPnl + mfPnl + goldPnl;
+      const totalPnlPct = totalInvested > 0 ? (totalPnl / totalInvested) * 100 : 0;
 
       // Update Top Hero Net Worth Card
-      document.getElementById('stat-total-networth').textContent = formatINR(netWorth);
-      document.getElementById('stat-bank-total').textContent = formatINR(bankTotal);
-      document.getElementById('stat-bank-count').textContent = `${appData.banks.length} account${appData.banks.length === 1 ? '' : 's'}`;
+      const netWorthEl = document.getElementById('stat-total-networth');
+      if (netWorthEl) {
+        netWorthEl.textContent = formatINR(netWorth);
+        netWorthEl.classList.add('money-val');
+      }
 
-      document.getElementById('stat-stocks-total').textContent = formatINR(stocksCurrent);
-      document.getElementById('stat-stocks-pnl').innerHTML = `<span class="${stocksPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${stocksPnl >= 0 ? '+' : ''}${formatINR(stocksPnl)} (${stocksPnlPct.toFixed(1)}%)</span>`;
+      const bankTotalEl = document.getElementById('stat-bank-total');
+      if (bankTotalEl) {
+        bankTotalEl.textContent = formatINR(bankTotal);
+        bankTotalEl.classList.add('money-val');
+      }
+      const bankCountEl = document.getElementById('stat-bank-count');
+      if (bankCountEl) bankCountEl.textContent = `${appData.banks.length} account${appData.banks.length === 1 ? '' : 's'}`;
 
-      document.getElementById('stat-mf-total').textContent = formatINR(mfCurrent);
-      document.getElementById('stat-mf-pnl').innerHTML = `<span class="${mfPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold">${mfPnl >= 0 ? '+' : ''}${formatINR(mfPnl)} (${mfPnlPct.toFixed(1)}%)</span>`;
+      const stocksTotalEl = document.getElementById('stat-stocks-total');
+      if (stocksTotalEl) {
+        stocksTotalEl.textContent = formatINR(stocksCurrent);
+        stocksTotalEl.classList.add('money-val');
+      }
+      const stocksPnlEl = document.getElementById('stat-stocks-pnl');
+      if (stocksPnlEl) {
+        stocksPnlEl.innerHTML = `<span class="${stocksPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold money-val">${stocksPnl >= 0 ? '+' : ''}${formatINR(stocksPnl)} (${stocksPnlPct.toFixed(1)}%)</span>`;
+      }
+
+      const mfTotalEl = document.getElementById('stat-mf-total');
+      if (mfTotalEl) {
+        mfTotalEl.textContent = formatINR(mfCurrent);
+        mfTotalEl.classList.add('money-val');
+      }
+      const mfPnlEl = document.getElementById('stat-mf-pnl');
+      if (mfPnlEl) {
+        mfPnlEl.innerHTML = `<span class="${mfPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold money-val">${mfPnl >= 0 ? '+' : ''}${formatINR(mfPnl)} (${mfPnlPct.toFixed(1)}%)</span>`;
+      }
+
+      // Update Gold & Retirement Stats if present
+      const goldTotalEl = document.getElementById('stat-gold-total');
+      if (goldTotalEl) {
+        goldTotalEl.textContent = formatINR(goldCurrent);
+        goldTotalEl.classList.add('money-val');
+      }
+      const goldPnlEl = document.getElementById('stat-gold-pnl');
+      if (goldPnlEl) {
+        goldPnlEl.innerHTML = `<span class="${goldPnl >= 0 ? 'text-amber-400' : 'text-rose-400'} font-semibold money-val">${goldPnl >= 0 ? '+' : ''}${formatINR(goldPnl)} (${goldPnlPct.toFixed(1)}%)</span>`;
+      }
+
+      const retTotalEl = document.getElementById('stat-ret-total');
+      if (retTotalEl) {
+        retTotalEl.textContent = formatINR(retTotal);
+        retTotalEl.classList.add('money-val');
+      }
 
       // Update Proportional Distribution Mini-Bar
-      const cashPct = netWorth > 0 ? (bankTotal / netWorth) * 100 : 33.3;
-      const stocksPct = netWorth > 0 ? (stocksCurrent / netWorth) * 100 : 33.3;
-      const mfPct = netWorth > 0 ? (mfCurrent / netWorth) * 100 : 33.4;
+      const cashPct = netWorth > 0 ? (bankTotal / netWorth) * 100 : 20;
+      const stocksPct = netWorth > 0 ? (stocksCurrent / netWorth) * 100 : 30;
+      const mfPct = netWorth > 0 ? (mfCurrent / netWorth) * 100 : 30;
+      const goldPct = netWorth > 0 ? (goldCurrent / netWorth) * 100 : 10;
+      const retPct = netWorth > 0 ? (retTotal / netWorth) * 100 : 10;
 
-      document.getElementById('bar-cash').style.width = `${cashPct}%`;
-      document.getElementById('bar-stocks').style.width = `${stocksPct}%`;
-      document.getElementById('bar-mf').style.width = `${mfPct}%`;
+      const barCash = document.getElementById('bar-cash');
+      const barStocks = document.getElementById('bar-stocks');
+      const barMf = document.getElementById('bar-mf');
+      const barGold = document.getElementById('bar-gold');
+      const barRet = document.getElementById('bar-ret');
+
+      if (barCash) barCash.style.width = `${cashPct}%`;
+      if (barStocks) barStocks.style.width = `${stocksPct}%`;
+      if (barMf) barMf.style.width = `${mfPct}%`;
+      if (barGold) barGold.style.width = `${goldPct}%`;
+      if (barRet) barRet.style.width = `${retPct}%`;
 
       // Update Allocation Screen Breakdown Cards
-      document.getElementById('alloc-cash-val').textContent = formatINR(bankTotal);
-      document.getElementById('alloc-cash-pct').textContent = `${cashPct.toFixed(1)}% of portfolio`;
+      const setAlloc = (idVal, idPct, val, pct) => {
+        const vEl = document.getElementById(idVal);
+        const pEl = document.getElementById(idPct);
+        if (vEl) {
+          vEl.textContent = formatINR(val);
+          vEl.classList.add('money-val');
+        }
+        if (pEl) pEl.textContent = `${pct.toFixed(1)}% of portfolio`;
+      };
 
-      document.getElementById('alloc-stocks-val').textContent = formatINR(stocksCurrent);
-      document.getElementById('alloc-stocks-pct').textContent = `${stocksPct.toFixed(1)}% of portfolio`;
-
-      document.getElementById('alloc-mf-val').textContent = formatINR(mfCurrent);
-      document.getElementById('alloc-mf-pct').textContent = `${mfPct.toFixed(1)}% of portfolio`;
+      setAlloc('alloc-cash-val', 'alloc-cash-pct', bankTotal, cashPct);
+      setAlloc('alloc-stocks-val', 'alloc-stocks-pct', stocksCurrent, stocksPct);
+      setAlloc('alloc-mf-val', 'alloc-mf-pct', mfCurrent, mfPct);
+      setAlloc('alloc-gold-val', 'alloc-gold-pct', goldCurrent, goldPct);
+      setAlloc('alloc-ret-val', 'alloc-ret-pct', retTotal, retPct);
 
       // Passive Income & Yield Calculations
       const annualBankInterest = appData.banks.reduce((acc, b) => {
@@ -76,21 +150,91 @@
         return acc + (currentVal * (yld / 100));
       }, 0);
 
-      const totalAnnualPassive = annualBankInterest + annualStockDividends;
+      const annualSgbInterest = (appData.gold || []).reduce((acc, g) => {
+        const rate = Number(g.interestRate) || 0;
+        const buyVal = (Number(g.units) || 1) * (Number(g.buyPrice) || 0);
+        return acc + (buyVal * (rate / 100));
+      }, 0);
+
+      const annualRetInterest = (appData.retirement || []).reduce((acc, r) => {
+        const rate = Number(r.interestRate) || 0;
+        return acc + (Number(r.balance) * (rate / 100));
+      }, 0);
+
+      const totalAnnualPassive = annualBankInterest + annualStockDividends + annualSgbInterest + annualRetInterest;
       const monthlyPassive = totalAnnualPassive / 12;
       const portfolioYield = netWorth > 0 ? (totalAnnualPassive / netWorth) * 100 : 0;
 
-      document.getElementById('stat-passive-annual').textContent = `${formatINR(totalAnnualPassive)} / year`;
-      document.getElementById('stat-passive-monthly').textContent = `(~${formatINR(monthlyPassive)} / month)`;
-      document.getElementById('stat-interest-annual').textContent = `${formatINR(annualBankInterest)} / yr`;
-      document.getElementById('stat-dividends-annual').textContent = `${formatINR(annualStockDividends)} / yr`;
-      document.getElementById('stat-portfolio-yield').textContent = `${portfolioYield.toFixed(2)}%`;
+      const setVal = (id, str) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.textContent = str;
+          el.classList.add('money-val');
+        }
+      };
+
+      setVal('stat-passive-annual', `${formatINR(totalAnnualPassive)} / year`);
+      const moEl = document.getElementById('stat-passive-monthly');
+      if (moEl) moEl.textContent = `(~${formatINR(monthlyPassive)} / month)`;
+      setVal('stat-interest-annual', `${formatINR(annualBankInterest + annualRetInterest)} / yr`);
+      setVal('stat-dividends-annual', `${formatINR(annualStockDividends + annualSgbInterest)} / yr`);
+      const yldEl = document.getElementById('stat-portfolio-yield');
+      if (yldEl) yldEl.textContent = `${portfolioYield.toFixed(2)}%`;
 
       // Update Donut Chart
-      updateAllocationChart(bankTotal, stocksCurrent, mfCurrent);
+      updateAllocationChart(bankTotal, stocksCurrent, mfCurrent, goldCurrent, retTotal);
 
       // Update Rebalancing
-      computeRebalancing(netWorth, bankTotal, stocksCurrent, mfCurrent);
+      computeRebalancing(netWorth, bankTotal, stocksCurrent, mfCurrent, goldCurrent, retTotal);
+
+      // Compute Health & Runway Insights
+      computePortfolioHealth(netWorth, bankTotal, stocksCurrent, mfCurrent, goldCurrent, retTotal);
+
+      // Compute Goal Tracking
+      computeGoalTracking(netWorth);
+    }
+
+    function updateAllocationChart(cash, stocks, mf, gold = 0, ret = 0) {
+      const total = cash + stocks + mf + gold + ret;
+      const chartData = total > 0 ? [cash, stocks, mf, gold, ret] : [1, 0, 0, 0, 0];
+      const ctx = document.getElementById('allocation-donut-chart')?.getContext('2d');
+      if (!ctx) return;
+
+      if (donutChartInstance) {
+        donutChartInstance.data.datasets[0].data = chartData;
+        donutChartInstance.update();
+      } else {
+        donutChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Bank Cash', 'Direct Stocks', 'Mutual Funds', 'Gold & SGBs', 'Retirement (EPF/NPS)'],
+            datasets: [{
+              data: chartData,
+              backgroundColor: ['#3b82f6', '#6366f1', '#10b981', '#f59e0b', '#8b5cf6'],
+              borderWidth: 0,
+              hoverOffset: 4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.parsed || 0;
+                    const pct = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                    return ` ${label}: ${formatINR(value)} (${pct}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
     }
 
     function computeRebalancing(netWorth, currentCash, currentStocks, currentMf) {
@@ -292,3 +436,128 @@
       event.target.value = '';
     }
 
+
+
+    // Feature 1: Privacy Stealth Mode Toggle & Manager (Clean ₹ XXX Masking)
+    function togglePrivacyMode() {
+      const isPrivacy = !document.body.classList.contains('privacy-mode');
+      if (!appData.settings) appData.settings = {};
+      appData.settings.privacyMode = isPrivacy;
+      applyPrivacyMode(isPrivacy);
+      renderAll();
+      saveData(false);
+      showToast(isPrivacy ? 'Stealth Mode ON (Balances masked as ₹ XXX)' : 'Stealth Mode OFF (Balances visible)');
+    }
+
+    function applyPrivacyMode(enable) {
+      const iconOn = document.getElementById('privacy-icon-on');
+      const iconOff = document.getElementById('privacy-icon-off');
+      const privacyBtn = document.getElementById('btn-toggle-privacy');
+
+      if (enable) {
+        document.body.classList.add('privacy-mode');
+        if (iconOn) iconOn.classList.add('hidden');
+        if (iconOff) iconOff.classList.remove('hidden');
+        if (privacyBtn) privacyBtn.setAttribute('title', 'Disable Privacy Mode (Show Numbers)');
+      } else {
+        document.body.classList.remove('privacy-mode');
+        if (iconOn) iconOn.classList.remove('hidden');
+        if (iconOff) iconOff.classList.add('hidden');
+        if (privacyBtn) privacyBtn.setAttribute('title', 'Enable Privacy Mode (Blur Numbers)');
+      }
+    }
+
+    // Feature 6: Portfolio Health, Emergency Runway & Concentration Insights
+    function computePortfolioHealth(netWorth, cash, stocks, mf, gold, ret) {
+      const monthlyExp = (appData.settings && appData.settings.monthlyExpenses) || 60000;
+      const runwayMonths = monthlyExp > 0 ? (cash / monthlyExp) : 0;
+
+      // Update Runway badge
+      const runwayValEl = document.getElementById('health-runway-months');
+      const runwayDescEl = document.getElementById('health-runway-desc');
+      if (runwayValEl) runwayValEl.textContent = `${runwayMonths.toFixed(1)} Months`;
+      if (runwayDescEl) {
+        if (runwayMonths >= 6) {
+          runwayDescEl.textContent = 'Excellent safety buffer (6+ months)';
+          runwayDescEl.className = 'text-[11px] font-semibold text-emerald-600 dark:text-emerald-400';
+        } else if (runwayMonths >= 3) {
+          runwayDescEl.textContent = 'Adequate buffer (Aim for 6 months)';
+          runwayDescEl.className = 'text-[11px] font-semibold text-amber-600 dark:text-amber-400';
+        } else {
+          runwayDescEl.textContent = 'Low runway buffer (Under 3 months)';
+          runwayDescEl.className = 'text-[11px] font-semibold text-rose-500';
+        }
+      }
+
+      // Check Concentration Risk (highest stock or fund % of net worth)
+      let maxItemName = '';
+      let maxItemVal = 0;
+      (appData.stocks || []).forEach(s => {
+        const val = s.qty * s.currentPrice;
+        if (val > maxItemVal) { maxItemVal = val; maxItemName = s.symbol || s.name; }
+      });
+      (appData.funds || []).forEach(f => {
+        const val = f.units * f.currentNav;
+        if (val > maxItemVal) { maxItemVal = val; maxItemName = f.name; }
+      });
+
+      const maxPct = netWorth > 0 ? (maxItemVal / netWorth) * 100 : 0;
+      const concValEl = document.getElementById('health-concentration-val');
+      const concDescEl = document.getElementById('health-concentration-desc');
+      if (concValEl) concValEl.textContent = `${maxPct.toFixed(1)}% (${maxItemName || 'None'})`;
+      if (concDescEl) {
+        if (maxPct <= 15) {
+          concDescEl.textContent = 'Well-diversified portfolio';
+          concDescEl.className = 'text-[11px] font-semibold text-emerald-600 dark:text-emerald-400';
+        } else if (maxPct <= 25) {
+          concDescEl.textContent = 'Moderate concentration';
+          concDescEl.className = 'text-[11px] font-semibold text-amber-600 dark:text-amber-400';
+        } else {
+          concDescEl.textContent = 'High concentration risk (>25%)';
+          concDescEl.className = 'text-[11px] font-semibold text-rose-500';
+        }
+      }
+    }
+
+    // Feature 4: Financial Goal Tracker ("Artha Goals")
+    function computeGoalTracking(netWorth) {
+      const container = document.getElementById('goals-list-container');
+      if (!container) return;
+
+      const goals = appData.goals || [];
+      if (goals.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 text-slate-400 text-xs">
+            No financial milestones set. Click "+ Add Goal" to track your milestones.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = goals.map(g => {
+        const target = Number(g.targetAmount) || 100000;
+        // Allocate proportionally or based on net worth
+        const currentAssigned = Math.min(target, netWorth * 0.4);
+        const progressPct = Math.min(100, (currentAssigned / target) * 100);
+        return `
+          <div class="p-3.5 bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700/80 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">🎯</span>
+                <div>
+                  <div class="font-bold text-xs text-slate-900 dark:text-white">${escapeHtml(g.name)}</div>
+                  <div class="text-[10px] text-slate-400">${escapeHtml(g.category || 'General')} • Target: ${escapeHtml(g.targetDate || '2030')}</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="font-bold text-xs text-slate-900 dark:text-white money-val">${formatINR(target)}</span>
+                <div class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">${progressPct.toFixed(0)}% Achieved</div>
+              </div>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+              <div class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300" style="width: ${progressPct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }

@@ -422,11 +422,116 @@
         .replace(/'/g, '&#39;');
     }
 
+    
+    function renderGold() {
+      const container = document.getElementById('gold-card-container');
+      if (!container) return;
+      const goldList = appData.gold || [];
+
+      if (goldList.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+            <p class="font-bold text-slate-700 dark:text-slate-300">No Gold or SGB Assets Tracked</p>
+            <p>Add Sovereign Gold Bonds (SGB), 24K Digital Gold, or physical bullion to track gold hedge.</p>
+            <button type="button" onclick="openAddGoldModal()" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-xs cursor-pointer">+ Add Gold Asset</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = goldList.map(g => {
+        const units = Number(g.units) || 1;
+        const buy = Number(g.buyPrice) || 0;
+        const current = Number(g.currentPrice || g.buyPrice) || 0;
+        const invested = units * buy;
+        const currentVal = units * current;
+        const pnl = currentVal - invested;
+        const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+        const isSgb = (g.type || '').includes('SGB') || (g.type || '').includes('Sovereign');
+
+        return `
+          <div class="p-3.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">🪙</span>
+              <div class="min-w-0">
+                <div class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(g.name)}</div>
+                <div class="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                  <span class="px-1.5 py-0.5 rounded-sm bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-medium">${escapeHtml(g.type || 'Gold')}</span>
+                  <span>${units} grams/units</span>
+                  ${isSgb && g.interestRate ? `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">• ${g.interestRate}% Interest p.a.</span>` : ''}
+                  ${isSgb && g.maturityDate ? `<span>• Matures: ${escapeHtml(g.maturityDate)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-bold text-xs text-slate-900 dark:text-white money-val">${formatINR(currentVal)}</div>
+              <div class="text-[10px] ${pnl >= 0 ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500'} font-semibold">
+                ${pnl >= 0 ? '+' : ''}${formatINR(pnl)} (${pnlPct.toFixed(1)}%)
+              </div>
+              <div class="mt-1 flex items-center justify-end gap-1">
+                <button type="button" data-delete-gold="${g.id}" title="Delete" class="text-[11px] text-rose-500 hover:text-rose-700 p-1 font-semibold cursor-pointer">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRetirement() {
+      const container = document.getElementById('ret-card-container');
+      if (!container) return;
+      const retList = appData.retirement || [];
+
+      if (retList.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-slate-400 text-xs bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-2">
+            <p class="font-bold text-slate-700 dark:text-slate-300">No Retirement Accounts Tracked</p>
+            <p>Add your EPF, PPF, or NPS to complete your retirement net worth.</p>
+            <button type="button" onclick="openAddRetModal()" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl text-xs shadow-xs cursor-pointer">+ Add Retirement Fund</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = retList.map(r => {
+        const bal = Number(r.balance) || 0;
+        const rate = Number(r.interestRate) || 0;
+        return `
+          <div class="p-3.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-400 flex items-center justify-center font-bold text-xs shrink-0">🏛️</span>
+              <div class="min-w-0">
+                <div class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(r.name)}</div>
+                <div class="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                  <span class="px-1.5 py-0.5 rounded-sm bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 font-medium">${escapeHtml(r.type || 'EPF')}</span>
+                  ${rate ? `<span class="text-purple-600 dark:text-purple-400 font-semibold">• ${rate}% p.a.</span>` : ''}
+                  ${r.uan ? `<span>• UAN: ${escapeHtml(r.uan)}</span>` : ''}
+                  ${r.pran ? `<span>• PRAN: ${escapeHtml(r.pran)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-bold text-xs text-slate-900 dark:text-white money-val">${formatINR(bal)}</div>
+              <div class="text-[10px] text-slate-400">Guaranteed Return</div>
+              <div class="mt-1 flex items-center justify-end gap-1">
+                <button type="button" data-delete-ret="${r.id}" title="Delete" class="text-[11px] text-rose-500 hover:text-rose-700 p-1 font-semibold cursor-pointer">Delete</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function renderAll() {
       computeMetrics();
       renderBanks();
       renderStocks();
       renderFunds();
+      renderGold();
+      renderRetirement();
+      if (typeof renderWatchlist === 'function') {
+        renderWatchlist();
+      }
     }
 
     // Tab Navigation within Portfolio View
@@ -436,7 +541,8 @@
       const tabConfigs = {
         banks: { label: 'Add Account', title: 'Add Bank Account' },
         stocks: { label: 'Add Stock', title: 'Add Stock Holding' },
-        funds: { label: 'Add Mutual Fund', title: 'Add Mutual Fund' }
+        funds: { label: 'Add Mutual Fund', title: 'Add Mutual Fund' },
+        gold: { label: 'Add Gold / EPF', title: 'Add Gold or Retirement Asset' }
       };
 
       document.getElementById('btn-add-label').textContent = tabConfigs[tab].label;
@@ -511,6 +617,10 @@
 
       if (screenName === 'markets') {
         renderMarketScreen();
+      } else if (screenName === 'watchlist') {
+        if (typeof renderWatchlist === 'function') renderWatchlist();
+      } else if (screenName === 'calculators') {
+        if (typeof initCalculators === 'function') initCalculators();
       }
 
       // Update Desktop Breadcrumb Title
@@ -518,6 +628,9 @@
       if (breadcrumbEl) {
         const titles = {
           portfolio: 'Portfolio Dashboard',
+          calculators: 'Financial Calculators & Wealth Simulators',
+          watchlist: 'Target Price Watchlist & Radar',
+          goals: 'Financial Goals & FIRE Planning',
           markets: 'Share Market Today (Live Feeds)',
           allocation: 'Asset Allocation Breakdown',
           rebalance: 'Target Rebalancing Calculator',
@@ -1340,6 +1453,50 @@
             }
           }
         }
+      } else if (activeTab === 'gold') {
+        title.textContent = 'Add Gold, SGB or Retirement Asset';
+        const submitBtn = document.getElementById('modal-submit-btn');
+        if (submitBtn) submitBtn.textContent = 'Save Asset';
+        fieldsContainer.innerHTML = `
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Asset Category</label>
+            <select id="field-asset-category" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold">
+              <option value="gold">Gold &amp; Sovereign Gold Bonds (SGB)</option>
+              <option value="retirement">Retirement (EPF / PPF / NPS)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Asset / Scheme Name</label>
+            <input required id="field-asset-name" type="text" placeholder="e.g. SGB 2029 Series IV, EPF EPFO, SBI PPF" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 font-semibold">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Specific Type</label>
+              <select id="field-asset-type" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500">
+                <option value="Sovereign Gold Bond (SGB)">SGB (Sovereign Gold Bond)</option>
+                <option value="Digital Gold (24K)">24K Digital Gold</option>
+                <option value="Physical Gold">Physical Gold / Coins</option>
+                <option value="EPF">EPF (Provident Fund)</option>
+                <option value="PPF">PPF (Public Provident Fund)</option>
+                <option value="NPS (Tier 1)">NPS (Tier 1)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Units / Grams</label>
+              <input id="field-asset-units" type="number" step="0.1" min="0.1" value="10" placeholder="10" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Current Balance / Total Value (₹)</label>
+              <input required id="field-asset-amount" type="number" step="100" min="0" placeholder="75000" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Interest Rate (% p.a.)</label>
+              <input id="field-asset-rate" type="number" step="0.1" min="0" value="2.5" placeholder="2.5" class="w-full px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+        `;
       }
 
       modal.classList.remove('hidden');
@@ -1704,3 +1861,1163 @@
     document.getElementById('btn-cloud-sync')?.addEventListener('click', openCloudModal);
     document.getElementById('cloud-modal-close-btn')?.addEventListener('click', closeCloudModal);
 
+
+
+    // Feature 5: 1-Click CAMS / KFintech CAS Import Handler
+    function openCasModal() {
+      document.getElementById('cas-modal-container')?.classList.remove('hidden');
+    }
+
+    function closeCasModal() {
+      document.getElementById('cas-modal-container')?.classList.add('hidden');
+    }
+
+    function loadSampleCasData() {
+      const sampleCas = `Folio No: 10458921/0
+Scheme: Parag Parikh Flexi Cap Fund - Direct Plan - Growth
+Units: 1420.550
+Purchase NAV: 62.40
+
+Folio No: 91048211/4
+Scheme: Motilal Oswal Midcap Fund - Direct Plan - Growth
+Units: 650.000
+Purchase NAV: 88.20
+
+Folio No: 33419082/1
+Scheme: SBI Small Cap Fund - Direct Plan - Growth
+Units: 420.250
+Purchase NAV: 154.60`;
+
+      const input = document.getElementById('cas-paste-input');
+      if (input) input.value = sampleCas;
+      const status = document.getElementById('cas-status-msg');
+      if (status) {
+        status.textContent = 'Sample CAS folios loaded! Click "Import Holdings" to process.';
+        status.className = 'text-xs font-semibold p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 block';
+      }
+    }
+
+    function executeCasImport() {
+      const rawText = (document.getElementById('cas-paste-input')?.value || '').trim();
+      if (!rawText) {
+        showToast('Please paste CAS statement text first.', 'error');
+        return;
+      }
+
+      let imported = 0;
+      // Multi-line regex parser for Scheme, Units, NAV
+      const schemeMatches = rawText.matchAll(/Scheme:\s*([^\n]+)/gi);
+      const unitMatches = [...rawText.matchAll(/Units:\s*([\d.]+)/gi)];
+      const navMatches = [...rawText.matchAll(/(?:Purchase|Buy)?\s*NAV:\s*([\d.]+)/gi)];
+
+      let idx = 0;
+      for (const m of schemeMatches) {
+        const name = m[1].trim();
+        const units = unitMatches[idx] ? parseFloat(unitMatches[idx][1]) || 100 : 100;
+        const buyNav = navMatches[idx] ? parseFloat(navMatches[idx][1]) || 50 : 50;
+        
+        // Find current NAV from catalog or default
+        let currentNav = buyNav * 1.15;
+        let schemeCode = '';
+        for (const [c, info] of Object.entries(POPULAR_MF_DIRECTORY)) {
+          if (info.name && info.name.toLowerCase().includes(name.toLowerCase().split(' ')[0])) {
+            currentNav = info.nav || currentNav;
+            schemeCode = c;
+            break;
+          }
+        }
+
+        appData.funds.push({
+          id: 'f_' + Date.now() + '_' + idx,
+          schemeCode,
+          name,
+          units,
+          buyNav,
+          currentNav,
+          navDate: 'Imported CAS'
+        });
+        imported++;
+        idx++;
+      }
+
+      if (imported > 0) {
+        saveData();
+        renderAll();
+        closeCasModal();
+        showToast(`Successfully imported ${imported} mutual fund folios from CAS!`);
+      } else {
+        // Fallback: try split lines
+        showToast('Could not detect folio structure. Using sample import.', 'error');
+        loadSampleCasData();
+      }
+    }
+
+    // Modal helpers for Gold and Retirement
+    window.openAddGoldModal = function() {
+      switchTab('gold');
+      editingItemId = null;
+      openModal();
+    };
+
+    window.openAddRetModal = function() {
+      switchTab('gold');
+      editingItemId = null;
+      openModal();
+    };
+
+
+    // Feature 1 & 5 Listeners (Privacy Mode & CAS Import)
+    document.getElementById('btn-toggle-privacy')?.addEventListener('click', togglePrivacyMode);
+    document.getElementById('btn-open-cas-modal')?.addEventListener('click', openCasModal);
+    document.getElementById('cas-modal-close-btn')?.addEventListener('click', closeCasModal);
+    document.getElementById('cas-modal-cancel-btn')?.addEventListener('click', closeCasModal);
+    document.getElementById('btn-load-sample-cas')?.addEventListener('click', loadSampleCasData);
+    document.getElementById('btn-execute-cas-import')?.addEventListener('click', executeCasImport);
+    document.getElementById('tab-btn-gold')?.addEventListener('click', () => switchTab('gold'));
+
+
+    // ==============================================
+    // WATCHLIST & INVESTMENT RADAR LOGIC
+    // ==============================================
+    let watchlistFilter = 'all'; // 'all', 'stocks', 'funds', 'buyzone'
+    let watchlistSearch = '';
+
+    function renderWatchlist() {
+      const tbody = document.getElementById('watchlist-table-body');
+      const cardsContainer = document.getElementById('watchlist-cards-container');
+      const totalCountEl = document.getElementById('stat-watch-total');
+      const stocksCountEl = document.getElementById('stat-watch-stocks');
+      const fundsCountEl = document.getElementById('stat-watch-funds');
+      const buyZoneCountEl = document.getElementById('stat-watch-near-target');
+      const topCountEl = document.getElementById('top-watchlist-count');
+      const sideCountEl = document.getElementById('sidebar-watchlist-count');
+
+      const list = appData.watchlist || [];
+
+      // Summary counts
+      const totalCount = list.length;
+      const stocksCount = list.filter(item => item.type === 'stock').length;
+      const fundsCount = list.filter(item => item.type === 'fund').length;
+      const buyZoneList = list.filter(item => {
+        if (!item.targetPrice || item.targetPrice <= 0) return false;
+        return item.currentPrice <= item.targetPrice * 1.03;
+      });
+      const buyZoneCount = buyZoneList.length;
+
+      if (totalCountEl) totalCountEl.textContent = `${totalCount} Asset${totalCount === 1 ? '' : 's'}`;
+      if (stocksCountEl) stocksCountEl.textContent = `${stocksCount} Equit${stocksCount === 1 ? 'y' : 'ies'}`;
+      if (fundsCountEl) fundsCountEl.textContent = `${fundsCount} Fund${fundsCount === 1 ? '' : 's'}`;
+      if (buyZoneCountEl) buyZoneCountEl.textContent = `${buyZoneCount} In Buy Zone`;
+      if (topCountEl) topCountEl.textContent = totalCount;
+      if (sideCountEl) sideCountEl.textContent = totalCount;
+
+      // Filter tabs active styling
+      ['all', 'stocks', 'funds', 'buyzone'].forEach(f => {
+        const btn = document.getElementById(`watch-tab-${f}`);
+        if (btn) {
+          if (f === watchlistFilter) {
+            btn.classList.add('active', 'bg-amber-100', 'text-amber-800', 'dark:bg-amber-950/80', 'dark:text-amber-300', 'font-bold');
+            btn.classList.remove('text-slate-600', 'dark:text-slate-400', 'font-medium');
+          } else {
+            btn.classList.remove('active', 'bg-amber-100', 'text-amber-800', 'dark:bg-amber-950/80', 'dark:text-amber-300', 'font-bold');
+            btn.classList.add('text-slate-600', 'dark:text-slate-400', 'font-medium');
+          }
+        }
+      });
+
+      // Filtered items
+      const filtered = list.filter(item => {
+        if (watchlistFilter === 'stocks' && item.type !== 'stock') return false;
+        if (watchlistFilter === 'funds' && item.type !== 'fund') return false;
+        if (watchlistFilter === 'buyzone') {
+          if (!item.targetPrice || item.targetPrice <= 0) return false;
+          if (item.currentPrice > item.targetPrice * 1.03) return false;
+        }
+        if (watchlistSearch) {
+          const q = watchlistSearch.toLowerCase();
+          const matchSym = item.symbol && item.symbol.toLowerCase().includes(q);
+          const matchName = item.name && item.name.toLowerCase().includes(q);
+          const matchNotes = item.notes && item.notes.toLowerCase().includes(q);
+          return matchSym || matchName || matchNotes;
+        }
+        return true;
+      });
+
+      if (!tbody || !cardsContainer) return;
+
+      if (filtered.length === 0) {
+        const emptyHtml = `
+          <div class="p-8 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xl">
+              ⭐
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-slate-900 dark:text-white">No Watchlist Assets Found</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">Track prospective Indian equities and mutual funds before allocating capital. Set target prices to trigger entry alerts.</p>
+            </div>
+            <button type="button" onclick="openWatchlistModal()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>Add to Watchlist</span>
+            </button>
+          </div>
+        `;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-0 border-0">${emptyHtml}</td></tr>`;
+        cardsContainer.innerHTML = emptyHtml;
+        return;
+      }
+
+      // Render Desktop Rows
+      tbody.innerHTML = filtered.map(item => {
+        const isStock = item.type === 'stock';
+        const typeBadge = isStock
+          ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">${escapeHtml(item.exchange || 'NSE')}</span>`
+          : `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800">AMFI MF</span>`;
+
+        const curPrice = Number(item.currentPrice) || 0;
+        const tgtPrice = Number(item.targetPrice) || 0;
+        const dayChange = Number(item.dayChange) || 0;
+        const isPositive = dayChange >= 0;
+
+        // Target distance indicator
+        let targetHtml = '<span class="text-slate-400">Not set</span>';
+        if (tgtPrice > 0) {
+          const diffPct = ((curPrice - tgtPrice) / tgtPrice) * 100;
+          if (curPrice <= tgtPrice) {
+            targetHtml = `
+              <div>
+                <span class="font-bold text-xs text-slate-900 dark:text-white money-val">${formatINR(tgtPrice)}</span>
+                <div class="mt-0.5 inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
+                  <span>🎯 In Buy Zone</span>
+                  <span class="text-[9px]">(${Math.abs(diffPct).toFixed(1)}% below)</span>
+                </div>
+              </div>
+            `;
+          } else {
+            const isNear = diffPct <= 5;
+            targetHtml = `
+              <div>
+                <span class="font-bold text-xs text-slate-900 dark:text-white money-val">${formatINR(tgtPrice)}</span>
+                <div class="mt-0.5 inline-flex items-center gap-1 text-[10px] ${isNear ? 'text-amber-600 dark:text-amber-400 font-semibold' : 'text-slate-400'}">
+                  <span>${diffPct.toFixed(1)}% above target</span>
+                </div>
+              </div>
+            `;
+          }
+        }
+
+        // 52W range progress
+        const high52 = Number(item.high52) || curPrice * 1.2;
+        const low52 = Number(item.low52) || curPrice * 0.8;
+        let rangePct = 50;
+        if (high52 > low52) {
+          rangePct = Math.max(0, Math.min(100, ((curPrice - low52) / (high52 - low52)) * 100));
+        }
+
+        return `
+          <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors border-b border-slate-100 dark:border-slate-800/80">
+            <td class="px-3.5 py-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl ${isStock ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400' : 'bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400'} flex items-center justify-center font-bold text-xs shrink-0">
+                  ${isStock ? (item.symbol || 'ST').substring(0, 3) : 'MF'}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(item.symbol || item.name)}</span>
+                    ${typeBadge}
+                  </div>
+                  <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-xs">${escapeHtml(item.name || item.symbol)}</div>
+                </div>
+              </div>
+            </td>
+            <td class="px-3.5 py-3 text-right">
+              <span class="font-bold text-xs text-slate-900 dark:text-white money-val">${formatINR(curPrice)}</span>
+            </td>
+            <td class="px-3.5 py-3 text-right">
+              <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold ${isPositive ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'}">
+                <span>${isPositive ? '▲ +' : '▼ '}${dayChange.toFixed(2)}%</span>
+              </span>
+            </td>
+            <td class="px-3.5 py-3 text-right">
+              ${targetHtml}
+            </td>
+            <td class="px-3.5 py-3 text-center">
+              <div class="w-24 mx-auto space-y-1">
+                <div class="flex justify-between text-[9px] text-slate-400 font-medium">
+                  <span>${formatINR(low52)}</span>
+                  <span>${formatINR(high52)}</span>
+                </div>
+                <div class="w-full bg-slate-100 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full rounded-full" style="width: ${rangePct}%"></div>
+                </div>
+              </div>
+            </td>
+            <td class="px-3.5 py-3">
+              <div class="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-2 max-w-xs italic" title="${escapeHtml(item.notes || '')}">
+                ${escapeHtml(item.notes || 'No thesis notes added')}
+              </div>
+            </td>
+            <td class="px-3.5 py-3 text-right whitespace-nowrap">
+              <div class="flex items-center justify-end gap-1.5">
+                <button type="button" onclick="promoteWatchlistToPortfolio('${item.id}')" title="Buy &amp; Add to Portfolio" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg shadow-xs transition-colors cursor-pointer">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                  <span>Buy</span>
+                </button>
+                <button type="button" onclick="openWatchlistModal('${item.id}')" title="Edit Target / Notes" class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </button>
+                <button type="button" onclick="deleteWatchlistItem('${item.id}')" title="Remove from Watchlist" class="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Render Mobile Cards
+      cardsContainer.innerHTML = filtered.map(item => {
+        const isStock = item.type === 'stock';
+        const curPrice = Number(item.currentPrice) || 0;
+        const tgtPrice = Number(item.targetPrice) || 0;
+        const dayChange = Number(item.dayChange) || 0;
+        const isPositive = dayChange >= 0;
+        const inBuyZone = tgtPrice > 0 && curPrice <= tgtPrice;
+
+        return `
+          <div class="p-3.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-2.5">
+            <div class="flex items-start justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <div class="w-8 h-8 rounded-xl ${isStock ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400' : 'bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400'} flex items-center justify-center font-bold text-xs shrink-0">
+                  ${isStock ? (item.symbol || 'ST').substring(0, 3) : 'MF'}
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(item.symbol || item.name)}</span>
+                    <span class="px-1 py-0.2 rounded text-[9px] font-bold ${isStock ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300'}">${escapeHtml(item.exchange || 'MF')}</span>
+                  </div>
+                  <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(item.name || item.symbol)}</div>
+                </div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="font-bold text-xs text-slate-900 dark:text-white money-val">${formatINR(curPrice)}</div>
+                <div class="text-[10px] font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                  ${isPositive ? '▲ +' : '▼ '}${dayChange.toFixed(2)}%
+                </div>
+              </div>
+            </div>
+
+            <!-- Target & Buy Zone Banner -->
+            <div class="flex items-center justify-between text-xs p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <div class="text-[11px] text-slate-500">Target Buy Price: <span class="font-bold text-slate-800 dark:text-slate-200 money-val">${tgtPrice > 0 ? formatINR(tgtPrice) : 'Not set'}</span></div>
+              ${inBuyZone ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">🎯 Buy Zone!</span>' : ''}
+            </div>
+
+            ${item.notes ? `<div class="text-[11px] text-slate-600 dark:text-slate-300 italic bg-amber-50/50 dark:bg-amber-950/20 p-2 rounded-lg border border-amber-200/40 dark:border-amber-900/30">"${escapeHtml(item.notes)}"</div>` : ''}
+
+            <!-- Bottom Actions -->
+            <div class="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800">
+              <button type="button" onclick="deleteWatchlistItem('${item.id}')" class="text-[11px] text-rose-500 hover:text-rose-700 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                Remove
+              </button>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="openWatchlistModal('${item.id}')" class="px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                  Edit
+                </button>
+                <button type="button" onclick="promoteWatchlistToPortfolio('${item.id}')" class="px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-lg shadow-xs flex items-center gap-1">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                  Buy to Portfolio
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setWatchlistFilter(filter) {
+      watchlistFilter = filter;
+      renderWatchlist();
+    }
+
+    function setWatchlistModalType(type) {
+      const typeInput = document.getElementById('watch-field-type');
+      const stockSection = document.getElementById('watch-stock-section');
+      const fundSection = document.getElementById('watch-fund-section');
+      const stockBtn = document.getElementById('watch-type-stock-btn');
+      const fundBtn = document.getElementById('watch-type-fund-btn');
+
+      if (!typeInput || !stockSection || !fundSection) return;
+      typeInput.value = type;
+
+      if (type === 'stock') {
+        stockSection.classList.remove('hidden');
+        fundSection.classList.add('hidden');
+        stockBtn.className = "px-3 py-2 text-xs font-bold rounded-xl border-2 border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 flex items-center justify-center gap-1.5 cursor-pointer";
+        fundBtn.className = "px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1.5 cursor-pointer";
+      } else {
+        stockSection.classList.add('hidden');
+        fundSection.classList.remove('hidden');
+        fundBtn.className = "px-3 py-2 text-xs font-bold rounded-xl border-2 border-teal-500 bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 flex items-center justify-center gap-1.5 cursor-pointer";
+        stockBtn.className = "px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1.5 cursor-pointer";
+      }
+    }
+
+    function openWatchlistModal(idToEdit = null) {
+      const modal = document.getElementById('watchlist-modal-container');
+      const title = document.getElementById('watchlist-modal-title');
+      const submitBtn = document.getElementById('watch-modal-submit-btn');
+      if (!modal) return;
+
+      const idInput = document.getElementById('watch-field-id');
+      const symInput = document.getElementById('watch-field-symbol');
+      const nameInput = document.getElementById('watch-field-name');
+      const exSelect = document.getElementById('watch-field-exchange');
+      const fundNameInput = document.getElementById('watch-field-fund-name');
+      const fundCodeInput = document.getElementById('watch-field-fund-code');
+      const curInput = document.getElementById('watch-field-current');
+      const tgtInput = document.getElementById('watch-field-target');
+      const lowInput = document.getElementById('watch-field-low');
+      const highInput = document.getElementById('watch-field-high');
+      const notesInput = document.getElementById('watch-field-notes');
+
+      if (idToEdit) {
+        const item = (appData.watchlist || []).find(w => w.id === idToEdit);
+        if (item) {
+          title.textContent = 'Edit Watchlist Target & Thesis';
+          submitBtn.textContent = 'Update Watchlist';
+          idInput.value = item.id;
+          setWatchlistModalType(item.type || 'stock');
+
+          if (item.type === 'stock') {
+            symInput.value = item.symbol || '';
+            nameInput.value = item.name || '';
+            if (exSelect) exSelect.value = item.exchange || 'NSE';
+          } else {
+            fundNameInput.value = item.name || '';
+            fundCodeInput.value = item.schemeCode || '';
+          }
+
+          curInput.value = item.currentPrice || '';
+          tgtInput.value = item.targetPrice || '';
+          lowInput.value = item.low52 || '';
+          highInput.value = item.high52 || '';
+          notesInput.value = item.notes || '';
+          modal.classList.remove('hidden');
+          return;
+        }
+      }
+
+      // Add New Mode
+      title.textContent = 'Add Asset to Watchlist';
+      submitBtn.textContent = 'Save to Watchlist';
+      idInput.value = '';
+      setWatchlistModalType('stock');
+      symInput.value = '';
+      nameInput.value = '';
+      fundNameInput.value = '';
+      fundCodeInput.value = '';
+      curInput.value = '';
+      tgtInput.value = '';
+      lowInput.value = '';
+      highInput.value = '';
+      notesInput.value = '';
+      modal.classList.remove('hidden');
+    }
+
+    function closeWatchlistModal() {
+      const modal = document.getElementById('watchlist-modal-container');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function triggerWatchlistStockLookup() {
+      const symInput = document.getElementById('watch-field-symbol');
+      const nameInput = document.getElementById('watch-field-name');
+      const curInput = document.getElementById('watch-field-current');
+      const lowInput = document.getElementById('watch-field-low');
+      const highInput = document.getElementById('watch-field-high');
+      const tgtInput = document.getElementById('watch-field-target');
+      const exSelect = document.getElementById('watch-field-exchange');
+
+      const raw = (symInput.value || '').trim().toUpperCase();
+      if (!raw) {
+        showToast('Please enter a stock ticker or name');
+        return;
+      }
+
+      // Check Directory
+      const entry = INDIAN_STOCK_DIRECTORY[raw] || INDIAN_STOCK_DIRECTORY[raw + '_NSE'] || INDIAN_STOCK_DIRECTORY[raw + '_BSE'];
+      if (entry) {
+        if (nameInput) nameInput.value = entry.name;
+        if (exSelect && entry.exchange) exSelect.value = entry.exchange;
+        showToast(`Matched: ${entry.name}`);
+      }
+
+      // Check existing market data or random sample fallback
+      const samplePrices = {
+        'TATAMOTORS': { price: 980.50, low: 655, high: 1179 },
+        'HDFCBANK': { price: 1742.00, low: 1363, high: 1794 },
+        'RELIANCE': { price: 1410.50, low: 1220, high: 1608 },
+        'TCS': { price: 4120.00, low: 3315, high: 4585 },
+        'INFY': { price: 1850.25, low: 1358, high: 1991 },
+        'SUZLON': { price: 68.40, low: 33.9, high: 86.04 },
+        'HAL': { price: 4380.00, low: 1850, high: 5675 },
+        'LICI': { price: 948.00, low: 597, high: 1222 }
+      };
+
+      if (samplePrices[raw]) {
+        curInput.value = samplePrices[raw].price;
+        lowInput.value = samplePrices[raw].low;
+        highInput.value = samplePrices[raw].high;
+        if (!tgtInput.value) tgtInput.value = (samplePrices[raw].price * 0.95).toFixed(2);
+      }
+    }
+
+    function deleteWatchlistItem(id) {
+      const item = (appData.watchlist || []).find(w => w.id === id);
+      const name = item ? (item.symbol || item.name) : 'Asset';
+      appData.watchlist = (appData.watchlist || []).filter(w => w.id !== id);
+      saveData();
+      renderWatchlist();
+      showToast(`Removed ${name} from Watchlist`);
+    }
+
+    function promoteWatchlistToPortfolio(id) {
+      const item = (appData.watchlist || []).find(w => w.id === id);
+      if (!item) return;
+
+      if (item.type === 'stock') {
+        switchScreen('portfolio');
+        switchTab('stocks');
+        openModal();
+        setTimeout(() => {
+          const symInput = document.getElementById('field-stock-symbol');
+          const nameInput = document.getElementById('field-stock-name');
+          const exInput = document.getElementById('field-stock-exchange');
+          const buyInput = document.getElementById('field-stock-buy');
+          const curInput = document.getElementById('field-stock-current');
+          const qtyInput = document.getElementById('field-stock-qty');
+
+          if (symInput) symInput.value = item.symbol || '';
+          if (nameInput) nameInput.value = item.name || item.symbol || '';
+          if (exInput && item.exchange) exInput.value = item.exchange;
+          if (buyInput) buyInput.value = item.targetPrice > 0 ? item.targetPrice : item.currentPrice;
+          if (curInput) curInput.value = item.currentPrice || 0;
+          if (qtyInput) qtyInput.focus();
+          showToast(`Pre-filled ${item.symbol}! Enter quantity to buy.`);
+        }, 150);
+      } else {
+        switchScreen('portfolio');
+        switchTab('funds');
+        openModal();
+        setTimeout(() => {
+          const codeInput = document.getElementById('field-mf-schemecode');
+          const nameInput = document.getElementById('field-mf-name');
+          const buyInput = document.getElementById('field-mf-buynav');
+          const curInput = document.getElementById('field-mf-currentnav');
+          const unitsInput = document.getElementById('field-mf-units');
+
+          if (codeInput) codeInput.value = item.schemeCode || '';
+          if (nameInput) nameInput.value = item.name || '';
+          if (buyInput) buyInput.value = item.targetPrice > 0 ? item.targetPrice : item.currentPrice;
+          if (curInput) curInput.value = item.currentPrice || 0;
+          if (unitsInput) unitsInput.focus();
+          showToast(`Pre-filled ${item.name}! Enter units to add.`);
+        }, 150);
+      }
+    }
+
+    function addToWatchlistFromMarket(symbol, name, currentPrice, dayChange, exchange = 'NSE') {
+      if (!appData.watchlist) appData.watchlist = [];
+      const existing = appData.watchlist.find(w => w.symbol === symbol);
+      if (existing) {
+        showToast(`${symbol} is already on your Watchlist!`);
+        switchScreen('watchlist');
+        return;
+      }
+
+      const cur = Number(currentPrice) || 100;
+      appData.watchlist.push({
+        id: 'w_' + Date.now(),
+        type: 'stock',
+        symbol: symbol,
+        name: name || symbol,
+        exchange: exchange,
+        currentPrice: cur,
+        dayChange: Number(dayChange) || 0,
+        targetPrice: Math.round(cur * 0.95 * 100) / 100,
+        high52: Math.round(cur * 1.25 * 100) / 100,
+        low52: Math.round(cur * 0.75 * 100) / 100,
+        notes: `Added from Share Market live feed on ${new Date().toLocaleDateString('en-IN')}`
+      });
+
+      saveData();
+      renderWatchlist();
+      showToast(`Added ${symbol} to Watchlist!`);
+    }
+
+    // Export global functions for inline onclick handlers
+    window.renderWatchlist = renderWatchlist;
+    window.setWatchlistFilter = setWatchlistFilter;
+    window.openWatchlistModal = openWatchlistModal;
+    window.closeWatchlistModal = closeWatchlistModal;
+    window.setWatchlistModalType = setWatchlistModalType;
+    window.triggerWatchlistStockLookup = triggerWatchlistStockLookup;
+    window.deleteWatchlistItem = deleteWatchlistItem;
+    window.promoteWatchlistToPortfolio = promoteWatchlistToPortfolio;
+    window.addToWatchlistFromMarket = addToWatchlistFromMarket;
+
+    // Search bar listener for watchlist
+    document.getElementById('watchlist-search-input')?.addEventListener('input', (e) => {
+      watchlistSearch = e.target.value.trim();
+      renderWatchlist();
+    });
+
+    // Autocomplete for Watchlist Symbol input
+    const watchSymInput = document.getElementById('watch-field-symbol');
+    const watchAutoList = document.getElementById('watch-stock-autocomplete');
+
+    if (watchSymInput && watchAutoList) {
+      watchSymInput.addEventListener('input', (e) => {
+        const q = e.target.value.trim();
+        if (q.length < 1) {
+          watchAutoList.classList.add('hidden');
+          watchAutoList.innerHTML = '';
+          return;
+        }
+
+        const matches = searchIndianStocks(q);
+        if (matches.length === 0) {
+          watchAutoList.innerHTML = `
+            <div class="px-3.5 py-2 text-[11px] text-slate-400">
+              No matching ticker in directory.
+            </div>
+          `;
+          watchAutoList.classList.remove('hidden');
+          return;
+        }
+
+        watchAutoList.innerHTML = matches.slice(0, 6).map(([sym, entry]) => `
+          <div class="watch-auto-item px-3.5 py-2 hover:bg-amber-50 dark:hover:bg-amber-950/40 cursor-pointer flex items-center justify-between text-xs transition-colors" data-sym="${escapeHtml(sym)}" data-name="${escapeHtml(entry.name)}" data-ex="${escapeHtml(entry.exchange || 'NSE')}">
+            <div>
+              <div class="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                <span>${escapeHtml(sym)}</span>
+                <span class="px-1 py-0.2 rounded text-[9px] bg-slate-100 dark:bg-slate-700 font-semibold">${escapeHtml(entry.exchange || 'NSE')}</span>
+              </div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate max-w-xs">${escapeHtml(entry.name)}</div>
+            </div>
+          </div>
+        `).join('');
+
+        watchAutoList.classList.remove('hidden');
+
+        watchAutoList.querySelectorAll('.watch-auto-item').forEach(itemEl => {
+          itemEl.addEventListener('click', () => {
+            const sym = itemEl.getAttribute('data-sym');
+            const name = itemEl.getAttribute('data-name');
+            const ex = itemEl.getAttribute('data-ex');
+
+            watchSymInput.value = sym;
+            const nameEl = document.getElementById('watch-field-name');
+            const exEl = document.getElementById('watch-field-exchange');
+            if (nameEl) nameEl.value = name;
+            if (exEl) exEl.value = ex;
+            watchAutoList.classList.add('hidden');
+            triggerWatchlistStockLookup();
+          });
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!watchSymInput.contains(e.target) && !watchAutoList.contains(e.target)) {
+          watchAutoList.classList.add('hidden');
+        }
+      });
+    }
+
+
+    // ==============================================
+    // FINANCIAL CALCULATORS HUB LOGIC & SIMULATORS
+    // ==============================================
+    let activeCalcTab = 'sip';
+    let taxHoldingPeriod = 'ltcg';
+
+    function switchCalculatorTab(tab) {
+      activeCalcTab = tab;
+
+      const tabs = ['sip', 'loan', 'swp', 'tax', 'delay'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`calc-tab-btn-${t}`);
+        const panel = document.getElementById(`calc-panel-${t}`);
+
+        if (btn) {
+          if (t === tab) {
+            btn.className = "calc-sub-tab active px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition-all cursor-pointer flex items-center gap-1.5 shrink-0";
+          } else {
+            btn.className = "calc-sub-tab px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer flex items-center gap-1.5 shrink-0";
+          }
+        }
+
+        if (panel) {
+          if (t === tab) panel.classList.remove('hidden');
+          else panel.classList.add('hidden');
+        }
+      });
+
+      // Recalculate target tab
+      if (tab === 'sip') recalcSip();
+      else if (tab === 'loan') recalcLoan();
+      else if (tab === 'swp') recalcSwp();
+      else if (tab === 'tax') recalcTax();
+      else if (tab === 'delay') recalcDelay();
+    }
+
+    // 1. STEP-UP SIP CALCULATOR
+    function recalcSip() {
+      const monthlyInput = document.getElementById('calc-sip-amount-input');
+      const rateInput = document.getElementById('calc-sip-rate-input');
+      const yearsInput = document.getElementById('calc-sip-years-input');
+      const stepupInput = document.getElementById('calc-sip-stepup-input');
+
+      if (!monthlyInput || !rateInput || !yearsInput || !stepupInput) return;
+
+      const P = parseFloat(monthlyInput.value) || 15000;
+      const rAnnual = parseFloat(rateInput.value) || 12;
+      const years = parseInt(yearsInput.value) || 15;
+      const stepUp = parseFloat(stepupInput.value) || 0;
+
+      const rMonthly = (rAnnual / 100) / 12;
+      const totalMonths = years * 12;
+
+      let totalInvested = 0;
+      let maturityTotal = 0;
+
+      for (let y = 1; y <= years; y++) {
+        const curMonthly = P * Math.pow(1 + (stepUp / 100), y - 1);
+        for (let m = 1; m <= 12; m++) {
+          const remainingMonths = totalMonths - ((y - 1) * 12 + m) + 1;
+          maturityTotal += curMonthly * Math.pow(1 + rMonthly, remainingMonths);
+          totalInvested += curMonthly;
+        }
+      }
+
+      const totalGains = Math.max(0, maturityTotal - totalInvested);
+      const investedPct = maturityTotal > 0 ? (totalInvested / maturityTotal) * 100 : 0;
+      const gainsPct = 100 - investedPct;
+
+      // Normal Flat SIP Comparison
+      let flatMaturity = 0;
+      let flatInvested = P * totalMonths;
+      if (rMonthly > 0) {
+        flatMaturity = P * ((Math.pow(1 + rMonthly, totalMonths) - 1) / rMonthly) * (1 + rMonthly);
+      } else {
+        flatMaturity = flatInvested;
+      }
+      const stepUpBonus = Math.max(0, maturityTotal - flatMaturity);
+
+      // Render Outputs
+      document.getElementById('calc-sip-result-total').textContent = formatINR(Math.round(maturityTotal));
+      document.getElementById('calc-sip-result-invested').textContent = formatINR(Math.round(totalInvested));
+      document.getElementById('calc-sip-result-gains').textContent = formatINR(Math.round(totalGains));
+      document.getElementById('calc-sip-pct-invested').textContent = `${investedPct.toFixed(1)}% of total`;
+      document.getElementById('calc-sip-pct-gains').textContent = `${gainsPct.toFixed(1)}% of total`;
+      document.getElementById('sip-tag-years').textContent = `${years} Year${years === 1 ? '' : 's'}`;
+
+      const barInvested = document.getElementById('calc-sip-bar-invested');
+      const barGains = document.getElementById('calc-sip-bar-gains');
+      if (barInvested) barInvested.style.width = `${investedPct}%`;
+      if (barGains) barGains.style.width = `${gainsPct}%`;
+
+      const compText = document.getElementById('calc-sip-stepup-comparison-text');
+      if (compText) {
+        if (stepUp > 0) {
+          compText.innerHTML = `By stepping up your investment by <strong>${stepUp}% each year</strong>, your final corpus will be <strong class="text-emerald-600 dark:text-emerald-400 font-bold">${formatINR(Math.round(stepUpBonus))} higher</strong> than continuing with a flat ${formatINR(P)} monthly SIP!`;
+        } else {
+          compText.innerHTML = `Consider adding a 10% annual step-up as your salary increases to supercharge compounding wealth!`;
+        }
+      }
+    }
+
+    // 2. HOME LOAN EMI & PREPAYMENT VS SIP
+    function recalcLoan() {
+      const loanInput = document.getElementById('calc-loan-amount-input');
+      const rateInput = document.getElementById('calc-loan-rate-input');
+      const tenureInput = document.getElementById('calc-loan-tenure-input');
+      const prepayInput = document.getElementById('calc-loan-prepay-input');
+
+      if (!loanInput || !rateInput || !tenureInput || !prepayInput) return;
+
+      const P = parseFloat(loanInput.value) || 5000000;
+      const rAnnual = parseFloat(rateInput.value) || 8.5;
+      const years = parseInt(tenureInput.value) || 20;
+      const prepay = parseFloat(prepayInput.value) || 0;
+
+      const rMonthly = (rAnnual / 100) / 12;
+      const totalMonths = years * 12;
+
+      // Regular EMI formula
+      let emi = 0;
+      if (rMonthly > 0) {
+        emi = (P * rMonthly * Math.pow(1 + rMonthly, totalMonths)) / (Math.pow(1 + rMonthly, totalMonths) - 1);
+      } else {
+        emi = P / totalMonths;
+      }
+
+      const totalWithoutPrepay = emi * totalMonths;
+      const totalInterestWithout = Math.max(0, totalWithoutPrepay - P);
+
+      // Simulation with Monthly Prepayment
+      let balance = P;
+      let totalInterestWithPrepay = 0;
+      let monthsTaken = 0;
+
+      while (balance > 0 && monthsTaken < totalMonths) {
+        monthsTaken++;
+        const interest = balance * rMonthly;
+        totalInterestWithPrepay += interest;
+        const principalPart = (emi - interest) + prepay;
+        balance -= principalPart;
+        if (balance <= 0) break;
+      }
+
+      const interestSaved = Math.max(0, totalInterestWithout - totalInterestWithPrepay);
+      const monthsSaved = Math.max(0, totalMonths - monthsTaken);
+      const yearsSaved = Math.floor(monthsSaved / 12);
+      const remainingMonthsSaved = monthsSaved % 12;
+
+      // SIP Opportunity Cost of Prepayment Amount
+      let sipCorpus = 0;
+      if (prepay > 0) {
+        const sipRateMonthly = 0.12 / 12; // 12% equity index return
+        sipCorpus = prepay * ((Math.pow(1 + sipRateMonthly, totalMonths) - 1) / sipRateMonthly) * (1 + sipRateMonthly);
+      }
+      const netAdvantage = sipCorpus - interestSaved;
+
+      // Render Outputs
+      document.getElementById('calc-loan-result-emi').textContent = formatINR(Math.round(emi));
+      document.getElementById('calc-loan-result-total-interest').textContent = formatINR(Math.round(totalInterestWithout));
+      document.getElementById('calc-loan-result-total-payment').textContent = formatINR(Math.round(totalWithoutPrepay));
+
+      document.getElementById('calc-loan-interest-saved').textContent = formatINR(Math.round(interestSaved));
+      document.getElementById('calc-loan-time-saved').textContent = `${yearsSaved} Yrs ${remainingMonthsSaved} Mos early`;
+      document.getElementById('calc-loan-sip-corpus').textContent = formatINR(Math.round(sipCorpus));
+      document.getElementById('calc-loan-net-advantage').textContent = `${formatINR(Math.round(Math.abs(netAdvantage)))} ${netAdvantage >= 0 ? 'more net wealth' : 'prepayment advantage'}`;
+    }
+
+    // 3. SWP & FIRE RETIREMENT RUNWAY
+    function recalcSwp() {
+      const corpusInput = document.getElementById('calc-swp-corpus-input');
+      const monthlyInput = document.getElementById('calc-swp-monthly-input');
+      const returnInput = document.getElementById('calc-swp-return-input');
+      const inflationInput = document.getElementById('calc-swp-inflation-input');
+      const yearsInput = document.getElementById('calc-swp-years-input');
+
+      if (!corpusInput || !monthlyInput || !returnInput || !inflationInput || !yearsInput) return;
+
+      const initialCorpus = parseFloat(corpusInput.value) || 15000000;
+      let monthlyPayout = parseFloat(monthlyInput.value) || 60000;
+      const rAnnual = parseFloat(returnInput.value) || 9.0;
+      const inflation = parseFloat(inflationInput.value) || 6.0;
+      const years = parseInt(yearsInput.value) || 30;
+
+      const rMonthly = (rAnnual / 100) / 12;
+      const totalMonths = years * 12;
+
+      let balance = initialCorpus;
+      let totalWithdrawn = 0;
+      let exhaustedMonth = null;
+      const milestones = [];
+
+      for (let m = 1; m <= totalMonths; m++) {
+        // Adjust for annual inflation every 12 months
+        if (m > 1 && (m - 1) % 12 === 0) {
+          monthlyPayout *= (1 + (inflation / 100));
+        }
+
+        balance += balance * rMonthly;
+        balance -= monthlyPayout;
+        totalWithdrawn += monthlyPayout;
+
+        if (balance <= 0 && exhaustedMonth === null) {
+          exhaustedMonth = m;
+          balance = 0;
+        }
+
+        if (m % (5 * 12) === 0 || m === totalMonths) {
+          milestones.push({
+            year: Math.round(m / 12),
+            balance: Math.max(0, balance),
+            monthlyPayout: Math.round(monthlyPayout)
+          });
+        }
+      }
+
+      const swr = (parseFloat(monthlyInput.value) * 12 / initialCorpus) * 100;
+
+      // Render Outputs
+      document.getElementById('calc-swp-swr-badge').textContent = `${swr.toFixed(1)}% Initial SWR`;
+      document.getElementById('calc-swp-total-withdrawn').textContent = formatINR(Math.round(totalWithdrawn));
+      document.getElementById('calc-swp-ending-corpus').textContent = formatINR(Math.round(balance));
+
+      const headingEl = document.getElementById('calc-swp-status-heading');
+      const cardEl = document.getElementById('calc-swp-status-card');
+
+      if (exhaustedMonth === null) {
+        if (balance >= initialCorpus) {
+          headingEl.textContent = `🛡️ Perpetual Corpus — Wealth is Growing!`;
+          cardEl.className = "bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3";
+        } else {
+          headingEl.textContent = `Corpus Endures for Full ${years} Years`;
+          cardEl.className = "bg-gradient-to-br from-purple-700 via-indigo-800 to-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3";
+        }
+      } else {
+        const exhaustYr = (exhaustedMonth / 12).toFixed(1);
+        headingEl.textContent = `⚠️ Depletes in Year ${exhaustYr} — Reduce Withdrawal`;
+        cardEl.className = "bg-gradient-to-br from-rose-700 via-red-800 to-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3";
+      }
+
+      // Milestones breakdown
+      const listEl = document.getElementById('calc-swp-milestones-list');
+      if (listEl) {
+        listEl.innerHTML = milestones.map(ms => `
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+            <span class="font-bold text-slate-700 dark:text-slate-300">Year ${ms.year}</span>
+            <span class="text-[11px] text-slate-400">Payout: ${formatINR(ms.monthlyPayout)}/mo</span>
+            <span class="font-extrabold ${ms.balance > 0 ? 'text-slate-900 dark:text-white' : 'text-rose-500'} money-val">${formatINR(Math.round(ms.balance))}</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function loadNetWorthIntoSwp() {
+      // Calculate current net worth
+      const bankTotal = (appData.banks || []).reduce((acc, b) => acc + (Number(b.balance) || 0), 0);
+      const stocksCurrent = (appData.stocks || []).reduce((acc, s) => acc + (s.qty * s.currentPrice), 0);
+      const mfCurrent = (appData.funds || []).reduce((acc, f) => acc + (f.units * f.currentNav), 0);
+      const goldCurrent = (appData.gold || []).reduce((acc, g) => acc + ((Number(g.units) || 1) * (Number(g.currentPrice || g.buyPrice) || 0)), 0);
+      const retTotal = (appData.retirement || []).reduce((acc, r) => acc + (Number(r.balance) || 0), 0);
+
+      const netWorth = Math.round(bankTotal + stocksCurrent + mfCurrent + goldCurrent + retTotal);
+      if (netWorth > 0) {
+        const input = document.getElementById('calc-swp-corpus-input');
+        const slider = document.getElementById('calc-swp-corpus-slider');
+        if (input) input.value = netWorth;
+        if (slider) slider.value = Math.min(slider.max, netWorth);
+        recalcSwp();
+        showToast(`Loaded live portfolio net worth: ${formatINR(netWorth)}!`);
+      } else {
+        showToast('Portfolio empty or uncalculated.');
+      }
+    }
+
+    // 4. CAPITAL GAINS TAX (BUDGET 2024 RULES)
+    function setTaxHolding(type) {
+      taxHoldingPeriod = type;
+      const btnLtcg = document.getElementById('calc-tax-btn-ltcg');
+      const btnStcg = document.getElementById('calc-tax-btn-stcg');
+      const exemptRow = document.getElementById('calc-tax-exemption-row');
+
+      if (type === 'ltcg') {
+        btnLtcg.className = "px-3 py-2 text-xs font-bold rounded-xl border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 cursor-pointer";
+        btnStcg.className = "px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 cursor-pointer";
+        if (exemptRow) exemptRow.classList.remove('hidden');
+      } else {
+        btnStcg.className = "px-3 py-2 text-xs font-bold rounded-xl border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-200 cursor-pointer";
+        btnLtcg.className = "px-3 py-2 text-xs font-medium rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 cursor-pointer";
+        if (exemptRow) exemptRow.classList.add('hidden');
+      }
+      recalcTax();
+    }
+
+    function recalcTax() {
+      const assetTypeSelect = document.getElementById('calc-tax-asset-type');
+      const buyInput = document.getElementById('calc-tax-buy-input');
+      const sellInput = document.getElementById('calc-tax-sell-input');
+      const exemptUsedInput = document.getElementById('calc-tax-exempt-used-input');
+
+      if (!assetTypeSelect || !buyInput || !sellInput) return;
+
+      const assetType = assetTypeSelect.value;
+      const buyPrice = parseFloat(buyInput.value) || 0;
+      const sellPrice = parseFloat(sellInput.value) || 0;
+      const exemptUsed = parseFloat(exemptUsedInput?.value) || 0;
+
+      const grossProfit = Math.max(0, sellPrice - buyPrice);
+      let taxRate = 12.5;
+      let exemptionAllowed = 0;
+      let badgeText = 'LTCG @ 12.5%';
+
+      if (assetType === 'equity') {
+        if (taxHoldingPeriod === 'ltcg') {
+          taxRate = 12.5;
+          const availableExemption = Math.max(0, 125000 - exemptUsed);
+          exemptionAllowed = Math.min(grossProfit, availableExemption);
+          badgeText = 'Equity LTCG @ 12.5%';
+        } else {
+          taxRate = 20.0;
+          exemptionAllowed = 0;
+          badgeText = 'Equity STCG @ 20.0%';
+        }
+      } else if (assetType === 'debt') {
+        taxRate = 30.0; // Assumed marginal slab
+        exemptionAllowed = 0;
+        badgeText = 'Debt Funds (Taxed at Slab 30%)';
+      } else {
+        taxRate = 12.5; // Real Estate without indexation
+        exemptionAllowed = 0;
+        badgeText = 'Real Estate (12.5% Flat)';
+      }
+
+      const taxableGain = Math.max(0, grossProfit - exemptionAllowed);
+      const baseTax = taxableGain * (taxRate / 100);
+      const cess = baseTax * 0.04;
+      const totalTax = baseTax + cess;
+      const netProfit = Math.max(0, grossProfit - totalTax);
+
+      // Render Outputs
+      document.getElementById('calc-tax-rate-badge').textContent = badgeText;
+      document.getElementById('calc-tax-result-payable').textContent = formatINR(Math.round(totalTax));
+      document.getElementById('calc-tax-result-gross').textContent = formatINR(Math.round(grossProfit));
+      document.getElementById('calc-tax-result-net').textContent = formatINR(Math.round(netProfit));
+
+      document.getElementById('calc-tax-sheet-gross').textContent = formatINR(Math.round(grossProfit));
+      document.getElementById('calc-tax-sheet-exemption').textContent = exemptionAllowed > 0 ? `-${formatINR(Math.round(exemptionAllowed))}` : '₹0';
+      document.getElementById('calc-tax-sheet-taxable').textContent = formatINR(Math.round(taxableGain));
+      document.getElementById('calc-tax-sheet-total').textContent = formatINR(Math.round(totalTax));
+    }
+
+    // 5. GOAL INFLATION & COST OF DELAY
+    function recalcDelay() {
+      const costInput = document.getElementById('calc-delay-cost-input');
+      const yearsInput = document.getElementById('calc-delay-years-input');
+      const inflationInput = document.getElementById('calc-delay-inflation-input');
+      const delayInput = document.getElementById('calc-delay-postpone-input');
+
+      if (!costInput || !yearsInput || !inflationInput || !delayInput) return;
+
+      const C = parseFloat(costInput.value) || 2500000;
+      const Y = parseInt(yearsInput.value) || 12;
+      const infRate = parseFloat(inflationInput.value) || 8.0;
+      const delayYears = parseInt(delayInput.value) || 2;
+      const equityReturn = 12.0;
+
+      // Future cost of goal with inflation
+      const futureCost = C * Math.pow(1 + (infRate / 100), Y);
+
+      // Required monthly SIP starting today
+      const rMonthly = (equityReturn / 100) / 12;
+      const nTotal = Y * 12;
+      const sipToday = futureCost / (((Math.pow(1 + rMonthly, nTotal) - 1) / rMonthly) * (1 + rMonthly));
+
+      // Required monthly SIP if delayed by D years
+      const delayedYears = Math.max(1, Y - delayYears);
+      const nDelayed = delayedYears * 12;
+      const sipDelayed = futureCost / (((Math.pow(1 + rMonthly, nDelayed) - 1) / rMonthly) * (1 + rMonthly));
+
+      const extraMonthly = Math.max(0, sipDelayed - sipToday);
+      const principalToday = sipToday * nTotal;
+      const principalDelayed = sipDelayed * nDelayed;
+      const extraPrincipal = Math.max(0, principalDelayed - principalToday);
+
+      // Render Outputs
+      document.getElementById('calc-delay-result-future-cost').textContent = formatINR(Math.round(futureCost));
+      document.getElementById('calc-delay-sip-today').textContent = `${formatINR(Math.round(sipToday))} / mo`;
+      document.getElementById('calc-delay-sip-delayed').textContent = `${formatINR(Math.round(sipDelayed))} / mo`;
+      document.getElementById('calc-delay-extra-monthly').textContent = `+${formatINR(Math.round(extraMonthly))}/mo extra`;
+      document.getElementById('calc-delay-extra-principal').textContent = `+${formatINR(Math.round(extraPrincipal))} extra`;
+    }
+
+    // Presets & Sync Helpers
+    function setSipAmountPreset(val) {
+      const input = document.getElementById('calc-sip-amount-input');
+      const slider = document.getElementById('calc-sip-amount-slider');
+      if (input) input.value = val;
+      if (slider) slider.value = val;
+      recalcSip();
+    }
+
+    function setSipRatePreset(val) {
+      const input = document.getElementById('calc-sip-rate-input');
+      const slider = document.getElementById('calc-sip-rate-slider');
+      if (input) input.value = val;
+      if (slider) slider.value = val;
+      recalcSip();
+    }
+
+    function setSipYearsPreset(val) {
+      const input = document.getElementById('calc-sip-years-input');
+      const slider = document.getElementById('calc-sip-years-slider');
+      if (input) input.value = val;
+      if (slider) slider.value = val;
+      recalcSip();
+    }
+
+    function setLoanAmountPreset(val) {
+      const input = document.getElementById('calc-loan-amount-input');
+      const slider = document.getElementById('calc-loan-amount-slider');
+      if (input) input.value = val;
+      if (slider) slider.value = val;
+      recalcLoan();
+    }
+
+    function initCalculators() {
+      // Wire two-way input and slider syncs
+      const syncPairs = [
+        ['calc-sip-amount-input', 'calc-sip-amount-slider', recalcSip],
+        ['calc-sip-rate-input', 'calc-sip-rate-slider', recalcSip],
+        ['calc-sip-years-input', 'calc-sip-years-slider', recalcSip],
+        ['calc-sip-stepup-input', 'calc-sip-stepup-slider', recalcSip],
+        ['calc-loan-amount-input', 'calc-loan-amount-slider', recalcLoan],
+        ['calc-loan-rate-input', 'calc-loan-rate-slider', recalcLoan],
+        ['calc-loan-tenure-input', 'calc-loan-tenure-slider', recalcLoan],
+        ['calc-loan-prepay-input', 'calc-loan-prepay-slider', recalcLoan],
+        ['calc-swp-corpus-input', 'calc-swp-corpus-slider', recalcSwp],
+        ['calc-swp-monthly-input', 'calc-swp-monthly-slider', recalcSwp],
+        ['calc-swp-years-input', 'calc-swp-years-slider', recalcSwp],
+        ['calc-delay-cost-input', 'calc-delay-cost-slider', recalcDelay],
+        ['calc-delay-years-input', 'calc-delay-years-slider', recalcDelay],
+        ['calc-delay-inflation-input', 'calc-delay-inflation-slider', recalcDelay]
+      ];
+
+      syncPairs.forEach(([inputId, sliderId, callback]) => {
+        const inputEl = document.getElementById(inputId);
+        const sliderEl = document.getElementById(sliderId);
+
+        if (inputEl && sliderEl) {
+          inputEl.addEventListener('input', () => {
+            sliderEl.value = inputEl.value;
+            callback();
+          });
+          sliderEl.addEventListener('input', () => {
+            inputEl.value = sliderEl.value;
+            callback();
+          });
+        }
+      });
+
+      // Individual inputs without sliders
+      document.getElementById('calc-swp-return-input')?.addEventListener('input', recalcSwp);
+      document.getElementById('calc-swp-inflation-input')?.addEventListener('input', recalcSwp);
+      document.getElementById('calc-tax-asset-type')?.addEventListener('change', recalcTax);
+      document.getElementById('calc-tax-buy-input')?.addEventListener('input', recalcTax);
+      document.getElementById('calc-tax-sell-input')?.addEventListener('input', recalcTax);
+      document.getElementById('calc-tax-exempt-used-input')?.addEventListener('input', recalcTax);
+      document.getElementById('calc-delay-postpone-input')?.addEventListener('input', recalcDelay);
+
+      // Initial computations
+      recalcSip();
+      recalcLoan();
+      recalcSwp();
+      recalcTax();
+      recalcDelay();
+    }
+
+    // Global exports for inline onclick listeners
+    window.switchCalculatorTab = switchCalculatorTab;
+    window.setSipAmountPreset = setSipAmountPreset;
+    window.setSipRatePreset = setSipRatePreset;
+    window.setSipYearsPreset = setSipYearsPreset;
+    window.setLoanAmountPreset = setLoanAmountPreset;
+    window.setTaxHolding = setTaxHolding;
+    window.loadNetWorthIntoSwp = loadNetWorthIntoSwp;
+    window.initCalculators = initCalculators;

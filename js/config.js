@@ -637,6 +637,31 @@
 
     // Initial Seed Data with AMFI Scheme Codes and Yield / Interest Rates
     const DEFAULT_DATA = {
+      watchlist: [
+        { id: 'w1', type: 'stock', symbol: 'TATAMOTORS', name: 'Tata Motors Limited', exchange: 'NSE', currentPrice: 980.50, dayChange: 1.85, targetPrice: 920.00, notes: 'Accumulate on dips below ₹920 for EV long-term growth', high52: 1179.00, low52: 655.00 },
+        { id: 'w2', type: 'stock', symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', exchange: 'NSE', currentPrice: 1742.00, dayChange: -0.45, targetPrice: 1680.00, notes: 'Core private banking anchor', high52: 1794.00, low52: 1363.55 },
+        { id: 'w3', type: 'fund', schemeCode: '120503', name: 'Axis Small Cap Fund - Direct Growth', currentPrice: 94.60, dayChange: 0.92, targetPrice: 88.00, notes: 'SIP entry if smallcap corrects > 5%', high52: 98.20, low52: 74.10 },
+        { id: 'w4', type: 'stock', symbol: 'LICI', name: 'Life Insurance Corp of India', exchange: 'NSE', currentPrice: 948.00, dayChange: 2.10, targetPrice: 900.00, notes: 'High dividend yield watch near ₹900', high52: 1222.00, low52: 597.65 },
+        { id: 'w5', type: 'stock', symbol: 'HAL', name: 'Hindustan Aeronautics Ltd.', exchange: 'NSE', currentPrice: 4380.00, dayChange: 1.20, targetPrice: 4200.00, notes: 'Defence order book execution radar', high52: 5675.00, low52: 1850.00 }
+      ],
+
+      gold: [
+        { id: 'g1', name: 'SGB 2028-29 Series IV', type: 'Sovereign Gold Bond (SGB)', units: 15, buyPrice: 5850, currentPrice: 7920, interestRate: 2.5, maturityDate: '2029-03-15' },
+        { id: 'g2', name: '24K Digital Gold (MMTC-PAMP)', type: 'Digital Gold', units: 12.5, buyPrice: 6200, currentPrice: 7920, interestRate: 0 }
+      ],
+      retirement: [
+        { id: 'r1', name: 'Employee Provident Fund (EPF)', type: 'EPF', balance: 485000, interestRate: 8.25, monthlyContribution: 12500, uan: '100982347891' },
+        { id: 'r2', name: 'Public Provident Fund (PPF)', type: 'PPF', balance: 240000, interestRate: 7.1, annualDeposit: 150000, maturityDate: '2034-03-31' },
+        { id: 'r3', name: 'National Pension Scheme (NPS)', type: 'NPS (Tier 1)', balance: 310000, pran: '110023456789', interestRate: 10.2 }
+      ],
+      goals: [
+        { id: 'gl1', name: 'Emergency Fund (6 Months)', targetAmount: 360000, targetDate: '2027-12-31', category: 'Safety' },
+        { id: 'gl2', name: 'House Down Payment', targetAmount: 2500000, targetDate: '2029-06-30', category: 'Real Estate' },
+        { id: 'gl3', name: 'Retirement FIRE Corpus', targetAmount: 15000000, targetDate: '2042-03-31', category: 'Retirement' }
+      ],
+      targets: { cash: 15, stocks: 35, mf: 35, gold: 15 },
+      settings: { privacyMode: false, monthlyExpenses: 60000, expectedReturnRate: 12 },
+
       banks: [
         { id: 'b1', name: 'HDFC Bank', type: 'Savings Account', balance: 145000, interestRate: 3.5 },
         { id: 'b2', name: 'State Bank of India', type: 'Salary Account', balance: 52000, interestRate: 3.0 },
@@ -673,7 +698,15 @@
         const saved = localStorage.getItem('artha_data_v6') || localStorage.getItem('dhantrack_data_v5');
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (!parsed.targets) parsed.targets = { cash: 20, stocks: 40, mf: 40 };
+          if (!parsed.banks) parsed.banks = [];
+          if (!parsed.stocks) parsed.stocks = [];
+          if (!parsed.funds) parsed.funds = [];
+          if (!parsed.gold) parsed.gold = JSON.parse(JSON.stringify(DEFAULT_DATA.gold));
+          if (!parsed.retirement) parsed.retirement = JSON.parse(JSON.stringify(DEFAULT_DATA.retirement));
+          if (!parsed.goals) parsed.goals = JSON.parse(JSON.stringify(DEFAULT_DATA.goals));
+          if (!parsed.watchlist) parsed.watchlist = JSON.parse(JSON.stringify(DEFAULT_DATA.watchlist));
+          if (!parsed.targets) parsed.targets = { cash: 15, stocks: 35, mf: 35, gold: 15 };
+          if (!parsed.settings) parsed.settings = { privacyMode: false, monthlyExpenses: 60000, expectedReturnRate: 12 };
           return parsed;
         }
       } catch (e) {

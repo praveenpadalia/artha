@@ -874,13 +874,16 @@
         const isUp = stock.change >= 0;
         return `
           <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition-all group">
-            <div>
+            <button type="button" onclick="openStockDetailsModal('${escapeHtml(stock.symbol)}', '${escapeHtml(stock.exchange || 'NSE')}')" class="text-left w-full group/title cursor-pointer">
               <div class="flex items-center justify-between gap-1">
-                <span class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${escapeHtml(stock.symbol)}</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-slate-900 dark:text-white text-sm group-hover/title:text-emerald-600 dark:group-hover/title:text-emerald-400 transition-colors">${escapeHtml(stock.symbol)}</span>
+                  <svg class="w-3 h-3 text-slate-300 group-hover/title:text-emerald-500 opacity-0 group-hover/title:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </div>
                 <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${stock.cap === 'large' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${stock.cap === 'large' ? 'Large Cap' : 'Mid Cap'}</span>
               </div>
-              <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${escapeHtml(stock.name)}</div>
-            </div>
+              <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 group-hover/title:underline">${escapeHtml(stock.name)}</div>
+            </button>
 
             <div class="my-2.5">
               <div class="text-base font-extrabold text-slate-900 dark:text-white">${formatINR(stock.price)}</div>

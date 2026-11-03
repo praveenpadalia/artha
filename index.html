@@ -195,6 +195,18 @@
           </div>
         </div>
 
+        
+        <!-- Middle: Groww-Style Universal Search Bar -->
+        <div class="flex-1 max-w-xs sm:max-w-sm md:max-w-md mx-2 sm:mx-3">
+          <button id="btn-trigger-global-search" type="button" onclick="openGlobalSearch()" class="w-full flex items-center justify-between px-3 py-1.5 text-xs text-slate-400 dark:text-slate-500 bg-slate-100 hover:bg-slate-200/80 dark:bg-slate-800/80 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-xl transition-all cursor-pointer shadow-2xs group">
+            <div class="flex items-center gap-2 min-w-0">
+              <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-500 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              <span class="truncate text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200">Search stocks (e.g. Jio, Tata, Reliance)...</span>
+            </div>
+            <kbd class="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-mono text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded shadow-2xs">Ctrl K</kbd>
+          </button>
+        </div>
+
         <!-- Right: Status & Action Buttons -->
         <div class="flex items-center gap-1.5 sm:gap-2.5">
           <span id="sync-status-label" class="text-xs text-slate-500 dark:text-slate-400 font-medium hidden md:inline">Last sync: Initialized</span>
@@ -1294,7 +1306,7 @@
       </div>
     </div>
 
-    id="screen-markets" class="screen-panel hidden space-y-5">
+    <div id="screen-markets" class="screen-panel hidden space-y-5">
       <!-- Market Hero Header -->
       <section class="bg-gradient-to-br from-emerald-900 via-slate-900 to-slate-950 rounded-3xl p-5 sm:p-7 text-white shadow-xl relative overflow-hidden">
         <div class="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl"></div>
@@ -1943,7 +1955,7 @@
     </div>
   </div>
 
-  id="backup-modal-container" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div id="backup-modal-container" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl max-w-md w-full shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
       <div class="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
         <h3 class="font-bold text-slate-900 dark:text-white text-base">Backup &amp; Export</h3>
@@ -2015,6 +2027,244 @@
             </button>
           </div>
           <p class="text-[10px] text-slate-400">Paste your deployed Google Apps Script URL here for 100% reliable, zero-CORS live quotes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- ============================================== -->
+  <!-- MODAL: UNIVERSAL GROWW-STYLE STOCK SEARCH      -->
+  <!-- ============================================== -->
+  <div id="global-search-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-start justify-center pt-8 sm:pt-16 px-3 sm:px-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      <!-- Search Input Header -->
+      <div class="p-3.5 sm:p-4 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input id="global-search-input" type="text" autocomplete="off" placeholder="Search Indian stocks (NSE/BSE) or mutual funds (e.g. Jio, Reliance, Tata)..." class="w-full text-sm sm:text-base font-semibold bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden">
+        <button type="button" onclick="closeGlobalSearch()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
+          <kbd class="text-[10px] font-mono px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">ESC</kbd>
+        </button>
+      </div>
+
+      <!-- Filter Category Pills -->
+      <div class="px-4 py-2 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/60 dark:bg-slate-800/40 flex items-center gap-2 text-xs">
+        <span class="text-slate-400 text-[11px] font-medium">Filter:</span>
+        <button type="button" id="search-cat-all" onclick="setSearchFilterCategory('all')" class="px-2.5 py-1 rounded-lg font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">All</button>
+        <button type="button" id="search-cat-stocks" onclick="setSearchFilterCategory('stocks')" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700">Stocks</button>
+        <button type="button" id="search-cat-funds" onclick="setSearchFilterCategory('funds')" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700">Mutual Funds</button>
+      </div>
+
+      <!-- Results List Container -->
+      <div id="global-search-results" class="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 p-2 sm:p-3">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL: GROWW-STYLE STOCK DETAILS & CHART PAGE  -->
+  <!-- ============================================== -->
+  <div id="stock-details-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-2 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-h-[92vh] overflow-y-auto flex flex-col">
+      <!-- Top Sticky Navigation Bar -->
+      <div class="sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between z-10">
+        <div class="flex items-center gap-3 min-w-0">
+          <div id="stock-detail-avatar" class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 font-bold text-sm flex items-center justify-center shrink-0">
+            ST
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h2 id="stock-detail-name" class="font-bold text-base sm:text-lg text-slate-900 dark:text-white truncate">Stock Details</h2>
+              <span id="stock-detail-exchange-badge" class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">NSE</span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-slate-400">
+              <span id="stock-detail-symbol" class="font-mono font-bold text-slate-700 dark:text-slate-300">SYMBOL</span>
+              <span>•</span>
+              <span id="stock-detail-sector">Indian Equities</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Toggle Watchlist Button -->
+          <button id="stock-detail-watch-btn" type="button" title="Add / Remove from Watchlist" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-amber-400 text-slate-400 hover:text-amber-500 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-semibold">
+            <svg id="stock-detail-star-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+            <span id="stock-detail-watch-text" class="hidden sm:inline">Watchlist</span>
+          </button>
+
+          <!-- Direct Groww External Link -->
+          <a id="stock-detail-groww-link" href="#" target="_blank" rel="noopener noreferrer" title="View live page on Groww.in" class="p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-emerald-500 text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors flex items-center gap-1 text-xs font-semibold">
+            <span>Groww</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          </a>
+
+          <!-- Close Modal Button -->
+          <button type="button" onclick="closeStockDetailsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body Content -->
+      <div class="p-5 sm:p-6 space-y-6">
+        <!-- Live Price & Day Change Banner -->
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2">
+          <div>
+            <div class="flex items-baseline gap-3">
+              <span id="stock-detail-price" class="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white money-val tracking-tight">₹0.00</span>
+              <span id="stock-detail-change-badge" class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                +0.00%
+              </span>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Live Indian Market Quote</span>
+              <span>•</span>
+              <span id="stock-detail-prev-close">Prev Close: ₹0.00</span>
+            </div>
+          </div>
+
+          <!-- Timeframe Selector Tabs (1D, 1W, 1M, 1Y, 5Y) -->
+          <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl self-start sm:self-auto text-xs font-bold">
+            <button type="button" onclick="setStockChartTimeframe('1D')" class="stock-timeframe-btn active px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-2xs">1D</button>
+            <button type="button" onclick="setStockChartTimeframe('1W')" class="stock-timeframe-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">1W</button>
+            <button type="button" onclick="setStockChartTimeframe('1M')" class="stock-timeframe-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">1M</button>
+            <button type="button" onclick="setStockChartTimeframe('1Y')" class="stock-timeframe-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">1Y</button>
+            <button type="button" onclick="setStockChartTimeframe('5Y')" class="stock-timeframe-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">5Y</button>
+          </div>
+        </div>
+
+        <!-- Interactive Chart.js Canvas -->
+        <div class="h-56 sm:h-64 w-full bg-slate-50/50 dark:bg-slate-800/30 rounded-2xl p-2 border border-slate-100 dark:border-slate-800 relative">
+          <canvas id="stock-details-chart-canvas"></canvas>
+        </div>
+
+        <!-- Today's Range & 52-Week Range Bars (Groww Style) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+          <!-- Today's Range -->
+          <div class="p-3.5 bg-slate-50/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300 block">Today's Range</span>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-semibold">
+                <span id="stock-detail-today-low" class="text-slate-600 dark:text-slate-400 money-val">₹0.00</span>
+                <span class="text-[10px] text-slate-400">Day High</span>
+                <span id="stock-detail-today-high" class="text-slate-900 dark:text-white money-val">₹0.00</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden relative">
+                <div id="stock-detail-today-bar" class="bg-gradient-to-r from-emerald-400 to-indigo-500 h-full rounded-full" style="width: 50%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 52-Week Range -->
+          <div class="p-3.5 bg-slate-50/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-2">
+            <span class="text-[11px] font-bold text-slate-700 dark:text-slate-300 block">52-Week Range</span>
+            <div class="space-y-1">
+              <div class="flex justify-between text-xs font-semibold">
+                <span id="stock-detail-52w-low" class="text-slate-600 dark:text-slate-400 money-val">₹0.00</span>
+                <span class="text-[10px] text-purple-600 dark:text-purple-400 font-bold">52W High</span>
+                <span id="stock-detail-52w-high" class="text-purple-600 dark:text-purple-400 money-val">₹0.00</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden relative">
+                <div id="stock-detail-52w-bar" class="bg-gradient-to-r from-emerald-400 via-indigo-500 to-purple-500 h-full rounded-full" style="width: 50%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fundamentals Grid (Groww Style) -->
+        <div class="space-y-2.5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Fundamentals &amp; Market Ratios</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Market Cap</span>
+              <span id="stock-detail-mcap" class="font-extrabold text-slate-900 dark:text-white text-sm">₹0 Cr</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">P/E Ratio</span>
+              <span id="stock-detail-pe" class="font-extrabold text-slate-900 dark:text-white text-sm">0.0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">P/B Ratio</span>
+              <span id="stock-detail-pb" class="font-extrabold text-slate-900 dark:text-white text-sm">0.0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Industry P/E</span>
+              <span id="stock-detail-ind-pe" class="font-extrabold text-slate-900 dark:text-white text-sm">0.0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">ROE</span>
+              <span id="stock-detail-roe" class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">0.0%</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Debt to Equity</span>
+              <span id="stock-detail-de" class="font-extrabold text-slate-900 dark:text-white text-sm">0.0</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Dividend Yield</span>
+              <span id="stock-detail-divyield" class="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">0.0%</span>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Book Value</span>
+              <span id="stock-detail-bv" class="font-extrabold text-slate-900 dark:text-white text-sm money-val">₹0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- User's Portfolio Position (Conditional) -->
+        <div id="stock-detail-portfolio-section" class="hidden p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+              <span>💼</span> Your Portfolio Position
+            </span>
+            <span id="stock-detail-holdings-qty" class="text-xs font-extrabold text-emerald-700 dark:text-emerald-300">0 Shares Owned</span>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
+            <div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">Avg Buy Price</span>
+              <div id="stock-detail-holdings-avg" class="font-bold text-slate-900 dark:text-white money-val">₹0.00</div>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">Invested Capital</span>
+              <div id="stock-detail-holdings-invested" class="font-bold text-slate-900 dark:text-white money-val">₹0.00</div>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">Current Value</span>
+              <div id="stock-detail-holdings-current" class="font-bold text-slate-900 dark:text-white money-val">₹0.00</div>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">Overall Returns</span>
+              <div id="stock-detail-holdings-pnl" class="font-extrabold text-emerald-600 dark:text-emerald-400 money-val">+₹0.00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- About Company Overview -->
+        <div class="space-y-1.5 pt-1">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">About the Company</h3>
+          <p id="stock-detail-about-text" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            Company information and business segments.
+          </p>
+        </div>
+      </div>
+
+      <!-- Sticky Bottom Action Footer -->
+      <div class="sticky bottom-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-5 py-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 z-10">
+        <a id="stock-detail-footer-groww-btn" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-all flex items-center gap-1.5">
+          <span>Open on Groww</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+
+        <div class="flex items-center gap-2">
+          <button id="stock-detail-footer-watch-btn" type="button" class="px-3.5 py-2 text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 rounded-xl hover:bg-amber-100 transition-colors cursor-pointer flex items-center gap-1">
+            <span>★</span>
+            <span id="stock-detail-footer-watch-label">Watch</span>
+          </button>
+          <button id="stock-detail-footer-buy-btn" type="button" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>+ Add to Portfolio</span>
+          </button>
         </div>
       </div>
     </div>

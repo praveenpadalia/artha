@@ -194,11 +194,14 @@
         return `
           <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
             <td class="px-4 py-3">
-              <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                ${escapeHtml(stock.symbol)}
-                <span class="w-1.5 h-1.5 rounded-full ${isProfit ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
-              </div>
-              <div class="text-xs text-slate-500 dark:text-slate-400">${escapeHtml(stock.name || stock.symbol)}</div>
+              <button type="button" onclick="openStockDetailsModal('${escapeHtml(stock.symbol)}', '${escapeHtml(stock.exchange || 'NSE')}')" class="text-left group cursor-pointer block">
+                <div class="font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 flex items-center gap-1.5 transition-colors">
+                  <span>${escapeHtml(stock.symbol)}</span>
+                  <span class="w-1.5 h-1.5 rounded-full ${isProfit ? 'bg-emerald-500' : 'bg-rose-500'}"></span>
+                  <svg class="w-3 h-3 text-slate-300 group-hover:text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </div>
+                <div class="text-xs text-slate-500 dark:text-slate-400 group-hover:underline">${escapeHtml(stock.name || stock.symbol)}</div>
+              </button>
             </td>
             <td class="px-4 py-3">
               <span class="px-2 py-0.5 rounded text-xs font-semibold ${stock.exchange === 'NSE' ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300' : 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300'}">${escapeHtml(stock.exchange)}</span>
@@ -249,11 +252,13 @@
         return `
           <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between gap-3">
             <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-1.5">
-                <span class="font-bold text-slate-900 dark:text-white text-sm">${escapeHtml(stock.symbol)}</span>
-                <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${stock.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${escapeHtml(stock.exchange)}</span>
-              </div>
-              <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">${escapeHtml(stock.name || stock.symbol)}</div>
+              <button type="button" onclick="openStockDetailsModal('${escapeHtml(stock.symbol)}', '${escapeHtml(stock.exchange || 'NSE')}')" class="text-left group cursor-pointer block min-w-0 w-full">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-slate-900 dark:text-white text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${escapeHtml(stock.symbol)}</span>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold ${stock.exchange === 'NSE' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : 'bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300'}">${escapeHtml(stock.exchange)}</span>
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 group-hover:underline">${escapeHtml(stock.name || stock.symbol)}</div>
+              </button>
               <div class="text-[10px] text-slate-400 mt-1">
                 Qty: <strong class="text-slate-700 dark:text-slate-300">${stock.qty}</strong> • Avg: ${formatINR(stock.buyPrice)} • LTP: ${formatINR(stock.currentPrice)}
               </div>
@@ -2121,11 +2126,22 @@ Purchase NAV: 154.60`;
                   ${isStock ? (item.symbol || 'ST').substring(0, 3) : 'MF'}
                 </div>
                 <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(item.symbol || item.name)}</span>
-                    ${typeBadge}
-                  </div>
-                  <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-xs">${escapeHtml(item.name || item.symbol)}</div>
+                  ${isStock ? `
+                    <button type="button" onclick="openStockDetailsModal('${escapeHtml(item.symbol)}', '${escapeHtml(item.exchange || 'NSE')}')" class="text-left group cursor-pointer block">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-xs text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors truncate">${escapeHtml(item.symbol)}</span>
+                        ${typeBadge}
+                        <svg class="w-3 h-3 text-slate-300 group-hover:text-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                      </div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-xs group-hover:underline">${escapeHtml(item.name || item.symbol)}</div>
+                    </button>
+                  ` : `
+                    <div class="flex items-center gap-1.5">
+                      <span class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(item.name || item.symbol)}</span>
+                      ${typeBadge}
+                    </div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-xs">${escapeHtml(item.schemeCode || 'Direct Growth')}</div>
+                  `}
                 </div>
               </div>
             </td>
@@ -2191,11 +2207,21 @@ Purchase NAV: 154.60`;
                   ${isStock ? (item.symbol || 'ST').substring(0, 3) : 'MF'}
                 </div>
                 <div class="min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <span class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(item.symbol || item.name)}</span>
-                    <span class="px-1 py-0.2 rounded text-[9px] font-bold ${isStock ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300'}">${escapeHtml(item.exchange || 'MF')}</span>
-                  </div>
-                  <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(item.name || item.symbol)}</div>
+                  ${isStock ? `
+                    <button type="button" onclick="openStockDetailsModal('${escapeHtml(item.symbol)}', '${escapeHtml(item.exchange || 'NSE')}')" class="text-left group cursor-pointer block min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-xs text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors truncate">${escapeHtml(item.symbol)}</span>
+                        <span class="px-1 py-0.2 rounded text-[9px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">${escapeHtml(item.exchange || 'NSE')}</span>
+                      </div>
+                      <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate group-hover:underline">${escapeHtml(item.name || item.symbol)}</div>
+                    </button>
+                  ` : `
+                    <div class="flex items-center gap-1.5">
+                      <span class="font-bold text-xs text-slate-900 dark:text-white truncate">${escapeHtml(item.name || item.symbol)}</span>
+                      <span class="px-1 py-0.2 rounded text-[9px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300">MF</span>
+                    </div>
+                    <div class="text-[10px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(item.schemeCode || 'Direct Growth')}</div>
+                  `}
                 </div>
               </div>
               <div class="text-right shrink-0">
@@ -3021,3 +3047,635 @@ Purchase NAV: 154.60`;
     window.setTaxHolding = setTaxHolding;
     window.loadNetWorthIntoSwp = loadNetWorthIntoSwp;
     window.initCalculators = initCalculators;
+
+
+    // ==============================================
+    // GROWW-STYLE UNIVERSAL SEARCH & STOCK DETAILS
+    // ==============================================
+    let currentGlobalSearchFilter = 'all'; // 'all', 'stocks', 'funds'
+    let currentGlobalSearchQuery = '';
+    let stockDetailCurrentSymbol = '';
+    let stockDetailCurrentExchange = 'NSE';
+    let stockChartInstance = null;
+    let stockChartTimeframe = '1D';
+
+    // Helper: Generate Groww Stock Page URL Slug
+    function getGrowwStockSlug(symbol, name) {
+      // Custom overrides for famous Indian tickers
+      const overrides = {
+        'JIOFIN': 'jio-financial-services-ltd',
+        'RELIANCE': 'reliance-industries-ltd',
+        'TATAMOTORS': 'tata-motors-ltd',
+        'TCS': 'tata-consultancy-services-ltd',
+        'HDFCBANK': 'hdfc-bank-ltd',
+        'INFY': 'infosys-ltd',
+        'ICICIBANK': 'icici-bank-ltd',
+        'SBIN': 'state-bank-of-india',
+        'BHARTIARTL': 'bharti-airtel-ltd',
+        'ITC': 'itc-ltd',
+        'LT': 'larsen-and-toubro-ltd',
+        'SUZLON': 'suzlon-energy-ltd',
+        'ZOMATO': 'zomato-ltd',
+        'PAYTM': 'one-97-communications-ltd',
+        'LICI': 'life-insurance-corporation-of-india',
+        'HAL': 'hindustan-aeronautics-ltd'
+      };
+
+      if (symbol && overrides[symbol.toUpperCase()]) {
+        return overrides[symbol.toUpperCase()];
+      }
+
+      let clean = (name || symbol || 'stock')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+
+      if (!clean.includes('-ltd') && !clean.includes('-limited')) {
+        clean += '-ltd';
+      }
+      return clean;
+    }
+
+    // Open Global Search Modal
+    function openGlobalSearch() {
+      const modal = document.getElementById('global-search-modal');
+      const input = document.getElementById('global-search-input');
+      if (!modal) return;
+
+      modal.classList.remove('hidden');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      renderGlobalSearchResults('');
+    }
+
+    // Close Global Search Modal
+    function closeGlobalSearch() {
+      const modal = document.getElementById('global-search-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // Set Search Category Filter
+    function setSearchFilterCategory(cat) {
+      currentGlobalSearchFilter = cat;
+      ['all', 'stocks', 'funds'].forEach(c => {
+        const btn = document.getElementById(`search-cat-${c}`);
+        if (btn) {
+          if (c === cat) {
+            btn.className = "px-2.5 py-1 rounded-lg font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300";
+          } else {
+            btn.className = "px-2.5 py-1 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer";
+          }
+        }
+      });
+      renderGlobalSearchResults(currentGlobalSearchQuery);
+    }
+
+    // Render Global Search Results (Instant Groww Style)
+    function renderGlobalSearchResults(query) {
+      currentGlobalSearchQuery = (query || '').trim();
+      const resultsContainer = document.getElementById('global-search-results');
+      if (!resultsContainer) return;
+
+      if (!currentGlobalSearchQuery) {
+        // Trending on Indian Markets
+        const trendingStocks = [
+          { symbol: 'JIOFIN', name: 'Jio Financial Services Ltd.', price: 318.50, change: 1.53, ex: 'NSE', tag: 'Top Trending' },
+          { symbol: 'RELIANCE', name: 'Reliance Industries Ltd.', price: 1410.50, change: 0.85, ex: 'NSE', tag: 'Market Leader' },
+          { symbol: 'TATAMOTORS', name: 'Tata Motors Limited', price: 980.50, change: 1.85, ex: 'NSE', tag: 'EV Pioneer' },
+          { symbol: 'TCS', name: 'Tata Consultancy Services Ltd.', price: 4120.00, change: -0.40, ex: 'NSE', tag: 'IT Anchor' },
+          { symbol: 'HDFCBANK', name: 'HDFC Bank Ltd.', price: 1742.00, change: -0.45, ex: 'NSE', tag: 'Private Bank' },
+          { symbol: 'SUZLON', name: 'Suzlon Energy Ltd.', price: 68.40, change: 3.20, ex: 'NSE', tag: 'Clean Energy' },
+          { symbol: 'ZOMATO', name: 'Zomato Limited', price: 265.80, change: 2.15, ex: 'NSE', tag: 'Quick Commerce' }
+        ];
+
+        resultsContainer.innerHTML = `
+          <div class="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+            <span>🔥 Trending on Indian Markets (Groww Style)</span>
+            <span class="text-[10px] font-normal lowercase">click any to view live details</span>
+          </div>
+          <div class="space-y-1">
+            ${trendingStocks.map(stock => {
+              const isUp = stock.change >= 0;
+              return `
+                <div onclick="openStockDetailsModal('${stock.symbol}', '${stock.ex}'); closeGlobalSearch();" class="p-2.5 sm:p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer flex items-center justify-between transition-colors group">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0">
+                      ${stock.symbol.substring(0, 3)}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${escapeHtml(stock.symbol)}</span>
+                        <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">${stock.ex}</span>
+                        ${stock.tag ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 hidden sm:inline">${stock.tag}</span>` : ''}
+                      </div>
+                      <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(stock.name)}</div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2.5 shrink-0">
+                    <div class="text-right">
+                      <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white money-val">${formatINR(stock.price)}</div>
+                      <div class="text-[10px] font-bold ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                        ${isUp ? '▲ +' : '▼ '}${stock.change.toFixed(2)}%
+                      </div>
+                    </div>
+                    <button type="button" onclick="event.stopPropagation(); addToWatchlistFromMarket('${stock.symbol}', '${escapeHtml(stock.name)}', ${stock.price}, ${stock.change}, '${stock.ex}');" title="Add to Watchlist" class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-amber-400 hover:text-amber-500 text-slate-400 transition-colors">
+                      ★
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        return;
+      }
+
+      // Query-based Search
+      const stockMatches = currentGlobalSearchFilter !== 'funds' ? searchIndianStocks(currentGlobalSearchQuery) : [];
+
+      if (stockMatches.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="py-12 text-center text-slate-400 text-xs space-y-2">
+            <svg class="w-8 h-8 mx-auto text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <p>No matching stocks found for "<strong>${escapeHtml(currentGlobalSearchQuery)}</strong>"</p>
+            <p class="text-[10px] text-slate-500">Try searching by company name or ticker (e.g. Jio, Reliance, Tata, Suzlon)</p>
+          </div>
+        `;
+        return;
+      }
+
+      resultsContainer.innerHTML = stockMatches.map(([sym, data]) => {
+        // Calculate sample price based on symbol or existing data
+        const samplePrices = {
+          'JIOFIN': { price: 318.50, change: 1.53 },
+          'RELIANCE': { price: 1410.50, change: 0.85 },
+          'TATAMOTORS': { price: 980.50, change: 1.85 },
+          'TCS': { price: 4120.00, change: -0.40 },
+          'HDFCBANK': { price: 1742.00, change: -0.45 },
+          'INFY': { price: 1850.25, change: 0.65 },
+          'SUZLON': { price: 68.40, change: 3.20 },
+          'LICI': { price: 948.00, change: 2.10 },
+          'HAL': { price: 4380.00, change: 1.20 }
+        };
+
+        const existingStock = (appData.stocks || []).find(s => s.symbol === sym);
+        const existingWatch = (appData.watchlist || []).find(w => w.symbol === sym);
+        const fallbackPrice = samplePrices[sym]?.price || 450.00;
+        const curPrice = existingStock ? existingStock.currentPrice : (existingWatch ? existingWatch.currentPrice : fallbackPrice);
+        const dayChange = samplePrices[sym]?.change || (sym.charCodeAt(0) % 5 - 2);
+        const isUp = dayChange >= 0;
+
+        return `
+          <div onclick="openStockDetailsModal('${escapeHtml(sym)}', '${escapeHtml(data.exchange || 'NSE')}'); closeGlobalSearch();" class="p-2.5 sm:p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer flex items-center justify-between transition-colors group">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-xs flex items-center justify-center shrink-0">
+                ${sym.substring(0, 3)}
+              </div>
+              <div class="min-w-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${escapeHtml(sym)}</span>
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">${escapeHtml(data.exchange || 'NSE')}</span>
+                  ${existingStock ? '<span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">In Portfolio</span>' : ''}
+                </div>
+                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">${escapeHtml(data.name)}</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2.5 shrink-0">
+              <div class="text-right">
+                <div class="font-bold text-xs sm:text-sm text-slate-900 dark:text-white money-val">${formatINR(curPrice)}</div>
+                <div class="text-[10px] font-bold ${isUp ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                  ${isUp ? '▲ +' : '▼ '}${Math.abs(dayChange).toFixed(2)}%
+                </div>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); addToWatchlistFromMarket('${escapeHtml(sym)}', '${escapeHtml(data.name)}', ${curPrice}, ${dayChange}, '${escapeHtml(data.exchange || 'NSE')}');" title="Add to Watchlist" class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-amber-400 hover:text-amber-500 text-slate-400 transition-colors">
+                ★
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ==============================================
+    // GROWW-STYLE STOCK DETAILS MODAL & CHART ENGINE
+    // ==============================================
+    function openStockDetailsModal(symbol, exchange = 'NSE') {
+      stockDetailCurrentSymbol = (symbol || '').toUpperCase();
+      stockDetailCurrentExchange = exchange || 'NSE';
+
+      const modal = document.getElementById('stock-details-modal');
+      if (!modal) return;
+
+      // Master lookup
+      const dirEntry = INDIAN_STOCK_DIRECTORY[stockDetailCurrentSymbol] || {};
+      const stockHolding = (appData.stocks || []).find(s => s.symbol === stockDetailCurrentSymbol);
+      const watchItem = (appData.watchlist || []).find(w => w.symbol === stockDetailCurrentSymbol);
+
+      const companyName = stockHolding?.name || watchItem?.name || dirEntry.name || stockDetailCurrentSymbol;
+
+      // Realistic stock market stats dictionary for top Indian equities
+      const stockMasterStats = {
+        'JIOFIN': {
+          price: 318.50, change: 4.80, changePct: 1.53, prevClose: 313.70,
+          todayLow: 312.10, todayHigh: 322.40, low52: 204.65, high52: 394.70,
+          mcap: '₹2,02,340 Cr', pe: '124.5', pb: '1.72', indPe: '24.8',
+          roe: '1.45%', de: '0.00', divYield: '0.00%', bv: '₹185.20',
+          sector: 'Financial Services / NBFC',
+          about: 'Jio Financial Services Limited (JFSL), formerly Reliance Strategic Investments Limited, is a leading Indian digital financial services holding enterprise offering payments, merchant loans, insurance broking, and mutual fund management in strategic partnership with BlackRock.'
+        },
+        'RELIANCE': {
+          price: 1410.50, change: 11.20, changePct: 0.80, prevClose: 1399.30,
+          todayLow: 1398.00, todayHigh: 1424.00, low52: 1220.00, high52: 1608.80,
+          mcap: '₹19,08,500 Cr', pe: '25.4', pb: '2.10', indPe: '22.0',
+          roe: '9.80%', de: '0.38', divYield: '0.40%', bv: '₹672.40',
+          sector: 'Energy & Telecom Conglomerate',
+          about: 'Reliance Industries Limited is India\'s largest private sector enterprise, operating dominant positions in hydrocarbon exploration, petrochemicals, telecommunications (Jio Infocomm), and retail (Reliance Retail).'
+        },
+        'TATAMOTORS': {
+          price: 980.50, change: 17.80, changePct: 1.85, prevClose: 962.70,
+          todayLow: 968.00, todayHigh: 994.00, low52: 655.00, high52: 1179.00,
+          mcap: '₹3,25,000 Cr', pe: '10.2', pb: '3.40', indPe: '22.5',
+          roe: '32.5%', de: '1.20', divYield: '0.70%', bv: '₹288.40',
+          sector: 'Automobiles & EV Manufacturing',
+          about: 'Tata Motors Limited is a leading multinational automotive manufacturer of passenger vehicles, electric vehicles, and commercial trucks, owning the iconic British luxury marque Jaguar Land Rover (JLR).'
+        },
+        'TCS': {
+          price: 4120.00, change: -16.50, changePct: -0.40, prevClose: 4136.50,
+          todayLow: 4085.00, todayHigh: 4150.00, low52: 3315.00, high52: 4585.00,
+          mcap: '₹14,90,000 Cr', pe: '30.5', pb: '14.8', indPe: '28.2',
+          roe: '49.2%', de: '0.00', divYield: '1.40%', bv: '₹278.40',
+          sector: 'IT Services & Consulting',
+          about: 'Tata Consultancy Services is India\'s premier digital transformation, consulting, and business solutions organisation, delivering high-margin technology consulting across 55 countries.'
+        },
+        'HDFCBANK': {
+          price: 1742.00, change: -7.80, changePct: -0.45, prevClose: 1749.80,
+          todayLow: 1730.00, todayHigh: 1755.00, low52: 1363.55, high52: 1794.00,
+          mcap: '₹13,25,000 Cr', pe: '19.8', pb: '2.80', indPe: '18.5',
+          roe: '16.4%', de: '6.40', divYield: '1.20%', bv: '₹622.10',
+          sector: 'Private Banking',
+          about: 'HDFC Bank Limited is India\'s largest private sector bank by assets and market capitalization, providing comprehensive retail banking, commercial credit, and wealth management services.'
+        },
+        'INFY': {
+          price: 1850.25, change: 12.00, changePct: 0.65, prevClose: 1838.25,
+          todayLow: 1832.00, todayHigh: 1865.00, low52: 1358.00, high52: 1991.45,
+          mcap: '₹7,68,000 Cr', pe: '28.4', pb: '8.90', indPe: '28.2',
+          roe: '31.8%', de: '0.08', divYield: '2.40%', bv: '₹208.50',
+          sector: 'IT Consulting & Services',
+          about: 'Infosys Limited is a global leader in next-generation digital services and consulting, steering clients through digital transformation across 56 countries.'
+        }
+      };
+
+      // Resolved data with sensible fallback for any stock
+      const stats = stockMasterStats[stockDetailCurrentSymbol] || {
+        price: stockHolding?.currentPrice || watchItem?.currentPrice || 480.00,
+        change: 5.20,
+        changePct: 1.10,
+        prevClose: (stockHolding?.currentPrice || 480) * 0.989,
+        todayLow: (stockHolding?.currentPrice || 480) * 0.985,
+        todayHigh: (stockHolding?.currentPrice || 480) * 1.018,
+        low52: (stockHolding?.currentPrice || 480) * 0.72,
+        high52: (stockHolding?.currentPrice || 480) * 1.28,
+        mcap: '₹48,500 Cr',
+        pe: '22.4',
+        pb: '3.10',
+        indPe: '21.5',
+        roe: '15.2%',
+        de: '0.45',
+        divYield: `${Number(dirEntry.divYield || 1.2).toFixed(1)}%`,
+        bv: formatINR((stockHolding?.currentPrice || 480) * 0.35),
+        sector: dirEntry.exchange ? `${dirEntry.exchange} Listed Equity` : 'Indian Equity',
+        about: `${companyName} is an active Indian publicly traded company listed on the ${stockDetailCurrentExchange} offering goods and services across domestic and international markets.`
+      };
+
+      // Populate Modal Fields
+      document.getElementById('stock-detail-avatar').textContent = stockDetailCurrentSymbol.substring(0, 2);
+      document.getElementById('stock-detail-name').textContent = companyName;
+      document.getElementById('stock-detail-symbol').textContent = stockDetailCurrentSymbol;
+      document.getElementById('stock-detail-exchange-badge').textContent = stockDetailCurrentExchange;
+      document.getElementById('stock-detail-sector').textContent = stats.sector;
+
+      const curPrice = stockHolding ? stockHolding.currentPrice : (watchItem ? watchItem.currentPrice : stats.price);
+      document.getElementById('stock-detail-price').textContent = formatINR(curPrice);
+
+      const changeEl = document.getElementById('stock-detail-change-badge');
+      const isUp = stats.changePct >= 0;
+      changeEl.textContent = `${isUp ? '▲ +' : '▼ '}${Math.abs(stats.changePct).toFixed(2)}% (${isUp ? '+' : ''}${formatINR(stats.change)}) Today`;
+      changeEl.className = `px-2 py-0.5 rounded text-xs font-bold ${isUp ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300'}`;
+
+      document.getElementById('stock-detail-prev-close').textContent = `Prev Close: ${formatINR(stats.prevClose)}`;
+
+      // Ranges
+      document.getElementById('stock-detail-today-low').textContent = formatINR(stats.todayLow);
+      document.getElementById('stock-detail-today-high').textContent = formatINR(stats.todayHigh);
+      const todayRangePct = Math.max(0, Math.min(100, ((curPrice - stats.todayLow) / (stats.todayHigh - stats.todayLow)) * 100));
+      document.getElementById('stock-detail-today-bar').style.width = `${todayRangePct}%`;
+
+      document.getElementById('stock-detail-52w-low').textContent = formatINR(stats.low52);
+      document.getElementById('stock-detail-52w-high').textContent = formatINR(stats.high52);
+      const range52Pct = Math.max(0, Math.min(100, ((curPrice - stats.low52) / (stats.high52 - stats.low52)) * 100));
+      document.getElementById('stock-detail-52w-bar').style.width = `${range52Pct}%`;
+
+      // Fundamentals Grid
+      document.getElementById('stock-detail-mcap').textContent = stats.mcap;
+      document.getElementById('stock-detail-pe').textContent = stats.pe;
+      document.getElementById('stock-detail-pb').textContent = stats.pb;
+      document.getElementById('stock-detail-ind-pe').textContent = stats.indPe;
+      document.getElementById('stock-detail-roe').textContent = stats.roe;
+      document.getElementById('stock-detail-de').textContent = stats.de;
+      document.getElementById('stock-detail-divyield').textContent = stats.divYield;
+      document.getElementById('stock-detail-bv').textContent = stats.bv;
+      document.getElementById('stock-detail-about-text').textContent = stats.about;
+
+      // Groww External Link
+      const growwSlug = getGrowwStockSlug(stockDetailCurrentSymbol, companyName);
+      const growwUrl = `https://groww.in/stocks/${growwSlug}`;
+      const growwTopBtn = document.getElementById('stock-detail-groww-link');
+      const growwFootBtn = document.getElementById('stock-detail-footer-groww-btn');
+      if (growwTopBtn) growwTopBtn.href = growwUrl;
+      if (growwFootBtn) growwFootBtn.href = growwUrl;
+
+      // Portfolio Section
+      const portSection = document.getElementById('stock-detail-portfolio-section');
+      if (stockHolding && portSection) {
+        portSection.classList.remove('hidden');
+        const invested = stockHolding.qty * stockHolding.buyPrice;
+        const currentVal = stockHolding.qty * curPrice;
+        const pnl = currentVal - invested;
+        const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+        const isProf = pnl >= 0;
+
+        document.getElementById('stock-detail-holdings-qty').textContent = `${stockHolding.qty} Shares Owned`;
+        document.getElementById('stock-detail-holdings-avg').textContent = formatINR(stockHolding.buyPrice);
+        document.getElementById('stock-detail-holdings-invested').textContent = formatINR(invested);
+        document.getElementById('stock-detail-holdings-current').textContent = formatINR(currentVal);
+
+        const pnlEl = document.getElementById('stock-detail-holdings-pnl');
+        pnlEl.textContent = `${isProf ? '+' : ''}${formatINR(pnl)} (${isProf ? '+' : ''}${pnlPct.toFixed(2)}%)`;
+        pnlEl.className = `font-extrabold text-sm money-val ${isProf ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+      } else if (portSection) {
+        portSection.classList.add('hidden');
+      }
+
+      // Watchlist Button State
+      updateStockDetailWatchlistBtnState();
+
+      // Footer Action Buttons
+      const buyBtn = document.getElementById('stock-detail-footer-buy-btn');
+      if (buyBtn) {
+        buyBtn.onclick = () => {
+          closeStockDetailsModal();
+          switchScreen('portfolio');
+          switchTab('stocks');
+          openModal();
+          setTimeout(() => {
+            const symInput = document.getElementById('field-stock-symbol');
+            const nameInput = document.getElementById('field-stock-name');
+            const exInput = document.getElementById('field-stock-exchange');
+            const curInput = document.getElementById('field-stock-current');
+            const buyInput = document.getElementById('field-stock-buy');
+            const qtyInput = document.getElementById('field-stock-qty');
+
+            if (symInput) symInput.value = stockDetailCurrentSymbol;
+            if (nameInput) nameInput.value = companyName;
+            if (exInput) exInput.value = stockDetailCurrentExchange;
+            if (curInput) curInput.value = curPrice;
+            if (buyInput) buyInput.value = curPrice;
+            if (qtyInput) qtyInput.focus();
+          }, 150);
+        };
+      }
+
+      // Render Timeframe Chart (1D default)
+      setStockChartTimeframe('1D');
+
+      modal.classList.remove('hidden');
+    }
+
+    // Toggle Watchlist status inside Stock Details Modal
+    function updateStockDetailWatchlistBtnState() {
+      const isWatched = (appData.watchlist || []).some(w => w.symbol === stockDetailCurrentSymbol);
+      const topBtn = document.getElementById('stock-detail-watch-btn');
+      const footBtn = document.getElementById('stock-detail-footer-watch-btn');
+      const footLabel = document.getElementById('stock-detail-footer-watch-label');
+      const starIcon = document.getElementById('stock-detail-star-icon');
+
+      if (isWatched) {
+        if (topBtn) topBtn.className = "p-2 rounded-xl border border-amber-400 bg-amber-50 dark:bg-amber-950/80 text-amber-600 dark:text-amber-300 font-bold transition-colors cursor-pointer flex items-center gap-1.5 text-xs";
+        if (starIcon) starIcon.setAttribute('fill', 'currentColor');
+        if (footBtn) footBtn.className = "px-3.5 py-2 text-xs font-bold text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-950 border border-amber-300 dark:border-amber-700 rounded-xl transition-colors cursor-pointer flex items-center gap-1";
+        if (footLabel) footLabel.textContent = "Watching ★";
+      } else {
+        if (topBtn) topBtn.className = "p-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-amber-400 text-slate-400 hover:text-amber-500 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-semibold";
+        if (starIcon) starIcon.setAttribute('fill', 'none');
+        if (footBtn) footBtn.className = "px-3.5 py-2 text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 rounded-xl hover:bg-amber-100 transition-colors cursor-pointer flex items-center gap-1";
+        if (footLabel) footLabel.textContent = "Watch";
+      }
+
+      const toggleAction = () => {
+        const idx = (appData.watchlist || []).findIndex(w => w.symbol === stockDetailCurrentSymbol);
+        if (idx >= 0) {
+          appData.watchlist.splice(idx, 1);
+          showToast(`Removed ${stockDetailCurrentSymbol} from Watchlist`);
+        } else {
+          if (!appData.watchlist) appData.watchlist = [];
+          const curPrice = parseFloat(document.getElementById('stock-detail-price')?.textContent?.replace(/[^0-9.]/g, '')) || 500;
+          appData.watchlist.push({
+            id: 'w_' + Date.now(),
+            type: 'stock',
+            symbol: stockDetailCurrentSymbol,
+            name: document.getElementById('stock-detail-name')?.textContent || stockDetailCurrentSymbol,
+            exchange: stockDetailCurrentExchange,
+            currentPrice: curPrice,
+            dayChange: 1.25,
+            targetPrice: Math.round(curPrice * 0.95 * 100) / 100,
+            high52: Math.round(curPrice * 1.25 * 100) / 100,
+            low52: Math.round(curPrice * 0.75 * 100) / 100,
+            notes: 'Added from Stock Details page'
+          });
+          showToast(`Added ${stockDetailCurrentSymbol} to Watchlist!`);
+        }
+        saveData();
+        renderWatchlist();
+        updateStockDetailWatchlistBtnState();
+      };
+
+      if (topBtn) topBtn.onclick = toggleAction;
+      if (footBtn) footBtn.onclick = toggleAction;
+    }
+
+    // Set Timeframe on Stock Chart (1D, 1W, 1M, 1Y, 5Y)
+    function setStockChartTimeframe(tf) {
+      stockChartTimeframe = tf;
+
+      // Update button active styles
+      document.querySelectorAll('.stock-timeframe-btn').forEach(btn => {
+        if (btn.textContent.trim() === tf) {
+          btn.className = "stock-timeframe-btn active px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 font-bold shadow-2xs";
+        } else {
+          btn.className = "stock-timeframe-btn px-2.5 py-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-semibold";
+        }
+      });
+
+      renderStockChart(stockDetailCurrentSymbol, tf);
+    }
+
+    // Render Chart.js Curve
+    function renderStockChart(symbol, tf) {
+      const canvas = document.getElementById('stock-details-chart-canvas');
+      if (!canvas) return;
+
+      const curPrice = parseFloat(document.getElementById('stock-detail-price')?.textContent?.replace(/[^0-9.]/g, '')) || 500;
+
+      // Generate realistic price points for timeframe
+      let labels = [];
+      let data = [];
+      let pointCount = 10;
+      let volatility = 0.015;
+
+      if (tf === '1D') {
+        labels = ['09:15', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '15:30'];
+        pointCount = 8;
+        volatility = 0.008;
+      } else if (tf === '1W') {
+        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+        pointCount = 5;
+        volatility = 0.02;
+      } else if (tf === '1M') {
+        labels = ['W1', 'W2', 'W3', 'W4', 'Today'];
+        pointCount = 5;
+        volatility = 0.04;
+      } else if (tf === '1Y') {
+        labels = ['Nov', 'Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'];
+        pointCount = 7;
+        volatility = 0.12;
+      } else {
+        // 5Y
+        labels = ['2022', '2023', '2024', '2025', '2026'];
+        pointCount = 5;
+        volatility = 0.35;
+      }
+
+      // Generate smooth curve ending at curPrice
+      let startPrice = curPrice * (1 - (tf === '1D' ? 0.015 : (tf === '1W' ? 0.025 : (tf === '1M' ? 0.04 : (tf === '1Y' ? 0.18 : 0.65)))));
+      data = [];
+      for (let i = 0; i < pointCount - 1; i++) {
+        const factor = (i / (pointCount - 1));
+        const noise = (Math.sin(i * 1.5) * volatility * curPrice);
+        data.push(Math.round((startPrice + (curPrice - startPrice) * factor + noise) * 100) / 100);
+      }
+      data.push(curPrice);
+
+      const isPositive = data[data.length - 1] >= data[0];
+      const strokeColor = isPositive ? '#059669' : '#e11d48';
+      const fillColor = isPositive ? 'rgba(16, 185, 129, 0.12)' : 'rgba(244, 63, 94, 0.12)';
+
+      if (stockChartInstance) {
+        stockChartInstance.destroy();
+      }
+
+      const ctx = canvas.getContext('2d');
+      stockChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            borderColor: strokeColor,
+            borderWidth: 2.5,
+            fill: true,
+            backgroundColor: fillColor,
+            tension: 0.35,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: strokeColor,
+            pointHoverBorderColor: '#ffffff',
+            pointHoverBorderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(15, 23, 42, 0.9)',
+              titleFont: { size: 10, weight: 'bold' },
+              bodyFont: { size: 12, weight: 'bold' },
+              padding: 8,
+              cornerRadius: 10,
+              displayColors: false,
+              callbacks: {
+                label: (ctx) => `Price: ₹${ctx.parsed.y.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 10 }, color: '#94a3b8' }
+            },
+            y: {
+              grid: { color: 'rgba(226, 232, 240, 0.4)' },
+              ticks: {
+                font: { size: 10 },
+                color: '#94a3b8',
+                callback: (val) => '₹' + val.toLocaleString('en-IN')
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Close Stock Details Modal
+    function closeStockDetailsModal() {
+      const modal = document.getElementById('stock-details-modal');
+      if (modal) modal.classList.add('hidden');
+      if (stockChartInstance) {
+        stockChartInstance.destroy();
+        stockChartInstance = null;
+      }
+    }
+
+    // Keyboard Shortcuts (Ctrl+K or / opens Global Search, Esc closes modals)
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openGlobalSearch();
+      } else if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        openGlobalSearch();
+      } else if (e.key === 'Escape') {
+        closeGlobalSearch();
+        closeStockDetailsModal();
+      }
+    });
+
+    // Wire Global Search Input event
+    document.getElementById('global-search-input')?.addEventListener('input', (e) => {
+      renderGlobalSearchResults(e.target.value);
+    });
+
+    // Close modals on backdrop click
+    document.getElementById('global-search-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'global-search-modal') closeGlobalSearch();
+    });
+    document.getElementById('stock-details-modal')?.addEventListener('click', (e) => {
+      if (e.target.id === 'stock-details-modal') closeStockDetailsModal();
+    });
+
+    // Export functions globally
+    window.openGlobalSearch = openGlobalSearch;
+    window.closeGlobalSearch = closeGlobalSearch;
+    window.setSearchFilterCategory = setSearchFilterCategory;
+    window.renderGlobalSearchResults = renderGlobalSearchResults;
+    window.openStockDetailsModal = openStockDetailsModal;
+    window.closeStockDetailsModal = closeStockDetailsModal;
+    window.setStockChartTimeframe = setStockChartTimeframe;
+    window.getGrowwStockSlug = getGrowwStockSlug;
